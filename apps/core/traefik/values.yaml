@@ -1,0 +1,62 @@
+ingressClass:
+  enabled: true
+  isDefaultClass: false
+
+providers:
+  kubernetesCRD:
+    enabled: true
+    allowCrossNamespace: true
+    allowExternalNameServices: true
+  kubernetesIngress:
+    allowExternalNameServices: true
+    allowEmptyServices: true
+
+globalArguments:
+  - "--global.checknewversion"
+
+ingressRoute:
+  dashboard:
+    enabled: false
+
+additionalArguments:
+  - "--api.dashboard=true"
+  - "--serversTransport.insecureSkipVerify=true"
+
+ports:
+  web:
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
+        permanent: true
+  websecure:
+    tls:
+      enabled: true
+    transport:
+      respondingTimeouts:
+        readTimeout: 30m
+        writeTimeout: 30m
+
+logs:
+  general:
+    level: INFO
+  access:
+    enabled: true
+
+service:
+  ipFamilyPolicy: "PreferDualStack"
+  type: LoadBalancer
+  annotations:
+    io.cilium/lb-ipam-ips: "10.30.40.50"
+
+tolerations:
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+priorityClassName: "system-cluster-critical"
