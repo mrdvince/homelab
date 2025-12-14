@@ -5,30 +5,24 @@ locals {
 }
 
 terraform {
-  source = "${local.base_source_url}//qemu?ref=${local.base_source_branch}"
+  source = "${local.base_source_url}//vm?ref=${local.base_source_branch}"
 }
 
 inputs = {
-  os_type     = "cloud_init"
-  target_node = "avalon"
+  node_name = "avalon"
+
   network = {
-    bridge    = "vmbr0"
-    firewall  = false
-    link_down = false
-    model     = "virtio"
-    tag       = 30
+    bridge   = "vmbr0"
+    model    = "virtio"
+    firewall = false
+    vlan_id  = 30
   }
-  serial = {
-    id   = 0
-    type = "socket"
+
+  efi_disk = {
+    storage           = "nvme-data"
+    type              = "4m"
+    pre_enrolled_keys = false
   }
-  efidisk = {
-    efitype = "4m"
-    storage = "nvme-data"
-  }
-  vm_base_config_map = {
-    cpu       = "x86-64-v3"
-    skip_ipv6 = true
-  }
-  # sshkeys = file("~/.ssh/devkey.pub")
+
+  cpu_type = "x86-64-v2-AES"
 }

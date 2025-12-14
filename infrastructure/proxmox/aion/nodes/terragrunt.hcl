@@ -8,56 +8,42 @@ include "envcommon" {
 }
 
 inputs = {
-  target_node = "elysium"
+  node_name = "elysium"
+
   instances = [
     {
-      vmname   = "aion-node-01"
-      vmid     = 9004
-      ipconfig = "ip=dhcp"
-      macaddr  = "a2:45:24:08:74:dc"
+      vmname  = "aion-node-01"
+      vmid    = 9004
+      macaddr = "A2:45:24:08:74:DC"
     },
     {
-      vmname   = "aion-node-02"
-      vmid     = 9005
-      ipconfig = "ip=dhcp"
-      macaddr  = "9a:eb:4a:86:5c:7e"
+      vmname  = "aion-node-02"
+      vmid    = 9005
+      macaddr = "9A:EB:4A:86:5C:7E"
     },
   ]
 
-  vm_config_map = {
-    bios                   = "ovmf"
-    boot                   = "c"
-    bootdisk               = "ide2"
-    cores                  = 4
-    define_connection_info = false
-    machine                = "q35"
-    memory                 = 8192
-    onboot                 = true
-    scsihw                 = "virtio-scsi-pci"
-    balloon                = 8192
+  cores   = 4
+  memory  = 8192
+  balloon = 8192
+  bios    = "ovmf"
+  machine = "q35"
+  on_boot = true
+
+  disk = {
+    storage   = "nvme-data"
+    size      = 200
+    interface = "scsi0"
+    format    = "raw"
+    discard   = "on"
+    ssd       = false
+    iothread  = true
   }
 
-  disk_configurations = {
-    scsi = {
-      scsi0 = { disk = {
-        storage    = "local-lvm"
-        backup     = true
-        discard    = false
-        emulatessd = false
-        format     = "raw"
-        iothread   = false
-        readonly   = false
-        replicate  = false
-        size       = "200G" }
-      }
-    }
-
-    ide = {
-      ide2 = {
-        cdrom = { iso = "nfs-elysium:iso/talos-1.9.5-qemu-guest-agent.iso" }
-      }
-    }
+  cdrom = {
+    iso       = "nfs-elysium:iso/talos-1.11.5.iso"
+    interface = "ide2"
   }
 
-  tags = "worker,talos,aion"
+  tags = ["worker", "talos", "aion"]
 }

@@ -8,62 +8,47 @@ include "envcommon" {
 }
 
 inputs = {
-  target_node = "avalon"
+  node_name = "avalon"
+
   instances = [
     {
-      vmname   = "aion-cp-01"
-      vmid     = 9001
-      ipconfig = "ip=dhcp"
-      macaddr  = "ca:08:b1:d7:42:ff"
+      vmname  = "aion-cp-01"
+      vmid    = 9001
+      macaddr = "CA:08:B1:D7:42:FF"
     },
     {
-      vmname   = "aion-cp-02"
-      vmid     = 9002
-      ipconfig = "ip=dhcp"
-      macaddr  = "d2:1f:cc:81:09:f7"
+      vmname  = "aion-cp-02"
+      vmid    = 9002
+      macaddr = "D2:1F:CC:81:09:F7"
     },
     {
-      vmname   = "aion-cp-03"
-      vmid     = 9003
-      ipconfig = "ip=dhcp"
-      macaddr  = "d6:db:15:b4:d2:8a"
+      vmname  = "aion-cp-03"
+      vmid    = 9003
+      macaddr = "D6:DB:15:B4:D2:8A"
     },
   ]
 
-  vm_config_map = {
-    bios                   = "ovmf"
-    boot                   = "c"
-    bootdisk               = "ide2"
-    cores                  = 4
-    define_connection_info = false
-    machine                = "q35"
-    memory                 = 8192
-    onboot                 = true
-    scsihw                 = "virtio-scsi-pci"
-    balloon                = 8192
+  cores   = 4
+  memory  = 8192
+  balloon = 8192
+  bios    = "ovmf"
+  machine = "q35"
+  on_boot = true
+
+  disk = {
+    storage   = "nvme-data"
+    size      = 200
+    interface = "scsi0"
+    format    = "raw"
+    discard   = "on"
+    ssd       = false
+    iothread  = true
   }
 
-  disk_configurations = {
-    scsi = {
-      scsi0 = { disk = {
-        storage    = "nvme-data"
-        backup     = true
-        discard    = false
-        emulatessd = false
-        format     = "raw"
-        iothread   = false
-        readonly   = false
-        replicate  = false
-        size       = "200G" }
-      }
-    }
-
-    ide = {
-      ide2 = {
-        cdrom = { iso = "nfs-avalon:iso/talos-1.11.5.iso" }
-      }
-    }
+  cdrom = {
+    iso       = "nfs-avalon:iso/talos-1.11.5.iso"
+    interface = "ide2"
   }
 
-  tags = "controlplane,talos,aion"
+  tags = ["controlplane", "talos", "aion"]
 }

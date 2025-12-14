@@ -24,14 +24,13 @@ locals {
       EOF
     }
     proxmox = {
-      source  = "Telmate/proxmox"
-      version = "3.0.1-rc6"
+      source  = "bpg/proxmox"
+      version = "0.89.1"
       config  = <<-EOF
         provider "proxmox" {
-          pm_api_url          = "${local.pm_api_url}"
-          pm_api_token_id     = "${local.pm_api_token_id}"
-          pm_api_token_secret = "${local.pm_api_token_secret}"
-          pm_tls_insecure     = false
+          endpoint  = "${local.pm_api_url}"
+          api_token = "${local.pm_api_token_id}=${local.pm_api_token_secret}"
+          insecure  = false
         }
       EOF
     }
