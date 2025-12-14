@@ -34,6 +34,8 @@ inputs = {
   bios    = "ovmf"
   machine = "q35"
   on_boot = true
+  agent_enabled = true
+  agent_timeout = "3m"
 
   disk = {
     storage   = "nvme-data"

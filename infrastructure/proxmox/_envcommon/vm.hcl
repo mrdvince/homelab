@@ -6,6 +6,7 @@ locals {
 
 terraform {
   source = "${local.base_source_url}//vm?ref=${local.base_source_branch}"
+  # source = "../../../../../hllab-modules/vm"
 }
 
 inputs = {
