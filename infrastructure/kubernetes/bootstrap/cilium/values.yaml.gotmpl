@@ -48,7 +48,7 @@ hubble:
     prometheus:
       enabled: true
       serviceMonitor:
-        enabled: true
+        enabled: false
   ui:
     enabled: true
 
@@ -56,7 +56,7 @@ hubble:
     dashboards:
       enabled: false
     serviceMonitor:
-      enabled: true
+      enabled: false
     enableOpenMetrics: true
     enabled:
       - dns
@@ -73,7 +73,7 @@ dashboards:
 prometheus:
   enabled: true
   serviceMonitor:
-    enabled: true
+    enabled: false
 
 operator:
   dashboards:
@@ -81,5 +81,5 @@ operator:
   prometheus:
     enabled: true
     serviceMonitor:
-      enabled: true
+      enabled: false
   replicas: {{ dig "cilium_op" 2 .Values }}

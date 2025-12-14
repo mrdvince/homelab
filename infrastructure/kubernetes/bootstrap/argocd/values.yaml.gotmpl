@@ -36,7 +36,7 @@ configs:
 repoServer:
   extraContainers:
     - name: helmfile
-      image: ghcr.io/helmfile/helmfile:v0.171.0
+      image: ghcr.io/helmfile/helmfile:v1.2.2
       command: ["/var/run/argocd/argocd-cmp-server"]
       env:
         - name: SOPS_AGE_KEY_FILE
