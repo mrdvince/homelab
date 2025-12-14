@@ -1,0 +1,45 @@
+machine:
+  kubelet:
+    extraMounts:
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
+  network:
+    interfaces:
+      - interface: enp6s18
+        dhcp: true
+        vip:
+          ip: 10.30.30.145
+    nameservers:
+      - 192.168.50.120
+      - 1.1.1.1
+cluster:
+  allowSchedulingOnControlPlanes: true
+  apiServer:
+    certSANs:
+      - 10.30.30.141
+      - 10.30.30.142
+      - 10.30.30.143
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          defaults:
+            audit: privileged
+            audit-version: latest
+            enforce: privileged
+            enforce-version: latest
+            warn: privileged
+            warn-version: latest
+  network:
+    cni:
+      name: none
+    podSubnets:
+      - 10.244.0.0/18
+    serviceSubnets:
+      - 10.96.0.0/18
+  proxy:
+    disabled: true

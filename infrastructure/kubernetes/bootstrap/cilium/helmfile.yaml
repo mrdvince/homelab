@@ -1,0 +1,36 @@
+environments:
+  aion:
+    values:
+      - env: prod
+      - host_root: /sys/fs/cgroup
+      - cgroup_auto_mount: false
+      - k8sservicehost: localhost
+      - k8sserviceport: 7445
+      - nic: "enp*"
+      - ipv_4_native_routing_cidr: "10.244.0.0/17"
+      - domain: aion.home.mrdvince.me
+
+  athos:
+    values:
+      - env: prod
+      - host_root: /sys/fs/cgroup
+      - cgroup_auto_mount: false
+      - k8sservicehost: localhost
+      - k8sserviceport: 7445
+      - nic: "enp*"
+      - ipv_4_native_routing_cidr: "10.244.0.0/17"
+      - domain: athos.home.mrdvince.me
+      - cilium_op: 1
+---
+repositories:
+  - name: cilium
+    url: https://helm.cilium.io/
+
+releases:
+  - name: cilium
+    namespace: kube-system
+    chart: cilium/cilium
+    version: 1.17.6
+    values:
+      - ./values.yaml.gotmpl
+    force: false

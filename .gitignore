@@ -1,0 +1,23 @@
+# Terragrunt
+.terragrunt-cache/
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Talos
+infrastructure/kubernetes/*/\_out/
+
+# Helm
+charts/*.tgz
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# sops secrets, symlinked at the moment
+secrets
