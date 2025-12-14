@@ -10,10 +10,10 @@ machine:
           - rw
   network:
     interfaces:
-      - interface: enp6s18
+      - interface: ${NIC}
         dhcp: true
         vip:
-          ip: 10.30.30.145
+          ip: ${VIP}
     nameservers:
       - 192.168.50.120
       - 1.1.1.1
@@ -21,9 +21,7 @@ cluster:
   allowSchedulingOnControlPlanes: true
   apiServer:
     certSANs:
-      - 10.30.30.141
-      - 10.30.30.142
-      - 10.30.30.143
+${CERT_SANS}
     admissionControl:
       - name: PodSecurity
         configuration:
@@ -38,8 +36,8 @@ cluster:
     cni:
       name: none
     podSubnets:
-      - 10.244.0.0/18
+      - ${POD_SUBNET}
     serviceSubnets:
-      - 10.96.0.0/18
+      - ${SERVICE_SUBNET}
   proxy:
     disabled: true

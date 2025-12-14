@@ -6,7 +6,8 @@
 .terraform.lock.hcl
 
 # Talos
-infrastructure/kubernetes/*/\_out/
+infrastructure/kubernetes/*/_out/
+infrastructure/kubernetes/*/controlplane.yaml
 
 # Helm
 charts/*.tgz
