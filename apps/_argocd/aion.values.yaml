@@ -1,0 +1,48 @@
+applications:
+  cert-manager:
+    project: default
+    namespace: argocd
+    source:
+      repoURL: git@github.com:mrdvince/homelab.git
+      targetRevision: HEAD
+      path: apps/core/cert-manager
+      plugin:
+        name: helmfile
+        env:
+          - name: ENV_NAME
+            value: aion
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: cert-manager
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+        - ValidateSpec=false
+    ignoreDifferences:
+      - group: admissionregistration.k8s.io
+        kind: ValidatingWebhookConfiguration
+        jqPathExpressions:
+          - .webhooks[]?.failurePolicy
+
+  external-dns:
+    project: default
+    namespace: argocd
+    source:
+      repoURL: git@github.com:mrdvince/homelab.git
+      targetRevision: HEAD
+      path: apps/core/external-dns
+      plugin:
+        name: helmfile
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: external-dns
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+        - ValidateSpec=false

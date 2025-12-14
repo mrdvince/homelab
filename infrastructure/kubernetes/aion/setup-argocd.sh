@@ -53,3 +53,7 @@ EOF
 echo "added hllab repository"
 
 echo "github repositories configured with ssh authentication"
+
+echo "applying root app-of-apps..."
+kubectl apply -f ../../../apps/_argocd/root.yaml
+echo "app-of-apps deployed - argocd will now sync all applications"

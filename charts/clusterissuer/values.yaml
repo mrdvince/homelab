@@ -1,0 +1,13 @@
+name: letsencrypt-dns01
+env: prod
+
+acme:
+  prodServer: https://acme-v02.api.letsencrypt.org/directory
+  stagingServer: https://acme-staging-v02.api.letsencrypt.org/directory
+
+cloudflare:
+  secretName: cloudflare-api-key-secret
+  secretKey: api-key
+
+dnsZones:
+  - mrdvince.me

@@ -1,0 +1,21 @@
+environments:
+  aion:
+    values:
+      - ./base.values.yaml
+      - ./aion.values.yaml
+  athos:
+    values:
+      - ./base.values.yaml
+      - ./athos.values.yaml
+---
+repositories:
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+
+releases:
+  - name: apps
+    namespace: argocd
+    chart: argo/argocd-apps
+    version: 2.0.2
+    values:
+      - applications: {{ .Values.applications | toYaml | nindent 10 }}
