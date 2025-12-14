@@ -115,11 +115,21 @@ bootstrap:
 apply-cilium:
 	@sleep 1
 	@cd ../bootstrap/cilium && helmfile -e aion apply
-	@sleep 10
-	@echo "Applying Cilium L2 config..."
+	@echo "waiting for cilium l2 crds..."
+	@for i in $$(seq 1 30); do \
+		if kubectl get crd ciliuml2announcementpolicies.cilium.io >/dev/null 2>&1; then \
+			echo "cilium crds ready"; \
+			break; \
+		fi; \
+		if [ $$i -eq 30 ]; then \
+			echo "timed out waiting for cilium crds"; \
+			exit 1; \
+		fi; \
+		sleep 5; \
+	done
+	@echo "applying cilium l2 config..."
 	@kubectl apply -f cilium-config.yaml
-	@sleep 10
-	@echo "Cilium manifests applied successfully!"
+	@echo "cilium manifests applied"
 	@talosctl config node $(ALL_NODES)
 
 setup-argocd-repos:
