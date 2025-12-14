@@ -20,5 +20,5 @@ charts/*.tgz
 .vscode/
 *.swp
 
-# sops secrets, symlinked at the moment
-secrets
+# sops secrets (hllab submodule handles this now)
+/secrets
