@@ -34,7 +34,11 @@ applicationsets:
           syncOptions:
             - CreateNamespace=true
             - ServerSideApply=true
-        ignoreDifferences: '{{`{{ .ignoreDifferences | toJson }}`}}'
+    templatePatch: |
+      {{`{{- if .ignoreDifferences }}`}}
+      spec:
+        ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
+      {{`{{- end }}`}}
 
   service-apps:
     namespace: argocd
@@ -71,4 +75,8 @@ applicationsets:
           syncOptions:
             - CreateNamespace=true
             - ServerSideApply=true
-        ignoreDifferences: '{{`{{ .ignoreDifferences | toJson }}`}}'
+    templatePatch: |
+      {{`{{- if .ignoreDifferences }}`}}
+      spec:
+        ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
+      {{`{{- end }}`}}
