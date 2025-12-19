@@ -1,0 +1,50 @@
+environments:
+  aion:
+    values:
+      - host_root: /sys/fs/cgroup
+        cgroup_auto_mount: false
+        k8sservicehost: localhost
+        k8sserviceport: 7445
+        nic: "enp*"
+        ipv_4_native_routing_cidr: "10.244.0.0/17"
+        lb_pool_start: "10.30.40.1"
+        lb_pool_stop: "10.30.40.254"
+        cilium_op: 2
+
+  athos:
+    values:
+      - host_root: /sys/fs/cgroup
+        cgroup_auto_mount: false
+        k8sservicehost: localhost
+        k8sserviceport: 7445
+        nic: "enp*"
+        ipv_4_native_routing_cidr: "10.244.128.0/17"
+        lb_pool_start: "10.30.50.1"
+        lb_pool_stop: "10.30.50.254"
+        cilium_op: 1
+---
+repositories:
+  - name: cilium
+    url: https://helm.cilium.io/
+
+releases:
+  - name: cilium
+    namespace: kube-system
+    chart: cilium/cilium
+    version: 1.18.4
+    values:
+      - values.yaml.gotmpl
+
+  - name: cilium-config
+    namespace: kube-system
+    chart: ../../../charts/cilium-config
+    version: 0.1.0
+    needs:
+      - kube-system/cilium
+    values:
+      - l2announce:
+          interfaces:
+            - ^en.*
+        lbPool:
+          start: {{ .Values.lb_pool_start | quote }}
+          stop: {{ .Values.lb_pool_stop | quote }}

@@ -111,25 +111,11 @@ bootstrap:
 	done
 	@echo "Kubernetes API is now available."
 
-# apply cilium networking manifests
+# apply cilium networking manifests (minimal bootstrap - argocd manages full config)
 apply-cilium:
 	@sleep 1
 	@cd ../bootstrap/cilium && helmfile -e aion apply
-	@echo "waiting for cilium l2 crds..."
-	@for i in $$(seq 1 30); do \
-		if kubectl get crd ciliuml2announcementpolicies.cilium.io >/dev/null 2>&1; then \
-			echo "cilium crds ready"; \
-			break; \
-		fi; \
-		if [ $$i -eq 30 ]; then \
-			echo "timed out waiting for cilium crds"; \
-			exit 1; \
-		fi; \
-		sleep 5; \
-	done
-	@echo "applying cilium l2 config..."
-	@kubectl apply -f cilium-config.yaml
-	@echo "cilium manifests applied"
+	@echo "cilium cni applied - argocd will manage l2/ingress/hubble config"
 	@talosctl config node $(ALL_NODES)
 
 setup-argocd-repos:

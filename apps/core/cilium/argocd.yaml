@@ -1,0 +1,2 @@
+# cilium cni managed by argocd after bootstrap
+namespace: kube-system

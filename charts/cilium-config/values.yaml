@@ -1,0 +1,7 @@
+l2announce:
+  interfaces:
+    - ^en.*
+
+lbPool:
+  start: "10.30.40.1"
+  stop: "10.30.40.254"

@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: cilium-l2-announce
+spec:
+  externalIPs: true
+  loadBalancerIPs: true
+  interfaces:
+    {{- range .Values.l2announce.interfaces }}
+    - {{ . }}
+    {{- end }}
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lb-pool
+spec:
+  blocks:
+    - start: {{ .Values.lbPool.start | quote }}
+      stop: {{ .Values.lbPool.stop | quote }}

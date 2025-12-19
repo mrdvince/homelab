@@ -1,0 +1,19 @@
+environments:
+  aion:
+    values:
+      - domain: aion.home.mrdvince.me
+  athos:
+    values:
+      - domain: athos.home.mrdvince.me
+---
+repositories:
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+
+releases:
+  - name: argocd
+    namespace: argocd
+    chart: argo/argo-cd
+    version: 9.1.7
+    values:
+      - values.yaml.gotmpl

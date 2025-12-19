@@ -1,6 +1,13 @@
+global:
+  domain: argocd.{{ .Values.domain }}
+
 server:
   ingress:
     enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+    tls: true
 
 configs:
   params:
