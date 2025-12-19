@@ -1,6 +1,10 @@
 environments:
   aion:
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
   athos:
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
   - name: external-dns
@@ -11,8 +15,12 @@ releases:
     namespace: external-dns
     chart: ../../../charts/secrets
     version: 0.1.0
-    secrets:
-      - ../../../hllab/secrets/sealed-adguard-creds.yaml
+    values:
+      - fullnameOverride: adguard-auth-secret
+        data:
+          url: {{ .Values.adhome.url }}
+          user: {{ .Values.adhome.user }}
+          password: {{ .Values.adhome.password }}
 
   - name: external-dns
     namespace: external-dns

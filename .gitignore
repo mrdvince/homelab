@@ -19,6 +19,3 @@ charts/*.tgz
 .idea/
 .vscode/
 *.swp
-
-# sops secrets (hllab submodule handles this now)
-/secrets

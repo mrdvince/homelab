@@ -2,9 +2,13 @@ environments:
   aion:
     values:
       - env: prod
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - env: prod
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
   - name: jetstack
@@ -24,8 +28,10 @@ releases:
     namespace: cert-manager
     chart: ../../../charts/secrets
     version: 0.1.0
-    secrets:
-      - ../../../hllab/secrets/sealed-cloudflare-token-secret.yaml
+    values:
+      - fullnameOverride: cloudflare-api-key
+        data:
+          api-token: {{ .Values.cf | get "api-key" }}
     needs:
       - cert-manager/cert-manager
 

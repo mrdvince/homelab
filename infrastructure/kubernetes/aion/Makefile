@@ -140,7 +140,7 @@ setup-argocd-repos:
 	@chmod +x ./setup-argocd.sh
 	@./setup-argocd.sh
 	@sleep 30
-	@zsh -c "source ~/.zshrc && load_age_secrets && echo \"$$SOPS_AGE_KEY\" | kubectl -n argocd create secret generic age --from-file=key.txt=/dev/stdin"
+	@bw get notes "sops-age-key" | kubectl -n argocd create secret generic age --from-file=key.txt=/dev/stdin
 	@echo "Cluster setup complete."
 
 upload-config:
