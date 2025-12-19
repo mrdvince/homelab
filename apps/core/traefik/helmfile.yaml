@@ -6,6 +6,6 @@ releases:
   - name: traefik
     namespace: traefik
     chart: traefik/traefik
-    version: 35.2.0
+    version: 38.0.0
     values:
       - values.yaml

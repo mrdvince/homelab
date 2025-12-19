@@ -1,21 +1,21 @@
 environments:
   aion:
     values:
-      - ./base.values.yaml
-      - ./aion.values.yaml
+      - cluster: aion
+        server: https://kubernetes.default.svc
   athos:
     values:
-      - ./base.values.yaml
-      - ./athos.values.yaml
+      - cluster: athos
+        server: https://kubernetes.default.svc
 ---
 repositories:
   - name: argo
     url: https://argoproj.github.io/argo-helm
 
 releases:
-  - name: apps
+  - name: appsets
     namespace: argocd
     chart: argo/argocd-apps
     version: 2.0.2
     values:
-      - applications: {{ .Values.applications | toYaml | nindent 10 }}
+      - values.yaml.gotmpl

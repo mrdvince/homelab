@@ -1,0 +1,74 @@
+applicationsets:
+  core-apps:
+    namespace: argocd
+    goTemplate: true
+    goTemplateOptions:
+      - missingkey=error
+    generators:
+      - git:
+          repoURL: git@github.com:mrdvince/homelab.git
+          revision: HEAD
+          files:
+            - path: apps/core/*/argocd.yaml
+    template:
+      metadata:
+        name: '{{`{{ .path.basename }}`}}'
+      spec:
+        project: '{{`{{ default "default" .project }}`}}'
+        source:
+          repoURL: git@github.com:mrdvince/homelab.git
+          targetRevision: HEAD
+          path: '{{`{{ .path.path }}`}}'
+          plugin:
+            name: helmfile
+            env:
+              - name: ENV_NAME
+                value: {{ .Values.cluster }}
+        destination:
+          server: {{ .Values.server }}
+          namespace: '{{`{{ default .path.basename .namespace }}`}}'
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+          syncOptions:
+            - CreateNamespace=true
+            - ServerSideApply=true
+        ignoreDifferences: '{{`{{ .ignoreDifferences | toJson }}`}}'
+
+  service-apps:
+    namespace: argocd
+    goTemplate: true
+    goTemplateOptions:
+      - missingkey=error
+    generators:
+      - git:
+          repoURL: git@github.com:mrdvince/homelab.git
+          revision: HEAD
+          files:
+            - path: apps/services/*/argocd.yaml
+    template:
+      metadata:
+        name: '{{`{{ .path.basename }}`}}'
+      spec:
+        project: '{{`{{ default "default" .project }}`}}'
+        source:
+          repoURL: git@github.com:mrdvince/homelab.git
+          targetRevision: HEAD
+          path: '{{`{{ .path.path }}`}}'
+          plugin:
+            name: helmfile
+            env:
+              - name: ENV_NAME
+                value: {{ .Values.cluster }}
+        destination:
+          server: {{ .Values.server }}
+          namespace: '{{`{{ default .path.basename .namespace }}`}}'
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+          syncOptions:
+            - CreateNamespace=true
+            - ServerSideApply=true
+        ignoreDifferences: '{{`{{ .ignoreDifferences | toJson }}`}}'

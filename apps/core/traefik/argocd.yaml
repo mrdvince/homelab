@@ -1,0 +1,2 @@
+# argocd application config for traefik
+namespace: traefik

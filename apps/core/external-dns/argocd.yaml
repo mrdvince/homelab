@@ -1,0 +1,2 @@
+# argocd application config for external-dns
+namespace: external-dns

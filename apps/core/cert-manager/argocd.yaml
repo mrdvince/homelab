@@ -1,0 +1,7 @@
+# argocd application config for cert-manager
+namespace: cert-manager
+ignoreDifferences:
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    jqPathExpressions:
+      - .webhooks[]?.failurePolicy
