@@ -1,5 +1,6 @@
 l2announce:
   interfaces:
+    - ^eth.*
     - ^en.*
 
 lbPool:

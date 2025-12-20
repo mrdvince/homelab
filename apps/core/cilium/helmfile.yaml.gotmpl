@@ -44,6 +44,7 @@ releases:
     values:
       - l2announce:
           interfaces:
+            - ^eth.*
             - ^en.*
         lbPool:
           start: {{ .Values.lb_pool_start | quote }}
