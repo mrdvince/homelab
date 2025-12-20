@@ -1,12 +1,13 @@
 locals {
+  node_vars        = read_terragrunt_config(find_in_parent_folders("node.hcl"))
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   aws_region       = "garage"
-  secret_vars      = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../../secrets/secrets.enc.yaml"))
+  secret_vars  = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../../secrets/secrets.enc.yaml"))
 
   pm_api_token_id     = local.secret_vars.pm_api_token_id
   pm_api_token_secret = local.secret_vars.pm_api_token_secret
   cipassword          = try(local.secret_vars.cipassword, "")
-  pm_api_url          = local.environment_vars.locals.pm_api_url
+  pm_api_url          = local.node_vars.locals.pm_api_url
   authentik_token     = local.secret_vars.authentik
 
   providers_file   = "${get_terragrunt_dir()}/providers.yaml"
@@ -37,6 +38,16 @@ locals {
     random = {
       source  = "hashicorp/random"
       version = "3.7.2"
+      config  = ""
+    }
+    talos = {
+      source  = "siderolabs/talos"
+      version = "0.9.0"
+      config  = ""
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "3.1.1"
       config  = ""
     }
   }
