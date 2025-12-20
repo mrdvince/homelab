@@ -4,4 +4,3 @@ customization:
       - siderolabs/iscsi-tools
       - siderolabs/util-linux-tools
       - siderolabs/qemu-guest-agent
-      - siderolabs/tailscale

@@ -6,8 +6,8 @@ acme:
   stagingServer: https://acme-staging-v02.api.letsencrypt.org/directory
 
 cloudflare:
-  secretName: cloudflare-api-key-secret
-  secretKey: api-key
+  secretName: cloudflare-api-key
+  secretKey: api-token
 
 dnsZones:
   - mrdvince.me
