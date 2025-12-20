@@ -2,9 +2,15 @@ environments:
   aion:
     values:
       - domain: aion.home.mrdvince.me
+        authentik_domain: auth.home.mrdvince.me
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - domain: athos.home.mrdvince.me
+        authentik_domain: auth.home.mrdvince.me
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
   - name: argo

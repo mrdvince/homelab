@@ -1,13 +1,13 @@
 locals {
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   aws_region       = "garage"
-  secret_vars      = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../../secrets/auth.yaml"))
+  secret_vars      = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../../secrets/secrets.enc.yaml"))
 
   pm_api_token_id     = local.secret_vars.pm_api_token_id
   pm_api_token_secret = local.secret_vars.pm_api_token_secret
   cipassword          = try(local.secret_vars.cipassword, "")
   pm_api_url          = local.environment_vars.locals.pm_api_url
-  authentik_token     = try(local.secret_vars.authentik_token, "")
+  authentik_token     = local.secret_vars.authentik
 
   providers_file   = "${get_terragrunt_dir()}/providers.yaml"
   module_providers = try(yamldecode(file(local.providers_file)).providers, ["proxmox", "random"])
