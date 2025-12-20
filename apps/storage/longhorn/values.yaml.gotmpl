@@ -1,0 +1,23 @@
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: {{ .Values.defaultReplicaCount }}
+
+defaultSettings:
+  defaultReplicaCount: {{ .Values.defaultReplicaCount }}
+
+preUpgradeChecker:
+  jobEnabled: false
+
+metrics:
+  serviceMonitor:
+    enabled: false
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  host: longhorn.{{ .Values.domain }}
+  tls: true
+  tlsSecret: longhorn-tls
+  path: /
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns01-prod

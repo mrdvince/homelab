@@ -80,3 +80,44 @@ applicationsets:
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
       {{`{{- end }}`}}
+
+  storage-apps:
+    namespace: argocd
+    goTemplate: true
+    goTemplateOptions:
+      - missingkey=error
+    generators:
+      - git:
+          repoURL: git@github.com:mrdvince/homelab.git
+          revision: HEAD
+          files:
+            - path: apps/storage/*/argocd.yaml
+    template:
+      metadata:
+        name: '{{`{{ .path.basename }}`}}'
+      spec:
+        project: '{{`{{ default "default" .project }}`}}'
+        source:
+          repoURL: git@github.com:mrdvince/homelab.git
+          targetRevision: HEAD
+          path: '{{`{{ .path.path }}`}}'
+          plugin:
+            name: helmfile
+            env:
+              - name: ENV_NAME
+                value: {{ .Values.cluster }}
+        destination:
+          server: {{ .Values.server }}
+          namespace: '{{`{{ default .path.basename .namespace }}`}}'
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+          syncOptions:
+            - CreateNamespace=true
+            - ServerSideApply=true
+    templatePatch: |
+      {{`{{- if .ignoreDifferences }}`}}
+      spec:
+        ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
+      {{`{{- end }}`}}
