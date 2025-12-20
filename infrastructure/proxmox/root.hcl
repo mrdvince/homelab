@@ -50,6 +50,11 @@ locals {
       version = "3.1.1"
       config  = ""
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "3.0.1"
+      config  = ""
+    }
   }
 
   required_providers = {
