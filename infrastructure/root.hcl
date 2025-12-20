@@ -2,7 +2,7 @@ locals {
   node_vars        = read_terragrunt_config(find_in_parent_folders("node.hcl"))
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   aws_region       = "garage"
-  secret_vars  = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../../secrets/secrets.enc.yaml"))
+  secret_vars  = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
 
   pm_api_token_id     = local.secret_vars.pm_api_token_id
   pm_api_token_secret = local.secret_vars.pm_api_token_secret

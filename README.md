@@ -26,30 +26,25 @@
   │   ├── certificates/
   │   └── ...
   │
-  ├── infrastructure/
-  │   ├── proxmox/
-  │   │   ├── root.hcl
-  │   │   ├── _envcommon/
-  │   │   ├── avalon/                     # proxmox node
-  │   │   │   ├── node.hcl
-  │   │   │   └── clusters/
-  │   │   │       └── aion/
-  │   │   │           ├── env.hcl
-  │   │   │           ├── cluster/
-  │   │   │           ├── cp/
-  │   │   │           ├── workers/
-  │   │   │           ├── outposts/
-  │   │   │           └── oidc/
-  │   │   └── elysium/                    # proxmox node
-  │   │       ├── node.hcl
-  │   │       └── clusters/
-  │   │           └── aion/
-  │   │               └── workers/        # workers joining avalon's aion
-  │   │
-  │   └── kubernetes/
-  │       └── bootstrap/
-  │           ├── cilium/
-  │           └── argocd/
+  ├── infrastructure/                       # terragrunt configs
+  │   ├── root.hcl
+  │   ├── _envcommon/
+  │   ├── avalon/                           # proxmox node
+  │   │   ├── node.hcl
+  │   │   └── clusters/
+  │   │       └── aion/
+  │   │           ├── env.hcl
+  │   │           ├── cluster/
+  │   │           ├── argocd/
+  │   │           ├── cp/
+  │   │           ├── workers/
+  │   │           ├── outposts/
+  │   │           └── oidc/
+  │   └── elysium/                          # proxmox node
+  │       ├── node.hcl
+  │       └── clusters/
+  │           └── aion/
+  │               └── workers/              # workers joining avalon's aion
   │
   ├── dashboards/
   └── secrets/                          # Git submodule
