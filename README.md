@@ -30,15 +30,26 @@
   │   ├── proxmox/
   │   │   ├── root.hcl
   │   │   ├── _envcommon/
-  │   │   ├── aion/
-  │   │   └── athos/
+  │   │   ├── avalon/                     # proxmox node
+  │   │   │   ├── node.hcl
+  │   │   │   └── clusters/
+  │   │   │       └── aion/
+  │   │   │           ├── env.hcl
+  │   │   │           ├── cluster/
+  │   │   │           ├── cp/
+  │   │   │           ├── workers/
+  │   │   │           ├── outposts/
+  │   │   │           └── oidc/
+  │   │   └── elysium/                    # proxmox node
+  │   │       ├── node.hcl
+  │   │       └── clusters/
+  │   │           └── aion/
+  │   │               └── workers/        # workers joining avalon's aion
   │   │
   │   └── kubernetes/
-  │       ├── bootstrap/
-  │       │   ├── cilium/
-  │       │   └── argocd/
-  │       ├── aion/
-  │       └── athos/
+  │       └── bootstrap/
+  │           ├── cilium/
+  │           └── argocd/
   │
   ├── dashboards/
   └── secrets/                          # Git submodule

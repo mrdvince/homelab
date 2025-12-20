@@ -21,3 +21,4 @@ ingress:
   path: /
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
