@@ -63,6 +63,11 @@ resources:
     cpu: 100m
     memory: 256Mi
 
+service:
+  type: ClusterIP
+  ports:
+    http: 2368
+
 updateStrategy:
   type: Recreate
 
@@ -75,7 +80,7 @@ extraDeploy:
   - apiVersion: traefik.io/v1alpha1
     kind: Middleware
     metadata:
-      name: ghost-x-forwarded-proto
+      name: blog-ghost-x-forwarded-proto
       namespace: blog
     spec:
       headers:
