@@ -17,11 +17,16 @@ inputs = {
       external_host = "https://longhorn.aion.home.mrdvince.me"
       mode          = "forward_single"
     }
+    traefik = {
+      name          = "Traefik"
+      external_host = "https://traefik.aion.home.mrdvince.me"
+      mode          = "forward_single"
+    }
   }
 
-  outpost_name = "longhorn-outpost"
+  outpost_name = "aion-forward-auth-outpost"
 
   docker_service_connection = {
-    name = "longhorn-docker-connection"
+    name = "aion-docker-connection"
   }
 }
