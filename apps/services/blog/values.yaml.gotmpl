@@ -45,7 +45,7 @@ ingress:
   ingressClassName: traefik
   hostname: blog.{{ .Values.domain }}
   pathType: Prefix
-  tls: true
+  tls: false
   extraTls:
     - hosts:
         - blog.{{ .Values.domain }}
