@@ -17,8 +17,6 @@ ghostEnableHttps: true
 extraEnvVars:
   - name: url
     value: https://blog.{{ .Values.domain }}
-  - name: BITNAMI_DEBUG
-    value: "true"
 
 mysql:
   enabled: true
