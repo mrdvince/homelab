@@ -12,7 +12,6 @@ ghostPassword: {{ .Values.ghost.ghostPassword }}
 ghostEmail: zero@mrdvince.me
 ghostBlogTitle: "Nomadin"
 ghostHost: blog.{{ .Values.domain }}
-ghostEnableHttps: true
 
 extraEnvVars:
   - name: url
@@ -66,7 +65,9 @@ resources:
 service:
   type: ClusterIP
   ports:
-    http: 2368
+    http: 80
+  annotations:
+    traefik.ingress.kubernetes.io/service.serversscheme: http
 
 updateStrategy:
   type: Recreate
