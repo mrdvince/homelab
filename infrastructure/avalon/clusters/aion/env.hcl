@@ -1,3 +1,3 @@
 locals {
-  s3_endpoint_url = "https://garage-s3.home.mrdvince.me"
+  s3_endpoint_url = "https://s3.home.mrdvince.me"
 }
