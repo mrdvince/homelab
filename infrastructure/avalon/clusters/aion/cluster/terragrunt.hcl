@@ -14,7 +14,7 @@ dependency "cp" {
 inputs = {
   cluster_name     = "aion"
   cluster_endpoint = "https://10.30.30.145:6443"
-  talos_version    = "v1.11.5"
+  talos_version    = "v1.12.0"
 
   controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
   worker_nodes       = []
