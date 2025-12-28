@@ -12,10 +12,13 @@ ghostPassword: {{ .Values.ghost.ghostPassword }}
 ghostEmail: zero@mrdvince.me
 ghostBlogTitle: "Nomadin"
 ghostHost: blog.{{ .Values.domain }}
+ghostEnableHttps: true
 
 extraEnvVars:
   - name: url
     value: https://blog.{{ .Values.domain }}
+  - name: BITNAMI_DEBUG
+    value: "true"
 
 mysql:
   enabled: true
@@ -52,22 +55,27 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
     external-dns.alpha.kubernetes.io/hostname: blog.{{ .Values.domain }}
-    traefik.ingress.kubernetes.io/router.middlewares: blog-ghost-x-forwarded-proto@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: blog-x-forwarded-proto@kubernetescrd
 
 resources:
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: "1"
+    memory: 1Gi
   requests:
     cpu: 100m
-    memory: 256Mi
+    memory: 512Mi
 
 service:
   type: ClusterIP
   ports:
     http: 80
+    https: 443
   annotations:
     traefik.ingress.kubernetes.io/service.serversscheme: http
+
+containerPorts:
+  http: 2368
+  https: 2368
 
 updateStrategy:
   type: Recreate
@@ -81,7 +89,7 @@ extraDeploy:
   - apiVersion: traefik.io/v1alpha1
     kind: Middleware
     metadata:
-      name: blog-ghost-x-forwarded-proto
+      name: x-forwarded-proto
       namespace: blog
     spec:
       headers:
