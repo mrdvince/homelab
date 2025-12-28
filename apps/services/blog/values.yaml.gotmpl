@@ -1,0 +1,83 @@
+global:
+  security:
+    allowInsecureImages: true
+
+image:
+  registry: docker.io
+  repository: bitnamilegacy/ghost
+  tag: 5.130.3-debian-12-r17
+
+ghostUsername: zero
+ghostPassword: {{ .Values.ghost.ghostPassword }}
+ghostEmail: zero@mrdvince.me
+ghostBlogTitle: "Nomadin"
+ghostHost: blog.{{ .Values.domain }}
+ghostEnableHttps: true
+
+extraEnvVars:
+  - name: url
+    value: https://blog.{{ .Values.domain }}
+
+mysql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/mysql
+    tag: 9.4.0-debian-12-r1
+  auth:
+    database: ghost_production
+    username: ghost
+    rootPassword: {{ .Values.ghost.ghostMysqlRootPassword }}
+    password: {{ .Values.ghost.ghostMysqlPassword }}
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: longhorn
+
+persistence:
+  enabled: true
+  size: 20Gi
+  storageClass: longhorn
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hostname: blog.{{ .Values.domain }}
+  pathType: Prefix
+  tls: true
+  extraTls:
+    - hosts:
+        - blog.{{ .Values.domain }}
+      secretName: ghost-blog-tls
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+    external-dns.alpha.kubernetes.io/hostname: blog.{{ .Values.domain }}
+    traefik.ingress.kubernetes.io/router.middlewares: blog-ghost-x-forwarded-proto@kubernetescrd
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+updateStrategy:
+  type: Recreate
+
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  fsGroupChangePolicy: OnRootMismatch
+
+extraDeploy:
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: ghost-x-forwarded-proto
+      namespace: blog
+    spec:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
