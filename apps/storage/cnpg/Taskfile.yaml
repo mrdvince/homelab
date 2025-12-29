@@ -1,0 +1,148 @@
+version: '3'
+
+vars:
+  NAMESPACE: cnpg-test
+  CLUSTER_NAME: test-cluster
+
+tasks:
+  deploy:
+    desc: Deploy test CNPG cluster
+    dir: test-cluster
+    cmds:
+      - helmfile -e aion apply
+      - kubectl wait --for=condition=Ready cluster/{{.CLUSTER_NAME}} -n {{.NAMESPACE}} --timeout=300s
+
+  status:
+    desc: Check cluster status
+    cmds:
+      - kubectl get cluster -n {{.NAMESPACE}}
+      - kubectl get pods -n {{.NAMESPACE}}
+
+  shell:
+    desc: Connect to primary instance bash
+    cmds:
+      - kubectl -n {{.NAMESPACE}} exec -it services/{{.CLUSTER_NAME}}-rw -- bash
+
+  psql:
+    desc: Connect to primary with psql
+    cmds:
+      - kubectl -n {{.NAMESPACE}} exec -it {{.CLUSTER_NAME}}-1 -c postgres -- psql -U postgres -d testdb
+
+  helm-test:
+    desc: Run Helm tests for the cluster
+    cmds:
+      - helm test -n {{.NAMESPACE}} {{.CLUSTER_NAME}}
+
+  backup:
+    desc: Trigger an on-demand backup
+    cmds:
+      - |
+        kubectl apply -f - <<EOF
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Backup
+        metadata:
+          name: manual-backup-$(date +%Y%m%d%H%M%S)
+          namespace: {{.NAMESPACE}}
+        spec:
+          method: barmanObjectStore
+          cluster:
+            name: {{.CLUSTER_NAME}}
+        EOF
+      - echo "Waiting for backup to complete..."
+      - kubectl wait --for=condition=LastBackupSucceeded cluster/{{.CLUSTER_NAME}} -n {{.NAMESPACE}} --timeout=300s
+
+  insert-test-data:
+    desc: Insert test data into the database
+    cmds:
+      - |
+        kubectl exec -n {{.NAMESPACE}} {{.CLUSTER_NAME}}-1 -c postgres -- psql -U postgres -d testdb -c "
+          CREATE TABLE IF NOT EXISTS test_data (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+          INSERT INTO test_data (name) VALUES ('backup-test-$(date +%Y%m%d%H%M%S)');
+          SELECT * FROM test_data;
+        "
+
+  verify-data:
+    desc: Verify data exists in database
+    cmds:
+      - kubectl exec -n {{.NAMESPACE}} {{.CLUSTER_NAME}}-1 -c postgres -- psql -U postgres -d testdb -c "SELECT * FROM test_data;"
+
+  restore:
+    desc: Create a restored cluster from object store backup
+    cmds:
+      - echo "Restoring from object store s3://cnpg-backups/{{.CLUSTER_NAME}}"
+      - |
+        kubectl apply -f - <<EOF
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        metadata:
+          name: {{.CLUSTER_NAME}}-restored
+          namespace: {{.NAMESPACE}}
+        spec:
+          imageName: ghcr.io/cloudnative-pg/postgresql:17
+          instances: 1
+          storage:
+            size: 5Gi
+            storageClass: longhorn
+          bootstrap:
+            recovery:
+              source: {{.CLUSTER_NAME}}-backup
+          externalClusters:
+            - name: {{.CLUSTER_NAME}}-backup
+              barmanObjectStore:
+                destinationPath: s3://cnpg-backups
+                endpointURL: https://s3.home.mrdvince.me
+                s3Credentials:
+                  accessKeyId:
+                    name: {{.CLUSTER_NAME}}-s3-creds
+                    key: ACCESS_KEY_ID
+                  secretAccessKey:
+                    name: {{.CLUSTER_NAME}}-s3-creds
+                    key: ACCESS_SECRET_KEY
+                serverName: {{.CLUSTER_NAME}}
+        EOF
+      - echo "Waiting for restored cluster..."
+      - kubectl wait --for=condition=Ready cluster/{{.CLUSTER_NAME}}-restored -n {{.NAMESPACE}} --timeout=300s
+
+  verify-restore:
+    desc: Verify data in restored cluster
+    cmds:
+      - kubectl exec -n {{.NAMESPACE}} {{.CLUSTER_NAME}}-restored-1 -c postgres -- psql -U postgres -d testdb -c "SELECT * FROM test_data;"
+
+  compare:
+    desc: Compare data between original and restored clusters
+    cmds:
+      - echo "=== ORIGINAL ({{.CLUSTER_NAME}}) ==="
+      - kubectl exec -n {{.NAMESPACE}} {{.CLUSTER_NAME}}-1 -c postgres -- psql -U postgres -d testdb -c "SELECT * FROM test_data ORDER BY id;"
+      - echo ""
+      - echo "=== RESTORED ({{.CLUSTER_NAME}}-restored) ==="
+      - kubectl exec -n {{.NAMESPACE}} {{.CLUSTER_NAME}}-restored-1 -c postgres -- psql -U postgres -d testdb -c "SELECT * FROM test_data ORDER BY id;"
+
+  full-test:
+    desc: Run full backup/restore test cycle
+    cmds:
+      - task: deploy
+      - task: insert-test-data
+      - task: backup
+      - task: list-backups
+      - task: restore
+      - task: verify-restore
+      - echo "Full backup/restore test completed successfully!"
+
+  cleanup:
+    desc: Delete all test resources
+    cmds:
+      - kubectl delete cluster {{.CLUSTER_NAME}}-restored -n {{.NAMESPACE}} --ignore-not-found
+      - kubectl delete cluster {{.CLUSTER_NAME}} -n {{.NAMESPACE}} --ignore-not-found
+      - kubectl delete backup -n {{.NAMESPACE}} -l cnpg.io/cluster={{.CLUSTER_NAME}} --ignore-not-found
+      - kubectl delete ns {{.NAMESPACE}} --ignore-not-found
+
+  destroy:
+    desc: Remove test cluster deployment via helmfile
+    dir: test-cluster
+    cmds:
+      - helmfile -e aion destroy
+      - kubectl delete ns {{.NAMESPACE}} --ignore-not-found

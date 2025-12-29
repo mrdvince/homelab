@@ -1,0 +1,65 @@
+fullnameOverride: test-cluster
+type: postgresql
+
+version:
+  postgresql: "17"
+
+mode: standalone
+
+cluster:
+  instances: 3
+  storage:
+    size: 5Gi
+    storageClass: longhorn
+  walStorage:
+    enabled: true
+    size: 1Gi
+    storageClass: longhorn
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  postgresql:
+    parameters:
+      max_slot_wal_keep_size: "1GB"
+
+  initdb:
+    database: testdb
+    owner: testuser
+
+backups:
+  enabled: true
+  provider: s3
+  endpointURL: "https://s3.home.mrdvince.me"
+  destinationPath: "s3://cnpg-backups"
+  s3:
+    region: "home"
+    bucket: "cnpg-backups"
+    accessKey: {{ .Values.s3.accessKey | quote }}
+    secretKey: {{ .Values.s3.secretKey | quote }}
+  secret:
+    create: true
+    name: "test-cluster-s3-creds"
+
+  wal:
+    compression: gzip
+    encryption: ""
+    maxParallel: 1
+
+  data:
+    compression: gzip
+    encryption: ""
+    jobs: 1
+
+  scheduledBackups:
+    - name: daily-backup
+      schedule: "0 0 0 * * *"
+      backupOwnerReference: self
+      method: barmanObjectStore
+
+  retentionPolicy: "7d"

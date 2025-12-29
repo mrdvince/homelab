@@ -1,0 +1,16 @@
+environments:
+  aion:
+    secrets:
+      - ../../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+
+releases:
+  - name: test-cluster
+    namespace: cnpg-test
+    chart: cnpg/cluster
+    version: 0.5.0
+    values:
+      - values.yaml.gotmpl
