@@ -170,7 +170,18 @@ gitlab:
     enabled: false
 
   gitlab-runner:
-    install: false
+    install: true
+    rbac:
+      create: true
+    runners:
+      locked: false
+      secret: "nonempty"
+      config: |
+        [[runners]]
+          [runners.kubernetes]
+          namespace = "gitlab"
+          image = "alpine:latest"
+          privileged = false
 
   upgradeCheck:
     enabled: false
