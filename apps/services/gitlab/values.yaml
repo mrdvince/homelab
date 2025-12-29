@@ -75,12 +75,19 @@ s3BackupConnection:
 gitlab:
   global:
     ingress:
+      apiVersion: networking.k8s.io/v1
       class: traefik
       configureCertmanager: false
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
       tls:
         enabled: true
+
+    hpa:
+      apiVersion: autoscaling/v2
+
+    pdb:
+      apiVersion: policy/v1
 
     psql:
       host: gitlab-postgres-rw.gitlab.svc.cluster.local
