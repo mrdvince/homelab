@@ -160,6 +160,9 @@ gitlab:
   gitlab-runner:
     install: false
 
+  upgradeCheck:
+    enabled: false
+
   gitlab:
     webservice:
       replicas: 1
