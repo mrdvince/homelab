@@ -1,0 +1,205 @@
+postgres:
+  fullnameOverride: gitlab-postgres
+  type: postgresql
+
+  version:
+    postgresql: "17"
+
+  mode: standalone
+
+  cluster:
+    instances: 2
+    storage:
+      size: 10Gi
+      storageClass: longhorn
+    walStorage:
+      enabled: true
+      size: 2Gi
+      storageClass: longhorn
+
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 512Mi
+
+    postgresql:
+      parameters:
+        max_slot_wal_keep_size: "2GB"
+
+    initdb:
+      database: gitlab
+      owner: gitlab
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS pg_trgm;
+        - CREATE EXTENSION IF NOT EXISTS btree_gist;
+
+  backups:
+    enabled: true
+    provider: s3
+    endpointURL: "https://s3.home.mrdvince.me"
+    destinationPath: "s3://cnpg-backups"
+    s3:
+      region: "home"
+      bucket: "cnpg-backups"
+    secret:
+      create: true
+      name: "gitlab-postgres-s3-creds"
+
+    wal:
+      compression: gzip
+      encryption: ""
+      maxParallel: 1
+
+    data:
+      compression: gzip
+      encryption: ""
+      jobs: 1
+
+    scheduledBackups:
+      - name: daily-backup
+        schedule: "0 0 0 * * *"
+        backupOwnerReference: self
+        method: barmanObjectStore
+
+    retentionPolicy: "7d"
+
+s3Connection:
+  fullnameOverride: gitlab-s3-connection
+
+s3BackupConnection:
+  fullnameOverride: gitlab-s3-backup-connection
+
+gitlab:
+  global:
+    ingress:
+      class: traefik
+      configureCertmanager: false
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+      tls:
+        enabled: true
+
+    psql:
+      host: gitlab-postgres-rw.gitlab.svc.cluster.local
+      port: 5432
+      database: gitlab
+      username: gitlab
+      password:
+        secret: gitlab-postgres-app
+        key: password
+
+    minio:
+      enabled: false
+
+    appConfig:
+      object_store:
+        enabled: true
+        proxy_download: true
+        connection:
+          secret: gitlab-s3-connection
+          key: connection
+
+      lfs:
+        bucket: gitlab
+        connection: {}
+      artifacts:
+        bucket: gitlab
+        connection: {}
+      uploads:
+        bucket: gitlab
+        connection: {}
+      packages:
+        bucket: gitlab
+        connection: {}
+      externalDiffs:
+        bucket: gitlab
+        connection: {}
+      terraformState:
+        bucket: gitlab
+        connection: {}
+      dependencyProxy:
+        bucket: gitlab
+        connection: {}
+      ciSecureFiles:
+        bucket: gitlab
+        connection: {}
+
+    pages:
+      enabled: false
+
+    kas:
+      enabled: true
+
+  postgresql:
+    install: false
+
+  redis:
+    install: true
+
+  nginx-ingress:
+    enabled: false
+
+  installCertmanager: false
+
+  prometheus:
+    install: false
+
+  registry:
+    enabled: false
+
+  gitlab-runner:
+    install: false
+
+  gitlab:
+    webservice:
+      replicas: 1
+      minReplicas: 1
+      resources:
+        requests:
+          cpu: 300m
+          memory: 1.5Gi
+        limits:
+          cpu: 1
+          memory: 2.5Gi
+
+    sidekiq:
+      replicas: 1
+      minReplicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 1Gi
+        limits:
+          cpu: 500m
+          memory: 1.5Gi
+
+    gitaly:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    gitlab-shell:
+      replicas: 1
+      minReplicas: 1
+
+    kas:
+      replicas: 1
+      minReplicas: 1
+
+    toolbox:
+      replicas: 1
+      backups:
+        objectStorage:
+          backend: s3
+          config:
+            secret: gitlab-s3-backup-connection
+            key: connection
+        cron:
+          enabled: false

@@ -1,0 +1,80 @@
+environments:
+  aion:
+    values:
+      - domain: home.mrdvince.me
+      - values.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+  - name: gitlab
+    url: https://charts.gitlab.io
+
+releases:
+  - name: gitlab-postgres
+    namespace: gitlab
+    chart: cnpg/cluster
+    version: 0.5.0
+    values:
+      - {{ .Values.postgres | toYaml | nindent 8 }}
+    set:
+      - name: backups.s3.accessKey
+        value: {{ .Values.s3.accessKey | quote }}
+      - name: backups.s3.secretKey
+        value: {{ .Values.s3.secretKey | quote }}
+      - name: backups.endpointURL
+        value: https://s3.{{ .Values.domain }}
+
+  - name: gitlab-s3-secrets
+    namespace: gitlab
+    chart: ../../../charts/secrets
+    version: 0.1.0
+    values:
+      - {{ .Values.s3Connection | toYaml | nindent 8 }}
+    set:
+      - name: stringData.connection
+        value: |
+          provider: AWS
+          region: home
+          aws_access_key_id: {{ .Values.s3.accessKey }}
+          aws_secret_access_key: {{ .Values.s3.secretKey }}
+          endpoint: https://s3.{{ .Values.domain }}
+          path_style: true
+
+  - name: gitlab-s3-backup-secrets
+    namespace: gitlab
+    chart: ../../../charts/secrets
+    version: 0.1.0
+    values:
+      - {{ .Values.s3BackupConnection | toYaml | nindent 8 }}
+    set:
+      - name: stringData.connection
+        value: |
+          provider: AWS
+          region: home
+          aws_access_key_id: {{ .Values.s3.accessKey }}
+          aws_secret_access_key: {{ .Values.s3.secretKey }}
+          endpoint: https://s3.{{ .Values.domain }}
+          path_style: true
+
+  - name: gitlab
+    namespace: gitlab
+    chart: gitlab/gitlab
+    version: 9.7.0
+    needs:
+      - gitlab-postgres
+      - gitlab-s3-secrets
+      - gitlab-s3-backup-secrets
+    values:
+      - {{ .Values.gitlab | toYaml | nindent 8 }}
+    set:
+      - name: global.hosts.domain
+        value: {{ .Values.domain }}
+      - name: global.hosts.gitlab.name
+        value: gitlab.{{ .Values.domain }}
+      - name: global.hosts.ssh
+        value: gitlab.{{ .Values.domain }}
+      - name: global.ingress.annotations.external-dns\.alpha\.kubernetes\.io/hostname
+        value: gitlab.{{ .Values.domain }}
