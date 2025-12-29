@@ -39,6 +39,12 @@ applicationsets:
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
       {{`{{- end }}`}}
+      {{`{{- if eq (default true .serverSideApply) false }}`}}
+      spec:
+        syncPolicy:
+          syncOptions:
+            - CreateNamespace=true
+      {{`{{- end }}`}}
 
   service-apps:
     namespace: argocd
@@ -80,6 +86,12 @@ applicationsets:
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
       {{`{{- end }}`}}
+      {{`{{- if eq (default true .serverSideApply) false }}`}}
+      spec:
+        syncPolicy:
+          syncOptions:
+            - CreateNamespace=true
+      {{`{{- end }}`}}
 
   storage-apps:
     namespace: argocd
@@ -120,4 +132,10 @@ applicationsets:
       {{`{{- if .ignoreDifferences }}`}}
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
+      {{`{{- end }}`}}
+      {{`{{- if eq (default true .serverSideApply) false }}`}}
+      spec:
+        syncPolicy:
+          syncOptions:
+            - CreateNamespace=true
       {{`{{- end }}`}}
