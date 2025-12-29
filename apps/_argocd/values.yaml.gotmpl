@@ -78,19 +78,17 @@ applicationsets:
           automated:
             prune: true
             selfHeal: true
-          syncOptions:
-            - CreateNamespace=true
-            - ServerSideApply=true
     templatePatch: |
       {{`{{- if .ignoreDifferences }}`}}
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
       {{`{{- end }}`}}
-      {{`{{- if eq (default true .serverSideApply) false }}`}}
       spec:
         syncPolicy:
           syncOptions:
             - CreateNamespace=true
+      {{`{{- if ne (default true .serverSideApply) false }}`}}
+            - ServerSideApply=true
       {{`{{- end }}`}}
 
   storage-apps:
