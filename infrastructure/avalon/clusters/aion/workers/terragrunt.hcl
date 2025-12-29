@@ -12,26 +12,31 @@ inputs = {
 
   instances = [
     {
-      vmname  = "aion-node-01"
+      vmname  = "aion-21"
       vmid    = 9004
       macaddr = "A2:45:24:08:74:DC"
     },
     {
-      vmname  = "aion-node-02"
+      vmname  = "aion-22"
       vmid    = 9005
       macaddr = "9A:EB:4A:86:5C:7E"
+    },
+    {
+      vmname  = "aion-23"
+      vmid    = 9006
+      macaddr = "7E:99:DF:12:72:5F"
     },
   ]
 
   cores   = 4
-  memory  = 8192
-  balloon = 8192
+  memory  = 16384
+  balloon = 16384
   bios    = "ovmf"
   machine = "q35"
   on_boot = true
 
   disk = {
-    storage   = "nvme-data"
+    storage   = "local-lvm"
     size      = 200
     interface = "scsi0"
     format    = "raw"
@@ -40,8 +45,12 @@ inputs = {
     iothread  = true
   }
 
+  efi_disk = {
+    storage = "local-lvm"
+  }
+  
   cdrom = {
-    iso       = "nfs-elysium:iso/talos-1.11.5.iso"
+    iso       = "nfs-avalon:iso/talos-1.11.5.iso"
     interface = "ide2"
   }
 

@@ -11,13 +11,17 @@ dependency "cp" {
   config_path = "../cp"
 }
 
+dependency "workers" {
+  config_path = "../workers"
+}
+
 inputs = {
   cluster_name     = "aion"
   cluster_endpoint = "https://10.30.30.145:6443"
   talos_version    = "v1.12.0"
 
   controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
-  worker_nodes       = []
+  worker_nodes       = values(dependency.workers.outputs.vm_ipv4_addresses)
 
   extensions   = ["iscsi-tools", "util-linux-tools", "qemu-guest-agent"]
   auto_upgrade = true
