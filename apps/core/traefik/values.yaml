@@ -36,6 +36,12 @@ ports:
       respondingTimeouts:
         readTimeout: 30m
         writeTimeout: 30m
+  ssh:
+    port: 22
+    expose:
+      default: true
+    exposedPort: 22
+    protocol: TCP
 
 logs:
   general:
@@ -110,3 +116,19 @@ extraObjects:
               namespace: traefik
       tls:
         secretName: traefik-dashboard-tls
+
+  # gitlab ssh routing
+  - apiVersion: traefik.io/v1alpha1
+    kind: IngressRouteTCP
+    metadata:
+      name: gitlab-ssh
+      namespace: traefik
+    spec:
+      entryPoints:
+        - ssh
+      routes:
+        - match: HostSNI(`*`)
+          services:
+            - name: gitlab-gitlab-shell
+              namespace: gitlab
+              port: 22
