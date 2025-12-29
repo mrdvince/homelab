@@ -8,6 +8,7 @@ postgres:
   mode: standalone
 
   cluster:
+    externalClusters: []
     instances: 2
     storage:
       size: 10Gi
