@@ -198,7 +198,7 @@ gitlab:
           memory: 2Gi
         limits:
           cpu: 1
-          memory: 3.5Gi
+          memory: 5Gi
 
     sidekiq:
       replicas: 1
