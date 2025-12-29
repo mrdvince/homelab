@@ -73,22 +73,20 @@ applicationsets:
             prune: true
             selfHeal: true
     templatePatch: |
-      {{`{{- if .ignoreDifferences }}`}}
       spec:
-        ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
-      {{`{{- end }}`}}
-      {{`{{- if and (hasKey . "serverSideApply") (not .serverSideApply) }}`}}
-      spec:
+        {{`{{- if .ignoreDifferences }}`}}
+        ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 6 }}`}}
+        {{`{{- end }}`}}
+        {{`{{- if and (hasKey . "serverSideApply") (not .serverSideApply) }}`}}
         syncPolicy:
           syncOptions:
             - CreateNamespace=true
-      {{`{{- else }}`}}
-      spec:
+        {{`{{- else }}`}}
         syncPolicy:
           syncOptions:
             - CreateNamespace=true
             - ServerSideApply=true
-      {{`{{- end }}`}}
+        {{`{{- end }}`}}
 
   storage-apps:
     namespace: argocd
