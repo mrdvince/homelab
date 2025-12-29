@@ -182,10 +182,10 @@ gitlab:
       resources:
         requests:
           cpu: 300m
-          memory: 1.5Gi
+          memory: 2Gi
         limits:
           cpu: 1
-          memory: 2.5Gi
+          memory: 3.5Gi
 
     sidekiq:
       replicas: 1
