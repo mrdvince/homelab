@@ -134,6 +134,18 @@ gitlab:
         bucket: gitlab
         connection: {}
 
+      omniauth:
+        enabled: true
+        autoSignInWithProvider: openid_connect
+        allowSingleSignOn:
+          - openid_connect
+        blockAutoCreatedUsers: false
+        autoLinkUser:
+          - openid_connect
+        providers:
+          - secret: gitlab-oidc-provider
+            key: provider
+
     pages:
       enabled: false
 

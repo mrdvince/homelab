@@ -2,6 +2,7 @@ environments:
   aion:
     values:
       - domain: home.mrdvince.me
+        authentik_domain: auth.home.mrdvince.me
       - values.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
@@ -59,6 +60,34 @@ releases:
           endpoint: https://s3.{{ .Values.domain }}
           path_style: true
 
+  - name: gitlab-oidc-provider
+    namespace: gitlab
+    chart: ../../../charts/secrets
+    version: 0.1.0
+    values:
+      - fullnameOverride: gitlab-oidc-provider
+    set:
+      - name: stringData.provider
+        value: |
+          name: openid_connect
+          label: Authentik
+          args:
+            name: openid_connect
+            scope:
+              - openid
+              - profile
+              - email
+            response_type: code
+            issuer: https://{{ .Values.authentik_domain }}/application/o/gitlab/
+            discovery: true
+            client_auth_method: query
+            uid_field: preferred_username
+            pkce: true
+            client_options:
+              identifier: {{ .Values | get "gitlab-oidc.client_id" }}
+              secret: {{ .Values | get "gitlab-oidc.client_secret" }}
+              redirect_uri: https://gitlab.{{ .Values.domain }}/users/auth/openid_connect/callback
+
   - name: gitlab
     namespace: gitlab
     chart: gitlab/gitlab
@@ -67,6 +96,7 @@ releases:
       - gitlab-postgres
       - gitlab-s3-secrets
       - gitlab-s3-backup-secrets
+      - gitlab-oidc-provider
     values:
       - {{ .Values.gitlab | toYaml | nindent 8 }}
     set:
