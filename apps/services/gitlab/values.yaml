@@ -178,6 +178,8 @@ gitlab:
       secret: "nonempty"
       config: |
         [[runners]]
+          request_concurrency = 4
+          environment = ["FF_USE_ADAPTIVE_REQUEST_CONCURRENCY=true"]
           [runners.kubernetes]
           namespace = "gitlab"
           image = "alpine:latest"
