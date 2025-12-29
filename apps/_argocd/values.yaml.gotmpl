@@ -87,7 +87,7 @@ applicationsets:
         syncPolicy:
           syncOptions:
             - CreateNamespace=true
-      {{`{{- if ne (default true .serverSideApply) false }}`}}
+      {{`{{- if not (eq (toString (default "true" .serverSideApply)) "false") }}`}}
             - ServerSideApply=true
       {{`{{- end }}`}}
 
