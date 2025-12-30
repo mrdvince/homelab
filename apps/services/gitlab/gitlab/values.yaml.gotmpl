@@ -38,15 +38,18 @@ global:
 
   gitlabBase:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 8).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 8).image }}
       tag: {{ (index .Values.gitlab 8).tag }}
 
   certificates:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 9).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 9).image }}
       tag: {{ (index .Values.gitlab 9).tag }}
+
+  kubectl:
+    image:
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 11).image }}
+      tag: {{ (index .Values.gitlab 11).tag }}
 
   appConfig:
     object_store:
@@ -157,14 +160,25 @@ gitlab-runner:
 upgradeCheck:
   enabled: false
 
+shared-secrets:
+  selfsign:
+    image:
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 12).image }}
+      tag: {{ (index .Values.gitlab 12).tag }}
+
 gitlab:
+  migrations:
+    image:
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 2).image }}
+      tag: {{ (index .Values.gitlab 2).tag }}
+
   webservice:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 0).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 0).image }}
       tag: {{ (index .Values.gitlab 0).tag }}
     workhorse:
-      image: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 3).image }}:{{ (index .Values.gitlab 3).tag }}
+      image: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 3).image }}
+      tag: {{ (index .Values.gitlab 3).tag }}
     replicas: 1
     minReplicas: 1
     workerProcesses: 3
@@ -178,8 +192,7 @@ gitlab:
 
   sidekiq:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 1).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 1).image }}
       tag: {{ (index .Values.gitlab 1).tag }}
     replicas: 1
     minReplicas: 1
@@ -193,8 +206,7 @@ gitlab:
 
   gitaly:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 4).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 4).image }}
       tag: {{ (index .Values.gitlab 4).tag }}
     resources:
       requests:
@@ -206,30 +218,26 @@ gitlab:
 
   gitlab-shell:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 5).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 5).image }}
       tag: {{ (index .Values.gitlab 5).tag }}
     replicas: 1
     minReplicas: 1
 
   kas:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 6).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 6).image }}
       tag: {{ (index .Values.gitlab 6).tag }}
     replicas: 1
     minReplicas: 1
 
   gitlab-exporter:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 7).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 7).image }}
       tag: {{ (index .Values.gitlab 7).tag }}
 
   toolbox:
     image:
-      registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.gitlab 2).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 2).image }}
       tag: {{ (index .Values.gitlab 2).tag }}
     replicas: 1
     backups:
