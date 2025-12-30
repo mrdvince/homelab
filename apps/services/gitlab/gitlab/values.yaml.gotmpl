@@ -146,7 +146,7 @@ gitlab-runner:
         environment = ["FF_USE_ADAPTIVE_REQUEST_CONCURRENCY=true", "FF_USE_ADVANCED_POD_SPEC_CONFIGURATION=true"]
         [runners.kubernetes]
         namespace = "gitlab"
-        image = "alpine:latest"
+        image = "{{ .Values.imageRegistry }}/library/alpine:latest"
         helper_image = "{{ .Values.imageRegistry }}/{{ (index .Values.gitlab 13).image }}:{{ (index .Values.gitlab 13).tag }}"
         privileged = true
         logs_base_dir = "/tmp"

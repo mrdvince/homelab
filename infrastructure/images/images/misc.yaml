@@ -18,6 +18,11 @@ skopeo:
     image: skopeo/stable
     tag: latest
 
+alpine:
+  - registry: docker.io
+    image: library/alpine
+    tag: latest
+
 ghostImages:
   - registry: docker.io
     image: bitnamilegacy/ghost

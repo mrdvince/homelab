@@ -1,6 +1,6 @@
 .sync-images:
   image:
-    name: quay.io/skopeo/stable:latest
+    name: registry.home.mrdvince.me/skopeo/stable:latest
     entrypoint: [""]
   variables:
     DEST_REGISTRY: registry.home.mrdvince.me

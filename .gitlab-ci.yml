@@ -15,7 +15,7 @@ variables:
 
 generate-images-pipeline:
   stage: generate
-  image: alpine:latest
+  image: registry.home.mrdvince.me/library/alpine:latest
   before_script:
     - apk add --no-cache yq
   script:
