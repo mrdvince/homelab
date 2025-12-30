@@ -104,10 +104,8 @@ prometheus:
 
 operator:
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 2).image }}
-    tag: {{ (index .Values.cilium 2).tag }}
+    override: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 2).image }}:{{ (index .Values.cilium 2).tag }}
     useDigest: false
-    suffix: ""
   dashboards:
     enabled: false
   prometheus:
