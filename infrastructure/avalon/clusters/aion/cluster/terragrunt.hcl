@@ -16,9 +16,10 @@ dependency "workers" {
 }
 
 inputs = {
-  cluster_name     = "aion"
-  cluster_endpoint = "https://10.30.30.145:6443"
-  talos_version    = "v1.12.0"
+  cluster_name      = "aion"
+  cluster_endpoint  = "https://10.30.30.145:6443"
+  talos_version     = "v1.12.0"
+  config_apply_mode = "auto"
 
   controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
   worker_nodes       = values(dependency.workers.outputs.vm_ipv4_addresses)
@@ -55,6 +56,16 @@ inputs = {
           extraConfig = {
             featureGates = {
               UserNamespacesSupport = true
+            }
+          }
+        }
+        registries = {
+          config = {
+            "registry.home.mrdvince.me" = {
+              auth = {
+                username = include.root.locals.secret_vars.registry.username
+                password = include.root.locals.secret_vars.registry.token
+              }
             }
           }
         }
