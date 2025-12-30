@@ -184,6 +184,8 @@ gitlab:
           namespace = "gitlab"
           image = "alpine:latest"
           privileged = false
+          [runners.kubernetes.pod_annotations]
+            "container.apparmor.security.beta.kubernetes.io/build" = "unconfined"
 
   upgradeCheck:
     enabled: false
