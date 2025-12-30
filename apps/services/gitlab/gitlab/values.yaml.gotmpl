@@ -1,0 +1,242 @@
+global:
+  hosts:
+    domain: {{ .Values.domain }}
+    gitlab:
+      name: gitlab.{{ .Values.domain }}
+    ssh: gitlab.{{ .Values.domain }}
+
+  ingress:
+    apiVersion: networking.k8s.io/v1
+    class: traefik
+    configureCertmanager: false
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+      external-dns.alpha.kubernetes.io/hostname: gitlab.{{ .Values.domain }}
+    tls:
+      enabled: true
+
+  hpa:
+    apiVersion: autoscaling/v2
+
+  pdb:
+    apiVersion: policy/v1
+
+  psql:
+    host: gitlab-postgres-rw.gitlab.svc.cluster.local
+    port: 5432
+    database: gitlab
+    username: gitlab
+    password:
+      secret: gitlab-postgres-app
+      key: password
+
+  minio:
+    enabled: false
+
+  registry:
+    enabled: false
+
+  gitlabBase:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 8).image }}
+      tag: {{ (index .Values.gitlab 8).tag }}
+
+  certificates:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 9).image }}
+      tag: {{ (index .Values.gitlab 9).tag }}
+
+  appConfig:
+    object_store:
+      enabled: true
+      proxy_download: true
+      connection:
+        secret: gitlab-s3-connection
+        key: connection
+
+    lfs:
+      bucket: gitlab
+      connection: {}
+    artifacts:
+      bucket: gitlab
+      connection: {}
+    uploads:
+      bucket: gitlab
+      connection: {}
+    packages:
+      bucket: gitlab
+      connection: {}
+    externalDiffs:
+      bucket: gitlab
+      connection: {}
+    terraformState:
+      bucket: gitlab
+      connection: {}
+    dependencyProxy:
+      bucket: gitlab
+      connection: {}
+    ciSecureFiles:
+      bucket: gitlab
+      connection: {}
+
+    omniauth:
+      enabled: true
+      autoSignInWithProvider: openid_connect
+      allowSingleSignOn:
+        - openid_connect
+      blockAutoCreatedUsers: false
+      autoLinkUser:
+        - openid_connect
+      providers:
+        - secret: gitlab-oidc-provider
+          key: provider
+
+  pages:
+    enabled: false
+
+  kas:
+    enabled: true
+
+postgresql:
+  install: false
+
+redis:
+  install: true
+  image:
+    registry: {{ .Values.imageRegistry }}
+    repository: {{ (index .Values.ghostImages 2).image }}
+    tag: {{ (index .Values.ghostImages 2).tag }}
+  metrics:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.ghostImages 3).image }}
+      tag: {{ (index .Values.ghostImages 3).tag }}
+
+nginx-ingress:
+  enabled: false
+
+installCertmanager: false
+
+prometheus:
+  install: false
+
+registry:
+  enabled: false
+
+gitlab-runner:
+  install: true
+  image:
+    registry: {{ .Values.imageRegistry }}
+    image: {{ (index .Values.gitlab 10).image }}
+    tag: {{ (index .Values.gitlab 10).tag }}
+  rbac:
+    create: true
+  runners:
+    locked: false
+    secret: "nonempty"
+    config: |
+      [[runners]]
+        request_concurrency = 4
+        builds_dir = "/tmp/builds"
+        environment = ["FF_USE_ADAPTIVE_REQUEST_CONCURRENCY=true", "FF_USE_ADVANCED_POD_SPEC_CONFIGURATION=true"]
+        [runners.kubernetes]
+        namespace = "gitlab"
+        image = "alpine:latest"
+        privileged = true
+        logs_base_dir = "/tmp"
+        scripts_base_dir = "/tmp"
+        [[runners.kubernetes.pod_spec]]
+          name = "user-namespaces"
+          patch = '''
+            [{"op": "add", "path": "/hostUsers", "value": false}]
+          '''
+          patch_type = "json"
+
+upgradeCheck:
+  enabled: false
+
+gitlab:
+  webservice:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 0).image }}
+      tag: {{ (index .Values.gitlab 0).tag }}
+    workhorse:
+      image: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 3).image }}:{{ (index .Values.gitlab 3).tag }}
+    replicas: 1
+    minReplicas: 1
+    workerProcesses: 3
+    resources:
+      requests:
+        cpu: 300m
+        memory: 3Gi
+      limits:
+        cpu: 2
+        memory: 6Gi
+
+  sidekiq:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 1).image }}
+      tag: {{ (index .Values.gitlab 1).tag }}
+    replicas: 1
+    minReplicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 1.5Gi
+      limits:
+        cpu: 500m
+        memory: 2.5Gi
+
+  gitaly:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 4).image }}
+      tag: {{ (index .Values.gitlab 4).tag }}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  gitlab-shell:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 5).image }}
+      tag: {{ (index .Values.gitlab 5).tag }}
+    replicas: 1
+    minReplicas: 1
+
+  kas:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 6).image }}
+      tag: {{ (index .Values.gitlab 6).tag }}
+    replicas: 1
+    minReplicas: 1
+
+  gitlab-exporter:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 7).image }}
+      tag: {{ (index .Values.gitlab 7).tag }}
+
+  toolbox:
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.gitlab 2).image }}
+      tag: {{ (index .Values.gitlab 2).tag }}
+    replicas: 1
+    backups:
+      objectStorage:
+        backend: s3
+        config:
+          secret: gitlab-s3-backup-connection
+          key: connection
+      cron:
+        enabled: false

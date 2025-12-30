@@ -4,8 +4,8 @@ global:
 
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.ghost 0).image }}
-  tag: {{ (index .Values.ghost 0).tag }}
+  repository: {{ (index .Values.ghostImages 0).image }}
+  tag: {{ (index .Values.ghostImages 0).tag }}
 
 ghostUsername: zero
 ghostPassword: {{ .Values.ghost.ghostPassword }}
@@ -22,8 +22,8 @@ mysql:
   enabled: true
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.ghost 1).image }}
-    tag: {{ (index .Values.ghost 1).tag }}
+    repository: {{ (index .Values.ghostImages 1).image }}
+    tag: {{ (index .Values.ghostImages 1).tag }}
   auth:
     database: ghost_production
     username: ghost

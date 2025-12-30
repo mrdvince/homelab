@@ -3,7 +3,6 @@ environments:
     values:
       - domain: home.mrdvince.me
         authentik_domain: auth.home.mrdvince.me
-      - values.yaml.gotmpl
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/*.yaml
     secrets:
@@ -21,21 +20,14 @@ releases:
     chart: cnpg/cluster
     version: 0.5.0
     values:
-      - {{ .Values.postgres | toYaml | nindent 8 }}
-    set:
-      - name: backups.s3.accessKey
-        value: {{ .Values.s3.accessKey | quote }}
-      - name: backups.s3.secretKey
-        value: {{ .Values.s3.secretKey | quote }}
-      - name: backups.endpointURL
-        value: https://s3.{{ .Values.domain }}
+      - postgres/values.yaml.gotmpl
 
   - name: gitlab-s3-secrets
     namespace: gitlab
     chart: ../../../charts/secrets
     version: 0.1.0
     values:
-      - {{ .Values.s3Connection | toYaml | nindent 8 }}
+      - fullnameOverride: gitlab-s3-connection
     set:
       - name: stringData.connection
         value: |
@@ -51,7 +43,7 @@ releases:
     chart: ../../../charts/secrets
     version: 0.1.0
     values:
-      - {{ .Values.s3BackupConnection | toYaml | nindent 8 }}
+      - fullnameOverride: gitlab-s3-backup-connection
     set:
       - name: stringData.connection
         value: |
@@ -100,4 +92,4 @@ releases:
       - gitlab-s3-backup-secrets
       - gitlab-oidc-provider
     values:
-      - {{ .Values.gitlab | toYaml | nindent 8 }}
+      - gitlab/values.yaml.gotmpl

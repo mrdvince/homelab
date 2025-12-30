@@ -13,7 +13,7 @@ argocdRedis:
     image: docker/library/redis
     tag: 8.2.2-alpine
 
-ghost:
+ghostImages:
   - registry: docker.io
     image: bitnamilegacy/ghost
     tag: 5.130.3-debian-12-r17
