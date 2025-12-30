@@ -15,11 +15,15 @@ environments:
 repositories:
   - name: external-dns
     url: https://kubernetes-sigs.github.io/external-dns
+  - name: homelab
+    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
+    username: {{ .Values.gitlab_deploy_token.username }}
+    password: {{ .Values.gitlab_deploy_token.token }}
 
 releases:
   - name: adguard-auth
     namespace: external-dns
-    chart: ../../../charts/secrets
+    chart: homelab/secret
     version: 0.1.0
     values:
       - fullnameOverride: adguard-auth-secret

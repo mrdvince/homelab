@@ -17,6 +17,10 @@ environments:
 repositories:
   - name: jetstack
     url: https://charts.jetstack.io
+  - name: homelab
+    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
+    username: {{ .Values.gitlab_deploy_token.username }}
+    password: {{ .Values.gitlab_deploy_token.token }}
 
 releases:
   - name: cert-manager
@@ -28,7 +32,7 @@ releases:
 
   - name: cloudflare-api-key
     namespace: cert-manager
-    chart: ../../../charts/secrets
+    chart: homelab/secret
     version: 0.1.0
     values:
       - fullnameOverride: cloudflare-api-key
@@ -39,7 +43,7 @@ releases:
 
   - name: clusterissuer
     namespace: cert-manager
-    chart: ../../../charts/clusterissuer
+    chart: homelab/clusterissuer
     version: 0.1.1
     values:
       - env: {{ .Values.env }}

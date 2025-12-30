@@ -12,6 +12,8 @@ environments:
         cilium_op: 2
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 
   athos:
     values:
@@ -26,10 +28,16 @@ environments:
         cilium_op: 1
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
   - name: cilium
     url: https://helm.cilium.io/
+  - name: homelab
+    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
+    username: {{ .Values.gitlab_deploy_token.username }}
+    password: {{ .Values.gitlab_deploy_token.token }}
 
 releases:
   - name: cilium
@@ -41,7 +49,7 @@ releases:
 
   - name: cilium-config
     namespace: kube-system
-    chart: ../../../charts/cilium-config
+    chart: homelab/cilium-config
     version: 0.1.0
     needs:
       - kube-system/cilium

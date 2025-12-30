@@ -13,6 +13,10 @@ repositories:
     url: https://cloudnative-pg.github.io/charts
   - name: gitlab
     url: https://charts.gitlab.io
+  - name: homelab
+    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
+    username: {{ .Values.gitlab_deploy_token.username }}
+    password: {{ .Values.gitlab_deploy_token.token }}
 
 releases:
   - name: gitlab-postgres
@@ -24,7 +28,7 @@ releases:
 
   - name: gitlab-s3-secrets
     namespace: gitlab
-    chart: ../../../charts/secrets
+    chart: homelab/secret
     version: 0.1.0
     values:
       - fullnameOverride: gitlab-s3-connection
@@ -40,7 +44,7 @@ releases:
 
   - name: gitlab-s3-backup-secrets
     namespace: gitlab
-    chart: ../../../charts/secrets
+    chart: homelab/secret
     version: 0.1.0
     values:
       - fullnameOverride: gitlab-s3-backup-connection
@@ -56,7 +60,7 @@ releases:
 
   - name: gitlab-oidc-provider
     namespace: gitlab
-    chart: ../../../charts/secrets
+    chart: homelab/secret
     version: 0.1.0
     values:
       - fullnameOverride: gitlab-oidc-provider
