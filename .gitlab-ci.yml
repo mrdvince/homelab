@@ -81,6 +81,7 @@ trigger-images-sync:
 
 publish-charts:
   stage: publish
+  needs: []
   image: registry.home.mrdvince.me/library/alpine:latest
   variables:
     HELM_VERSION: "3.16.4"
@@ -94,12 +95,13 @@ publish-charts:
     - |
       for chart in charts/*/Chart.yaml; do
         dir=$(dirname "$chart")
-        name=$(basename "$dir")
+        name=$(grep '^name:' "$chart" | awk '{print $2}')
+        version=$(grep '^version:' "$chart" | awk '{print $2}')
         echo "Packaging ${name}..."
         helm package "$dir" --destination .
 
-        tgz=$(ls ${name}-*.tgz 2>/dev/null | head -1)
-        if [ -z "$tgz" ]; then
+        tgz="${name}-${version}.tgz"
+        if [ ! -f "$tgz" ]; then
           echo "Failed to package ${name}"
           exit 1
         fi
@@ -113,7 +115,3 @@ publish-charts:
       done
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - charts/**/*
-    - if: $CI_PIPELINE_SOURCE == "web"
-      when: manual
