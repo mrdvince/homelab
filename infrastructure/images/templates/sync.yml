@@ -1,0 +1,42 @@
+.sync-images:
+  image:
+    name: quay.io/skopeo/stable:latest
+    entrypoint: [""]
+  variables:
+    DEST_REGISTRY: registry.home.mrdvince.me
+    YQ_VERSION: v4.44.1
+  before_script:
+    - |
+      curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq
+      chmod +x /usr/local/bin/yq
+    - |
+      skopeo login -u "${REGISTRY_USER}" -p "${REGISTRY_PASSWORD}" "${DEST_REGISTRY}"
+  script:
+    - |
+      echo "Processing ${IMAGE_FILE}..."
+
+      key=$(yq 'keys | .[0]' "${IMAGE_FILE}")
+      count=$(yq ".${key} | length" "${IMAGE_FILE}")
+
+      if [ "${count}" = "0" ] || [ "${count}" = "null" ]; then
+        echo "No images found in ${IMAGE_FILE}"
+        exit 0
+      fi
+
+      for i in $(seq 0 $((count - 1))); do
+        registry=$(yq ".${key}[${i}].registry" "${IMAGE_FILE}")
+        image=$(yq ".${key}[${i}].image" "${IMAGE_FILE}")
+        tag=$(yq ".${key}[${i}].tag" "${IMAGE_FILE}")
+
+        source="docker://${registry}/${image}:${tag}"
+        dest="docker://${DEST_REGISTRY}/${image}:${tag}"
+
+        echo "Syncing ${source} -> ${dest}"
+
+        if ! skopeo copy --all "${source}" "${dest}"; then
+          echo "Failed to sync ${source}"
+          exit 1
+        fi
+
+        echo "Successfully synced ${image}:${tag}"
+      done

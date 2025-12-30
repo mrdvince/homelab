@@ -1,0 +1,10 @@
+kubernetes:
+  - registry: registry.k8s.io
+    image: coredns/coredns
+    tag: v1.12.2
+  - registry: registry.k8s.io
+    image: external-dns/external-dns
+    tag: v0.19.0
+  - registry: registry.k8s.io
+    image: metrics-server/metrics-server
+    tag: v0.8.0

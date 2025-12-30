@@ -1,0 +1,22 @@
+misc:
+  - registry: ghcr.io
+    image: dexidp/dex
+    tag: v2.44.0
+  - registry: ghcr.io
+    image: muhlba91/external-dns-provider-adguard
+    tag: v11.0.1
+  - registry: ecr-public.aws.com
+    image: docker/library/redis
+    tag: 8.2.2-alpine
+  - registry: docker.io
+    image: bitnamilegacy/ghost
+    tag: 5.130.3-debian-12-r17
+  - registry: docker.io
+    image: bitnamilegacy/mysql
+    tag: 9.4.0-debian-12-r1
+  - registry: docker.io
+    image: bitnamilegacy/redis
+    tag: 7.2.4-debian-12-r9
+  - registry: docker.io
+    image: bitnamilegacy/redis-exporter
+    tag: 1.58.0-debian-12-r4

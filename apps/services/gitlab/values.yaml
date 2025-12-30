@@ -101,6 +101,9 @@ gitlab:
     minio:
       enabled: false
 
+    registry:
+      enabled: false
+
     appConfig:
       object_store:
         enabled: true
@@ -201,13 +204,14 @@ gitlab:
     webservice:
       replicas: 1
       minReplicas: 1
+      workerProcesses: 3
       resources:
         requests:
           cpu: 300m
-          memory: 2Gi
+          memory: 3Gi
         limits:
-          cpu: 1
-          memory: 5Gi
+          cpu: 2
+          memory: 6Gi
 
     sidekiq:
       replicas: 1

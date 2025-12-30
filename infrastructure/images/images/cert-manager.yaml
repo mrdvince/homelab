@@ -1,0 +1,10 @@
+certManager:
+  - registry: quay.io
+    image: jetstack/cert-manager-controller
+    tag: v1.19.2
+  - registry: quay.io
+    image: jetstack/cert-manager-webhook
+    tag: v1.19.2
+  - registry: quay.io
+    image: jetstack/cert-manager-cainjector
+    tag: v1.19.2
