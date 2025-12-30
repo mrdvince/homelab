@@ -26,47 +26,47 @@ ingress:
 image:
   longhorn:
     manager:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 0).image }}
       tag: {{ (index .Values.longhorn 0).tag }}
     engine:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 1).image }}
       tag: {{ (index .Values.longhorn 1).tag }}
     instanceManager:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 2).image }}
       tag: {{ (index .Values.longhorn 2).tag }}
     shareManager:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 3).image }}
       tag: {{ (index .Values.longhorn 3).tag }}
     ui:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 4).image }}
       tag: {{ (index .Values.longhorn 4).tag }}
   csi:
     attacher:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 5).image }}
       tag: {{ (index .Values.longhorn 5).tag }}
     provisioner:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 6).image }}
       tag: {{ (index .Values.longhorn 6).tag }}
     resizer:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 7).image }}
       tag: {{ (index .Values.longhorn 7).tag }}
     snapshotter:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 8).image }}
       tag: {{ (index .Values.longhorn 8).tag }}
     nodeDriverRegistrar:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 9).image }}
       tag: {{ (index .Values.longhorn 9).tag }}
     livenessProbe:
-      registry: {{ .Values.registry }}
+      registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.longhorn 10).image }}
       tag: {{ (index .Values.longhorn 10).tag }}

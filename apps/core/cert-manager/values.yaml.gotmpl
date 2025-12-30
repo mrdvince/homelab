@@ -3,15 +3,15 @@ crds:
   keep: true
 
 image:
-  registry: {{ .Values.registry }}
+  registry: {{ .Values.imageRegistry }}
   repository: {{ (index .Values.certManager 0).image }}
 
 webhook:
   image:
-    registry: {{ .Values.registry }}
+    registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.certManager 1).image }}
 
 cainjector:
   image:
-    registry: {{ .Values.registry }}
+    registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.certManager 2).image }}

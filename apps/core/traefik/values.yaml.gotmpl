@@ -1,5 +1,5 @@
 image:
-  registry: {{ .Values.registry }}
+  registry: {{ .Values.imageRegistry }}
   repository: {{ (index .Values.traefik 0).image }}
   tag: {{ (index .Values.traefik 0).tag }}
 

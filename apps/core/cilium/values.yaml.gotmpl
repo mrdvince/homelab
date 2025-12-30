@@ -1,11 +1,11 @@
 image:
-  repository: {{ .Values.registry }}/{{ (index .Values.cilium 0).image }}
+  repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 0).image }}
   tag: {{ (index .Values.cilium 0).tag }}
   useDigest: false
 
 envoy:
   image:
-    repository: {{ .Values.registry }}/{{ (index .Values.cilium 1).image }}
+    repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 1).image }}
     tag: {{ (index .Values.cilium 1).tag }}
     useDigest: false
 
@@ -59,7 +59,7 @@ hubble:
   relay:
     enabled: true
     image:
-      repository: {{ .Values.registry }}/{{ (index .Values.cilium 3).image }}
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 3).image }}
       tag: {{ (index .Values.cilium 3).tag }}
       useDigest: false
     prometheus:
@@ -70,12 +70,12 @@ hubble:
     enabled: true
     frontend:
       image:
-        repository: {{ .Values.registry }}/{{ (index .Values.cilium 4).image }}
+        repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 4).image }}
         tag: {{ (index .Values.cilium 4).tag }}
         useDigest: false
     backend:
       image:
-        repository: {{ .Values.registry }}/{{ (index .Values.cilium 5).image }}
+        repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 5).image }}
         tag: {{ (index .Values.cilium 5).tag }}
         useDigest: false
 
@@ -104,7 +104,7 @@ prometheus:
 
 operator:
   image:
-    repository: {{ .Values.registry }}/{{ (index .Values.cilium 2).image }}
+    repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 2).image }}
     tag: {{ (index .Values.cilium 2).tag }}
     useDigest: false
   dashboards:

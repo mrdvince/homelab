@@ -1,7 +1,7 @@
 global:
   domain: argocd.{{ .Values.domain }}
   image:
-    repository: {{ .Values.registry }}/{{ (index .Values.argocd 0).image }}
+    repository: {{ .Values.imageRegistry }}/{{ (index .Values.argocd 0).image }}
     tag: {{ (index .Values.argocd 0).tag }}
 
 server:
@@ -60,7 +60,7 @@ configs:
 repoServer:
   extraContainers:
     - name: helmfile
-      image: {{ .Values.registry }}/{{ (index .Values.argocd 1).image }}:{{ (index .Values.argocd 1).tag }}
+      image: {{ .Values.imageRegistry }}/{{ (index .Values.argocd 1).image }}:{{ (index .Values.argocd 1).tag }}
       command: ["/var/run/argocd/argocd-cmp-server"]
       env:
         - name: SOPS_AGE_KEY_FILE
