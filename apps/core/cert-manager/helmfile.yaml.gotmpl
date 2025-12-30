@@ -2,11 +2,15 @@ environments:
   aion:
     values:
       - env: prod
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - env: prod
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
 ---
@@ -20,9 +24,7 @@ releases:
     chart: jetstack/cert-manager
     version: v1.19.2
     values:
-      - crds:
-          enabled: true
-          keep: true
+      - values.yaml.gotmpl
 
   - name: cloudflare-api-key
     namespace: cert-manager

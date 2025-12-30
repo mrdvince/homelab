@@ -18,11 +18,4 @@ releases:
     chart: traefik/traefik
     version: 38.0.1
     values:
-      - values.yaml
-    set:
-      - name: image.registry
-        value: {{ .Values.registry }}
-      - name: image.repository
-        value: {{ (index .Values.traefik 0).image }}
-      - name: image.tag
-        value: {{ (index .Values.traefik 0).tag }}
+      - values.yaml.gotmpl

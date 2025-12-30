@@ -1,3 +1,8 @@
+image:
+  registry: {{ .Values.registry }}
+  repository: {{ (index .Values.traefik 0).image }}
+  tag: {{ (index .Values.traefik 0).tag }}
+
 ingressClass:
   enabled: true
   isDefaultClass: false

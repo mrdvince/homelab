@@ -3,12 +3,16 @@ environments:
     values:
       - domain: aion.home.mrdvince.me
         authentik_domain: auth.home.mrdvince.me
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - domain: athos.home.mrdvince.me
         authentik_domain: auth.home.mrdvince.me
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
 ---

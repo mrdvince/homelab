@@ -1,3 +1,14 @@
+image:
+  repository: {{ .Values.registry }}/{{ (index .Values.cilium 0).image }}
+  tag: {{ (index .Values.cilium 0).tag }}
+  useDigest: false
+
+envoy:
+  image:
+    repository: {{ .Values.registry }}/{{ (index .Values.cilium 1).image }}
+    tag: {{ (index .Values.cilium 1).tag }}
+    useDigest: false
+
 kubeProxyReplacement: true
 socketLB:
   hostNamespaceOnly: true
@@ -47,12 +58,26 @@ ipv4NativeRoutingCIDR: {{ .Values.ipv_4_native_routing_cidr }}
 hubble:
   relay:
     enabled: true
+    image:
+      repository: {{ .Values.registry }}/{{ (index .Values.cilium 3).image }}
+      tag: {{ (index .Values.cilium 3).tag }}
+      useDigest: false
     prometheus:
       enabled: true
       serviceMonitor:
         enabled: false
   ui:
     enabled: true
+    frontend:
+      image:
+        repository: {{ .Values.registry }}/{{ (index .Values.cilium 4).image }}
+        tag: {{ (index .Values.cilium 4).tag }}
+        useDigest: false
+    backend:
+      image:
+        repository: {{ .Values.registry }}/{{ (index .Values.cilium 5).image }}
+        tag: {{ (index .Values.cilium 5).tag }}
+        useDigest: false
 
   metrics:
     dashboards:
@@ -78,6 +103,10 @@ prometheus:
     enabled: false
 
 operator:
+  image:
+    repository: {{ .Values.registry }}/{{ (index .Values.cilium 2).image }}
+    tag: {{ (index .Values.cilium 2).tag }}
+    useDigest: false
   dashboards:
     enabled: false
   prometheus:
