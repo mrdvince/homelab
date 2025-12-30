@@ -7,6 +7,7 @@ version:
 mode: standalone
 
 cluster:
+  imageName: {{ .Values.imageRegistry }}/{{ (index .Values.cnpg 1).image }}:{{ (index .Values.cnpg 1).tag }}
   instances: 3
   storage:
     size: 5Gi

@@ -3,9 +3,9 @@ global:
     allowInsecureImages: true
 
 image:
-  registry: docker.io
-  repository: bitnamilegacy/ghost
-  tag: 5.130.3-debian-12-r17
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ (index .Values.ghost 0).image }}
+  tag: {{ (index .Values.ghost 0).tag }}
 
 ghostUsername: zero
 ghostPassword: {{ .Values.ghost.ghostPassword }}
@@ -21,9 +21,9 @@ extraEnvVars:
 mysql:
   enabled: true
   image:
-    registry: docker.io
-    repository: bitnamilegacy/mysql
-    tag: 9.4.0-debian-12-r1
+    registry: {{ .Values.imageRegistry }}
+    repository: {{ (index .Values.ghost 1).image }}
+    tag: {{ (index .Values.ghost 1).tag }}
   auth:
     database: ghost_production
     username: ghost

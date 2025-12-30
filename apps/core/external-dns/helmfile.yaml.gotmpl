@@ -1,8 +1,14 @@
 environments:
   aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
   athos:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
 ---
@@ -29,4 +35,4 @@ releases:
     needs:
       - external-dns/adguard-auth
     values:
-      - values.yaml
+      - values.yaml.gotmpl

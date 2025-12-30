@@ -1,6 +1,12 @@
 environments:
   aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
   athos:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
 ---
 repositories:
   - name: metrics-server
@@ -14,3 +20,6 @@ releases:
     values:
       - args:
           - --kubelet-insecure-tls
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.metricsServer 0).image }}
+          tag: {{ (index .Values.metricsServer 0).tag }}

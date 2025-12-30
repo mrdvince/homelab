@@ -3,7 +3,9 @@ environments:
     values:
       - domain: home.mrdvince.me
         authentik_domain: auth.home.mrdvince.me
-      - values.yaml
+      - values.yaml.gotmpl
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
 ---
@@ -99,12 +101,3 @@ releases:
       - gitlab-oidc-provider
     values:
       - {{ .Values.gitlab | toYaml | nindent 8 }}
-    set:
-      - name: global.hosts.domain
-        value: {{ .Values.domain }}
-      - name: global.hosts.gitlab.name
-        value: gitlab.{{ .Values.domain }}
-      - name: global.hosts.ssh
-        value: gitlab.{{ .Values.domain }}
-      - name: global.ingress.annotations.external-dns\.alpha\.kubernetes\.io/hostname
-        value: gitlab.{{ .Values.domain }}

@@ -1,9 +1,13 @@
+image:
+  repository: {{ .Values.imageRegistry }}/{{ (index .Values.externalDns 0).image }}
+  tag: {{ (index .Values.externalDns 0).tag }}
+
 provider:
   name: webhook
   webhook:
     image:
-      repository: ghcr.io/muhlba91/external-dns-provider-adguard
-      tag: v11.0.1
+      repository: {{ .Values.imageRegistry }}/{{ (index .Values.adguardExternalDns 0).image }}
+      tag: {{ (index .Values.adguardExternalDns 0).tag }}
     service:
       port: 8888
     livenessProbe:

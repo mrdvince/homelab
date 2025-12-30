@@ -1,13 +1,19 @@
-misc:
+dex:
   - registry: ghcr.io
     image: dexidp/dex
     tag: v2.44.0
+
+adguardExternalDns:
   - registry: ghcr.io
     image: muhlba91/external-dns-provider-adguard
     tag: v11.0.1
+
+argocdRedis:
   - registry: ecr-public.aws.com
     image: docker/library/redis
     tag: 8.2.2-alpine
+
+ghost:
   - registry: docker.io
     image: bitnamilegacy/ghost
     tag: 5.130.3-debian-12-r17

@@ -8,6 +8,7 @@ postgres:
   mode: standalone
 
   cluster:
+    imageName: {{ .Values.imageRegistry }}/{{ (index .Values.cnpg 1).image }}:{{ (index .Values.cnpg 1).tag }}
     instances: 2
     storage:
       size: 10Gi
@@ -39,7 +40,6 @@ postgres:
   backups:
     enabled: true
     provider: s3
-    endpointURL: "https://s3.home.mrdvince.me"
     destinationPath: "s3://cnpg-backups"
     s3:
       region: "home"
@@ -74,12 +74,19 @@ s3BackupConnection:
 
 gitlab:
   global:
+    hosts:
+      domain: {{ .Values.domain }}
+      gitlab:
+        name: gitlab.{{ .Values.domain }}
+      ssh: gitlab.{{ .Values.domain }}
+
     ingress:
       apiVersion: networking.k8s.io/v1
       class: traefik
       configureCertmanager: false
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+        external-dns.alpha.kubernetes.io/hostname: gitlab.{{ .Values.domain }}
       tls:
         enabled: true
 
@@ -103,6 +110,18 @@ gitlab:
 
     registry:
       enabled: false
+
+    gitlabBase:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 8).image }}
+        tag: {{ (index .Values.gitlab 8).tag }}
+
+    certificates:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 9).image }}
+        tag: {{ (index .Values.gitlab 9).tag }}
 
     appConfig:
       object_store:
@@ -160,6 +179,15 @@ gitlab:
 
   redis:
     install: true
+    image:
+      registry: {{ .Values.imageRegistry }}
+      repository: {{ (index .Values.ghost 2).image }}
+      tag: {{ (index .Values.ghost 2).tag }}
+    metrics:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.ghost 3).image }}
+        tag: {{ (index .Values.ghost 3).tag }}
 
   nginx-ingress:
     enabled: false
@@ -174,6 +202,10 @@ gitlab:
 
   gitlab-runner:
     install: true
+    image:
+      registry: {{ .Values.imageRegistry }}
+      image: {{ (index .Values.gitlab 10).image }}
+      tag: {{ (index .Values.gitlab 10).tag }}
     rbac:
       create: true
     runners:
@@ -202,6 +234,12 @@ gitlab:
 
   gitlab:
     webservice:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 0).image }}
+        tag: {{ (index .Values.gitlab 0).tag }}
+      workhorse:
+        image: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 3).image }}:{{ (index .Values.gitlab 3).tag }}
       replicas: 1
       minReplicas: 1
       workerProcesses: 3
@@ -214,6 +252,10 @@ gitlab:
           memory: 6Gi
 
     sidekiq:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 1).image }}
+        tag: {{ (index .Values.gitlab 1).tag }}
       replicas: 1
       minReplicas: 1
       resources:
@@ -225,6 +267,10 @@ gitlab:
           memory: 2.5Gi
 
     gitaly:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 4).image }}
+        tag: {{ (index .Values.gitlab 4).tag }}
       resources:
         requests:
           cpu: 100m
@@ -234,14 +280,32 @@ gitlab:
           memory: 512Mi
 
     gitlab-shell:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 5).image }}
+        tag: {{ (index .Values.gitlab 5).tag }}
       replicas: 1
       minReplicas: 1
 
     kas:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 6).image }}
+        tag: {{ (index .Values.gitlab 6).tag }}
       replicas: 1
       minReplicas: 1
 
+    gitlab-exporter:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 7).image }}
+        tag: {{ (index .Values.gitlab 7).tag }}
+
     toolbox:
+      image:
+        registry: {{ .Values.imageRegistry }}
+        repository: {{ (index .Values.gitlab 2).image }}
+        tag: {{ (index .Values.gitlab 2).tag }}
       replicas: 1
       backups:
         objectStorage:

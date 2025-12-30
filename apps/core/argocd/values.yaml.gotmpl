@@ -97,3 +97,13 @@ repoServer:
     - name: age
       secret:
         secretName: age
+
+dex:
+  image:
+    repository: {{ .Values.imageRegistry }}/{{ (index .Values.dex 0).image }}
+    tag: {{ (index .Values.dex 0).tag }}
+
+redis:
+  image:
+    repository: {{ .Values.imageRegistry }}/{{ (index .Values.argocdRedis 0).image }}
+    tag: {{ (index .Values.argocdRedis 0).tag }}
