@@ -179,16 +179,20 @@ gitlab:
       config: |
         [[runners]]
           request_concurrency = 4
-          environment = ["FF_USE_ADAPTIVE_REQUEST_CONCURRENCY=true"]
+          builds_dir = "/tmp/builds"
+          environment = ["FF_USE_ADAPTIVE_REQUEST_CONCURRENCY=true", "FF_USE_ADVANCED_POD_SPEC_CONFIGURATION=true"]
           [runners.kubernetes]
           namespace = "gitlab"
           image = "alpine:latest"
-          privileged = false
-          [runners.kubernetes.pod_annotations]
-            "container.apparmor.security.beta.kubernetes.io/build" = "unconfined"
-            "container.seccomp.security.alpha.kubernetes.io/build" = "unconfined"
-          [runners.kubernetes.pod_security_context]
-            fs_group = 1000
+          privileged = true
+          logs_base_dir = "/tmp"
+          scripts_base_dir = "/tmp"
+          [[runners.kubernetes.pod_spec]]
+            name = "user-namespaces"
+            patch = '''
+              [{"op": "add", "path": "/hostUsers", "value": false}]
+            '''
+            patch_type = "json"
 
   upgradeCheck:
     enabled: false

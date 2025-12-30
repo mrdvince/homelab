@@ -52,6 +52,18 @@ inputs = {
               options     = ["bind", "rshared", "rw"]
             }
           ]
+          extraConfig = {
+            featureGates = {
+              UserNamespacesSupport = true
+            }
+          }
+        }
+      }
+      cluster = {
+        apiServer = {
+          extraArgs = {
+            feature-gates = "UserNamespacesSupport=true"
+          }
         }
       }
     })
