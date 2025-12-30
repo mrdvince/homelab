@@ -40,6 +40,9 @@ inputs = {
   config_patches = [
     yamlencode({
       machine = {
+        sysctls = {
+          "user.max_user_namespaces" = "1024"
+        }
         kubelet = {
           extraMounts = [
             {
