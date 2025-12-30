@@ -1,17 +1,29 @@
 stages:
+  - test
   - generate
   - trigger
 
-generate-pipeline:
+include:
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/SAST.gitlab-ci.yml
+  - local: infrastructure/images/templates/sync.yml
+
+variables:
+  SECRET_DETECTION_DISABLED: "false"
+  SAST_DISABLED: "false"
+  SCAN_KUBERNETES_MANIFESTS: "true"
+
+generate-images-pipeline:
   stage: generate
   image: alpine:latest
   before_script:
     - apk add --no-cache yq
   script:
     - |
+      cd infrastructure/images
       cat > child-pipeline.yml << 'HEADER'
       include:
-        - local: templates/sync.yml
+        - local: infrastructure/images/templates/sync.yml
 
       stages:
         - sync
@@ -25,42 +37,43 @@ generate-pipeline:
         stage: sync
         extends: .sync-images
         variables:
-          IMAGE_FILE: "${file}"
+          IMAGE_FILE: "infrastructure/images/${file}"
         rules:
           - if: \$PARENT_PIPELINE_SOURCE == "web" || \$PARENT_PIPELINE_SOURCE == "schedule"
           - if: \$SYNC_ALL == "true"
           - changes:
-              - ${file}
-              - templates/sync.yml
+              - infrastructure/images/${file}
+              - infrastructure/images/templates/sync.yml
       EOF
       done
 
       echo "Generated child pipeline:"
       cat child-pipeline.yml
+      mv child-pipeline.yml ../../
   artifacts:
     paths:
       - child-pipeline.yml
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - images/**/*.yaml
-        - templates/**/*.yml
+        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/templates/**/*.yml
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
-trigger-sync:
+trigger-images-sync:
   stage: trigger
   variables:
     PARENT_PIPELINE_SOURCE: $CI_PIPELINE_SOURCE
   trigger:
     include:
       - artifact: child-pipeline.yml
-        job: generate-pipeline
+        job: generate-images-pipeline
     strategy: depend
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - images/**/*.yaml
-        - templates/**/*.yml
+        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/templates/**/*.yml
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "schedule"
