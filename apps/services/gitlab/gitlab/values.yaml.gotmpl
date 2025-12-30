@@ -147,6 +147,7 @@ gitlab-runner:
         [runners.kubernetes]
         namespace = "gitlab"
         image = "alpine:latest"
+        helper_image = "{{ .Values.imageRegistry }}/{{ (index .Values.gitlab 13).image }}:{{ (index .Values.gitlab 13).tag }}"
         privileged = true
         logs_base_dir = "/tmp"
         scripts_base_dir = "/tmp"

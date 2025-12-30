@@ -38,3 +38,6 @@ gitlab:
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/cfssl-self-sign
     tag: v18.7.0
+  - registry: registry.gitlab.com
+    image: gitlab-org/gitlab-runner/gitlab-runner-helper
+    tag: x86_64-v18.6.3

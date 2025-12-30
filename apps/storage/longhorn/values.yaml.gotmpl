@@ -4,6 +4,8 @@ persistence:
 
 defaultSettings:
   defaultReplicaCount: {{ .Values.defaultReplicaCount }}
+  defaultBackingImageManagerImage: {{ .Values.imageRegistry }}/{{ (index .Values.longhorn 11).image }}:{{ (index .Values.longhorn 11).tag }}
+  supportBundleManagerImage: {{ .Values.imageRegistry }}/{{ (index .Values.longhorn 12).image }}:{{ (index .Values.longhorn 12).tag }}
 
 preUpgradeChecker:
   jobEnabled: false

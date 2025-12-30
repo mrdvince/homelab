@@ -13,6 +13,11 @@ argocdRedis:
     image: docker/library/redis
     tag: 8.2.2-alpine
 
+skopeo:
+  - registry: quay.io
+    image: skopeo/stable
+    tag: latest
+
 ghostImages:
   - registry: docker.io
     image: bitnamilegacy/ghost
