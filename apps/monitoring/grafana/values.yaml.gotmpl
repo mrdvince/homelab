@@ -41,8 +41,14 @@ persistence:
 ingress:
   enabled: true
   ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
   hosts:
     - grafana.{{ .Values.domain }}
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - grafana.{{ .Values.domain }}
 
 datasources:
   datasources.yaml:
