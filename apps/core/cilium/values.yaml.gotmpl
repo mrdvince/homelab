@@ -65,7 +65,7 @@ hubble:
     prometheus:
       enabled: true
       serviceMonitor:
-        enabled: false
+        enabled: true
   ui:
     enabled: true
     frontend:
@@ -81,9 +81,9 @@ hubble:
 
   metrics:
     dashboards:
-      enabled: false
+      enabled: true
     serviceMonitor:
-      enabled: false
+      enabled: true
     enableOpenMetrics: true
     enabled:
       - dns
@@ -96,20 +96,20 @@ hubble:
       - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
 
 dashboards:
-  enabled: false
+  enabled: true
 prometheus:
   enabled: true
   serviceMonitor:
-    enabled: false
+    enabled: true
 
 operator:
   image:
     override: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 2).image }}:{{ (index .Values.cilium 2).tag }}
     useDigest: false
   dashboards:
-    enabled: false
+    enabled: true
   prometheus:
     enabled: true
     serviceMonitor:
-      enabled: false
+      enabled: true
   replicas: {{ dig "cilium_op" 2 .Values }}
