@@ -36,6 +36,21 @@ resultsCache:
 gateway:
   enabled: true
   replicas: 1
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
+    hosts:
+      - host: loki.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: loki-tls
+        hosts:
+          - loki.{{ .Values.domain }}
 
 backend:
   replicas: 0

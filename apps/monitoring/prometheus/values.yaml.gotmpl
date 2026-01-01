@@ -90,15 +90,29 @@ prometheus:
   ingress:
     enabled: true
     ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - prometheus.{{ .Values.domain }}
+    tls:
+      - secretName: prometheus-tls
+        hosts:
+          - prometheus.{{ .Values.domain }}
 
 alertmanager:
   ingress:
     enabled: true
     ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - alertmanager.{{ .Values.domain }}
+    tls:
+      - secretName: alertmanager-tls
+        hosts:
+          - alertmanager.{{ .Values.domain }}
 
 kubeControllerManager:
   enabled: false
