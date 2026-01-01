@@ -1,0 +1,20 @@
+environments:
+  aion:
+    values:
+      - domain: home.mrdvince.me
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+  - name: grafana
+    namespace: monitoring
+    chart: grafana/grafana
+    version: 10.4.3
+    values:
+      - values.yaml.gotmpl

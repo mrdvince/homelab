@@ -1,0 +1,17 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+---
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+  - name: alloy
+    namespace: monitoring
+    chart: grafana/alloy
+    version: 1.5.1
+    values:
+      - values.yaml.gotmpl

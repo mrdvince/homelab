@@ -1,0 +1,72 @@
+alloy:
+  configMap:
+    create: true
+    content: |
+      // metrics scraping using prometheus.operator CRDs
+      prometheus.operator.servicemonitors "servicemonitors" {
+        forward_to = [prometheus.remote_write.prometheus.receiver]
+      }
+
+      prometheus.operator.podmonitors "podmonitors" {
+        forward_to = [prometheus.remote_write.prometheus.receiver]
+      }
+
+      // remote write to prometheus
+      prometheus.remote_write "prometheus" {
+        endpoint {
+          url = "http://kps-prometheus.monitoring.svc:9090/api/v1/write"
+        }
+      }
+
+      // log collection from pods
+      discovery.kubernetes "pods" {
+        role = "pod"
+      }
+
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.pods.targets
+
+        rule {
+          target_label = "env"
+          replacement  = "aion"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          target_label  = "app"
+        }
+      }
+
+      loki.source.kubernetes "pod_logs" {
+        targets    = discovery.relabel.pod_logs.output
+        forward_to = [loki.write.loki.receiver]
+      }
+
+      loki.write "loki" {
+        endpoint {
+          url = "http://loki-gateway.monitoring.svc:80/loki/api/v1/push"
+        }
+      }
+
+serviceAccount:
+  create: true
+
+rbac:
+  create: true
+
+controller:
+  type: daemonset
+
+crds:
+  create: false

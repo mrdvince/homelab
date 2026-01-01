@@ -1,0 +1,53 @@
+adminUser: {{ .Values.grafana.adminUser }}
+adminPassword: {{ .Values.grafana.adminPassword }}
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClassName: longhorn
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hosts:
+    - grafana.{{ .Values.domain }}
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://kps-prometheus.monitoring.svc:9090
+        access: proxy
+        isDefault: true
+        jsonData:
+          httpMethod: POST
+          manageAlerts: true
+      - name: Loki
+        type: loki
+        url: http://loki-gateway.monitoring.svc:80
+        access: proxy
+        jsonData:
+          maxLines: 1000
+      - name: Alertmanager
+        type: alertmanager
+        url: http://kps-alertmanager.monitoring.svc:9093
+        access: proxy
+        jsonData:
+          implementation: prometheus
+
+sidecar:
+  dashboards:
+    enabled: true
+    label: grafana_dashboard
+    labelValue: "1"
+    folderAnnotation: grafana_folder
+    searchNamespace: ALL
+    provider:
+      foldersFromFilesStructure: true
+  datasources:
+    enabled: false
+
+serviceMonitor:
+  enabled: true
