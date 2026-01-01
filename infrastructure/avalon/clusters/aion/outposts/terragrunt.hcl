@@ -22,6 +22,21 @@ inputs = {
       external_host = "https://traefik.aion.home.mrdvince.me"
       mode          = "forward_single"
     }
+    prometheus = {
+      name          = "Prometheus"
+      external_host = "https://prometheus.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    alertmanager = {
+      name          = "Alertmanager"
+      external_host = "https://alertmanager.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    loki = {
+      name          = "Loki"
+      external_host = "https://loki.home.mrdvince.me"
+      mode          = "forward_single"
+    }
   }
 
   outpost_name = "aion-forward-auth-outpost"
