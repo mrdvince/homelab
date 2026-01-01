@@ -1,14 +1,23 @@
 alloy:
+  clustering:
+    enabled: true
   configMap:
     create: true
     content: |
       // metrics scraping using prometheus.operator CRDs
+      // clustering distributes targets across alloy pods
       prometheus.operator.servicemonitors "servicemonitors" {
         forward_to = [prometheus.remote_write.prometheus.receiver]
+        clustering {
+          enabled = true
+        }
       }
 
       prometheus.operator.podmonitors "podmonitors" {
         forward_to = [prometheus.remote_write.prometheus.receiver]
+        clustering {
+          enabled = true
+        }
       }
 
       // remote write to prometheus
