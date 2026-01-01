@@ -44,4 +44,11 @@ inputs = {
   docker_service_connection = {
     name = "aion-docker-connection"
   }
+
+  service_accounts = {
+    alloy = {
+      name              = "Alloy Metrics Collector"
+      token_description = "API token for Alloy to push metrics and logs"
+    }
+  }
 }
