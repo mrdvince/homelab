@@ -4,14 +4,14 @@ image:
   tag: {{ (index .Values.beyla 0).tag }}
 
 env:
-  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://{{ .Values.otlpEndpoint }}"
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "{{ .Values.otlpEndpoint }}"
   OTEL_RESOURCE_ATTRIBUTES: "env={{ .Environment.Name }}"
   BEYLA_OTEL_METRICS_EXPORTER: "none"
 
 config:
   data:
     otel_traces_export:
-      endpoint: http://{{ .Values.otlpEndpoint }}
+      endpoint: {{ .Values.otlpEndpoint }}
     attributes:
       kubernetes:
         enable: true
