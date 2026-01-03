@@ -4,28 +4,61 @@ image:
   tag: {{ (index .Values.beyla 0).tag }}
 
 env:
-  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "{{ .Values.otlpEndpoint }}"
   OTEL_RESOURCE_ATTRIBUTES: "env={{ .Environment.Name }}"
   BEYLA_OTEL_METRICS_EXPORTER: "none"
+  BEYLA_KUBE_META_CACHE_ADDRESS: "beyla-k8s-cache.monitoring.svc.cluster.local:50055"
+
+k8sCache:
+  replicas: 1
+  resources:
+    requests:
+      cpu: "0.1"
+      memory: "256Mi"
+    limits:
+      cpu: "1.0"
+      memory: "1Gi"
 
 config:
   data:
-    otel_traces_export:
-      endpoint: {{ .Values.otlpEndpoint }}
+    log_level: DEBUG
+    trace_printer: text
+
     attributes:
       kubernetes:
         enable: true
+        cluster_name: aion
+
     discovery:
       services:
-        - k8s_namespace: gitlab
-        - k8s_namespace: blog
-        - k8s_namespace: cert-manager
-        - k8s_namespace: cnpg-system
-        - k8s_namespace: external-dns
-        - k8s_namespace: longhorn-system
+        - open_ports: 80,443,8080,8443,9090,3000,5432,6379,4317,4318
+
+    otel_traces_export:
+      endpoint: http://alloy.monitoring.svc.cluster.local:4318
+
+    prometheus_export:
+      port: 9090
+      path: /metrics
+      features:
+      - application
+      - network
+      - application_service_graph
+      - application_span
+      - application_host
+
+    internal_metrics:
+      prometheus:
+        port: 9090
+        path: /internal/metrics
 
 serviceMonitor:
   enabled: false
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
 
 podAnnotations:
   prometheus.io/scrape: "true"
