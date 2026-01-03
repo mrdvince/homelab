@@ -1,0 +1,61 @@
+prometheus:
+  - registry: quay.io
+    image: prometheus/prometheus
+    tag: v3.8.1
+  - registry: quay.io
+    image: prometheus/alertmanager
+    tag: v0.30.0
+  - registry: quay.io
+    image: prometheus/node-exporter
+    tag: v1.10.2
+
+prometheusOperator:
+  - registry: quay.io
+    image: prometheus-operator/prometheus-operator
+    tag: v0.87.1
+  - registry: quay.io
+    image: prometheus-operator/prometheus-config-reloader
+    tag: v0.87.1
+  - registry: quay.io
+    image: prometheus-operator/prometheus-config-reloader
+    tag: v0.81.0
+  - registry: ghcr.io
+    image: jkroepke/kube-webhook-certgen
+    tag: 1.7.4
+
+kubeStateMetrics:
+  - registry: registry.k8s.io
+    image: kube-state-metrics/kube-state-metrics
+    tag: v2.17.0
+
+grafanaImages:
+  - registry: docker.io
+    image: grafana/grafana
+    tag: 12.3.1
+  - registry: quay.io
+    image: kiwigrid/k8s-sidecar
+    tag: 1.30.9
+  - registry: docker.io
+    image: library/busybox
+    tag: 1.31.1
+  - registry: docker.io
+    image: bats/bats
+    tag: v1.4.1
+
+alloy:
+  - registry: docker.io
+    image: grafana/alloy
+    tag: v1.12.1
+
+loki:
+  - registry: docker.io
+    image: grafana/loki
+    tag: 3.6.3
+  - registry: docker.io
+    image: nginxinc/nginx-unprivileged
+    tag: 1.29-alpine
+
+tempo:
+  - registry: docker.io
+    image: grafana/tempo
+    tag: 2.9.0
