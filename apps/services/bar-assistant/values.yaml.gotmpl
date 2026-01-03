@@ -12,6 +12,13 @@ api:
     AUTHENTIK_CLIENT_ID: {{ index .Values "bar-assistant-oidc" "client_id" }}
     AUTHENTIK_CLIENT_SECRET: {{ index .Values "bar-assistant-oidc" "client_secret" }}
     AUTHENTIK_REDIRECT_URI: https://bar.{{ .Values.domain }}/oauth/callback
+  resources:
+    limits:
+      cpu: "1"
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
   persistence:
     enabled: true
     storageClass: longhorn
