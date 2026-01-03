@@ -7,6 +7,7 @@ api:
   env:
     APP_URL: https://bar.{{ .Values.domain }}
     ALLOW_REGISTRATION: "true"
+    MEILISEARCH_KEY: {{ .Values.meilisearch_master_key }}
     # authentik SSO
     AUTHENTIK_BASE_URL: https://auth.{{ .Values.domain }}
     AUTHENTIK_CLIENT_ID: {{ index .Values "bar-assistant-oidc" "client_id" }}
@@ -44,6 +45,8 @@ meilisearch:
   image:
     repository: {{ .Values.imageRegistry }}/getmeili/meilisearch
     tag: "v1.15"
+  environment:
+    MEILI_MASTER_KEY: {{ .Values.meilisearch_master_key }}
   persistence:
     enabled: true
     storageClass: longhorn
