@@ -15,28 +15,31 @@
     - |
       echo "Processing ${IMAGE_FILE}..."
 
-      key=$(yq 'keys | .[0]' "${IMAGE_FILE}")
-      count=$(yq ".${key} | length" "${IMAGE_FILE}")
+      for key in $(yq 'keys | .[]' "${IMAGE_FILE}"); do
+        count=$(yq ".${key} | length" "${IMAGE_FILE}")
 
-      if [ "${count}" = "0" ] || [ "${count}" = "null" ]; then
-        echo "No images found in ${IMAGE_FILE}"
-        exit 0
-      fi
-
-      for i in $(seq 0 $((count - 1))); do
-        registry=$(yq ".${key}[${i}].registry" "${IMAGE_FILE}")
-        image=$(yq ".${key}[${i}].image" "${IMAGE_FILE}")
-        tag=$(yq ".${key}[${i}].tag" "${IMAGE_FILE}")
-
-        source="docker://${registry}/${image}:${tag}"
-        dest="docker://${DEST_REGISTRY}/${image}:${tag}"
-
-        echo "Syncing ${source} -> ${dest}"
-
-        if ! skopeo copy --all "${source}" "${dest}"; then
-          echo "Failed to sync ${source}"
-          exit 1
+        if [ "${count}" = "0" ] || [ "${count}" = "null" ]; then
+          echo "No images found under key ${key}"
+          continue
         fi
 
-        echo "Successfully synced ${image}:${tag}"
+        echo "Processing key: ${key} (${count} images)"
+
+        for i in $(seq 0 $((count - 1))); do
+          registry=$(yq ".${key}[${i}].registry" "${IMAGE_FILE}")
+          image=$(yq ".${key}[${i}].image" "${IMAGE_FILE}")
+          tag=$(yq ".${key}[${i}].tag" "${IMAGE_FILE}")
+
+          source="docker://${registry}/${image}:${tag}"
+          dest="docker://${DEST_REGISTRY}/${image}:${tag}"
+
+          echo "Syncing ${source} -> ${dest}"
+
+          if ! skopeo copy --all "${source}" "${dest}"; then
+            echo "Failed to sync ${source}"
+            exit 1
+          fi
+
+          echo "Successfully synced ${image}:${tag}"
+        done
       done
