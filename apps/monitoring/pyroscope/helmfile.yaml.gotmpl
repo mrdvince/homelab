@@ -1,0 +1,17 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+---
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+  - name: pyroscope
+    namespace: monitoring
+    chart: grafana/pyroscope
+    version: 1.17.0
+    values:
+      - values.yaml.gotmpl

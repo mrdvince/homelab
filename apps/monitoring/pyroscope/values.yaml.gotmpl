@@ -1,0 +1,35 @@
+pyroscope:
+  image:
+    registry: {{ .Values.imageRegistry }}
+    repository: {{ (index .Values.pyroscope 0).image }}
+    tag: {{ (index .Values.pyroscope 0).tag }}
+
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClassName: longhorn
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+
+  service:
+    type: ClusterIP
+
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4040"
+    prometheus.io/path: "/metrics"
+
+serviceMonitor:
+  enabled: false
+
+alloy:
+  enabled: false
+
+minio:
+  enabled: false

@@ -1,6 +1,13 @@
 alloy:
   clustering:
     enabled: true
+  securityContext:
+    privileged: true
+    runAsUser: 0
+  mounts:
+    extra:
+      - name: sys-kernel-debug
+        mountPath: /sys/kernel/debug
   extraPorts:
     - name: otlp-grpc
       port: 4317
@@ -96,7 +103,7 @@ alloy:
 
         rule {
           target_label = "env"
-          replacement  = "aion"
+          replacement  = "{{ .Environment.Name }}"
         }
         rule {
           source_labels = ["__meta_kubernetes_namespace"]
@@ -149,6 +156,72 @@ alloy:
         }
       }
 
+      // ebpf profiling for continuous profiling
+      discovery.kubernetes "local_pods" {
+        role = "pod"
+        selectors {
+          field = "spec.nodeName=" + sys.env("HOSTNAME")
+          role  = "pod"
+        }
+      }
+
+      discovery.relabel "profile_pods" {
+        targets = discovery.kubernetes.local_pods.targets
+
+        rule {
+          action        = "drop"
+          regex         = "Succeeded|Failed"
+          source_labels = ["__meta_kubernetes_pod_phase"]
+        }
+        rule {
+          action        = "keep"
+          regex         = "gitlab|blog|cert-manager|cnpg-system|external-dns|longhorn-system"
+          source_labels = ["__meta_kubernetes_namespace"]
+        }
+        rule {
+          action        = "replace"
+          regex         = "(.*)@(.*)"
+          replacement   = "${1}/${2}"
+          separator     = "@"
+          source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
+          target_label  = "service_name"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_node_name"]
+          target_label  = "node"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          target_label = "env"
+          replacement  = "{{ .Environment.Name }}"
+        }
+      }
+
+      pyroscope.ebpf "local_pods" {
+        forward_to = [pyroscope.write.pyroscope.receiver]
+        targets    = discovery.relabel.profile_pods.output
+      }
+
+      pyroscope.write "pyroscope" {
+        endpoint {
+          url = "http://pyroscope.monitoring.svc:4040"
+        }
+        external_labels = {
+          "env" = "{{ .Environment.Name }}",
+        }
+      }
+
 serviceAccount:
   create: true
 
@@ -157,6 +230,12 @@ rbac:
 
 controller:
   type: daemonset
+  hostPID: true
+
+extraVolumes:
+  - name: sys-kernel-debug
+    hostPath:
+      path: /sys/kernel/debug
 
 image:
   registry: {{ .Values.imageRegistry }}

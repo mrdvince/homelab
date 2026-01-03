@@ -90,12 +90,19 @@ datasources:
             filterBySpanID: true
           tracesToMetrics:
             datasourceUid: Prometheus
+          tracesToProfiles:
+            datasourceUid: Pyroscope
           serviceMap:
             datasourceUid: Prometheus
           nodeGraph:
             enabled: true
           lokiSearch:
             datasourceUid: Loki
+      - name: Pyroscope
+        type: grafana-pyroscope-datasource
+        uid: Pyroscope
+        url: http://pyroscope.monitoring.svc:4040
+        access: proxy
 
 sidecar:
   image:
