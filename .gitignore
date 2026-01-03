@@ -11,6 +11,8 @@ infrastructure/kubernetes/*/controlplane.yaml
 
 # Helm
 charts/*.tgz
+charts/*/charts/
+charts/*/Chart.lock
 
 # OS
 .DS_Store

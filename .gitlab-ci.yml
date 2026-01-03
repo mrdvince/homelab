@@ -97,6 +97,7 @@ publish-charts:
         name=$(grep '^name:' "$chart" | awk '{print $2}')
         version=$(grep '^version:' "$chart" | awk '{print $2}')
         echo "Packaging ${name}..."
+        helm dependency update "$dir"
         helm package "$dir" --destination .
 
         tgz="${name}-${version}.tgz"
