@@ -1,0 +1,100 @@
+# bar-assistant API server
+api:
+  replicaCount: 1
+  image:
+    repository: barassistant/server
+    pullPolicy: IfNotPresent
+    tag: ""
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 5Gi
+  env:
+    APP_URL: ""
+    MEILISEARCH_HOST: ""
+    MEILISEARCH_KEY: ""
+    REDIS_HOST: ""
+    ALLOW_REGISTRATION: "true"
+
+# salt-rim web frontend
+saltRim:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: barassistant/salt-rim
+    pullPolicy: IfNotPresent
+    tag: ""
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  env:
+    API_URL: ""
+    MEILISEARCH_URL: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []
+
+# meilisearch subchart
+meilisearch:
+  enabled: true
+  environment:
+    MEILI_ENV: production
+  auth:
+    existingMasterKeySecret: ""
+  persistence:
+    enabled: true
+    size: 2Gi
+
+# valkey (redis alternative)
+valkey:
+  enabled: true
+  image:
+    repository: valkey/valkey
+    pullPolicy: IfNotPresent
+    tag: "8.1"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
