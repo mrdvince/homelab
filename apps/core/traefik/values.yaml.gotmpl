@@ -54,6 +54,14 @@ logs:
   access:
     enabled: true
 
+tracing:
+  otlp:
+    enabled: true
+    grpc:
+      enabled: true
+      endpoint: "http://{{ .Values.otlpEndpoint }}"
+      insecure: true
+
 service:
   ipFamilyPolicy: "PreferDualStack"
   type: LoadBalancer

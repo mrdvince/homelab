@@ -5,6 +5,9 @@ global:
     tag: {{ (index .Values.argocd 0).tag }}
 
 server:
+  extraArgs:
+    - --otlp-address={{ .Values.otlpEndpoint }}
+    - --otlp-insecure=true
   ingress:
     enabled: true
     ingressClassName: traefik
@@ -57,7 +60,15 @@ configs:
               fi
         lockRepo: false
 
+controller:
+  extraArgs:
+    - --otlp-address={{ .Values.otlpEndpoint }}
+    - --otlp-insecure=true
+
 repoServer:
+  extraArgs:
+    - --otlp-address={{ .Values.otlpEndpoint }}
+    - --otlp-insecure=true
   extraContainers:
     - name: helmfile
       image: {{ .Values.imageRegistry }}/{{ (index .Values.argocd 1).image }}:{{ (index .Values.argocd 1).tag }}
