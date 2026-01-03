@@ -14,7 +14,7 @@ inputs = {
       allowed_redirect_uris = [
         {
           matching_mode = "strict"
-          url           = "https://auth.home.mrdvince.me/application/o/actual/"
+          url           = "https://actual.home.mrdvince.me/openid/callback"
         },
       ]
     }
