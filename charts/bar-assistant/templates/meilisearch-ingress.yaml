@@ -1,0 +1,48 @@
+{{- if and .Values.ingress.enabled .Values.meilisearch.enabled -}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "bar-assistant.fullname" . }}-strip-search
+  labels:
+    {{- include "bar-assistant.labels" . | nindent 4 }}
+spec:
+  stripPrefix:
+    prefixes:
+      - /search
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "bar-assistant.fullname" . }}-meilisearch
+  labels:
+    {{- include "bar-assistant.labels" . | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-{{ include "bar-assistant.fullname" . }}-strip-search@kubernetescrd
+spec:
+  {{- with .Values.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          - path: /search
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "bar-assistant.fullname" $ }}-meilisearch
+                port:
+                  number: 7700
+    {{- end }}
+{{- end }}

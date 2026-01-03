@@ -48,7 +48,14 @@ spec:
             - name: MEILISEARCH_HOST
               value: {{ .Values.api.env.MEILISEARCH_HOST | default (printf "http://%s-meilisearch:7700" (include "bar-assistant.fullname" .)) | quote }}
             - name: MEILISEARCH_KEY
+              {{- if and .Values.meilisearch.enabled (not .Values.api.env.MEILISEARCH_KEY) }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "bar-assistant.fullname" . }}-meilisearch-master-key
+                  key: MEILI_MASTER_KEY
+              {{- else }}
               value: {{ .Values.api.env.MEILISEARCH_KEY | quote }}
+              {{- end }}
             - name: REDIS_HOST
               value: {{ .Values.api.env.REDIS_HOST | default (printf "%s-valkey" (include "bar-assistant.fullname" .)) | quote }}
             - name: CACHE_DRIVER
@@ -57,6 +64,22 @@ spec:
               value: "redis"
             - name: ALLOW_REGISTRATION
               value: {{ .Values.api.env.ALLOW_REGISTRATION | quote }}
+            {{- with .Values.api.env.AUTHENTIK_BASE_URL }}
+            - name: AUTHENTIK_BASE_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.api.env.AUTHENTIK_CLIENT_ID }}
+            - name: AUTHENTIK_CLIENT_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.api.env.AUTHENTIK_CLIENT_SECRET }}
+            - name: AUTHENTIK_CLIENT_SECRET
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.api.env.AUTHENTIK_REDIRECT_URI }}
+            - name: AUTHENTIK_REDIRECT_URI
+              value: {{ . | quote }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /

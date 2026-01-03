@@ -1,0 +1,57 @@
+podSecurityContext:
+  fsGroup: 33
+
+api:
+  image:
+    repository: {{ .Values.imageRegistry }}/barassistant/server
+  env:
+    APP_URL: https://bar.{{ .Values.domain }}
+    MEILISEARCH_KEY: ""
+    ALLOW_REGISTRATION: "true"
+    # authentik SSO
+    AUTHENTIK_BASE_URL: https://auth.{{ .Values.domain }}
+    AUTHENTIK_CLIENT_ID: {{ index .Values "bar-assistant-oidc" "client_id" }}
+    AUTHENTIK_CLIENT_SECRET: {{ index .Values "bar-assistant-oidc" "client_secret" }}
+    AUTHENTIK_REDIRECT_URI: https://bar.{{ .Values.domain }}/oauth/callback
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 5Gi
+
+saltRim:
+  enabled: true
+  image:
+    repository: {{ .Values.imageRegistry }}/barassistant/salt-rim
+    tag: "4.12.1"
+  env:
+    API_URL: https://bar.{{ .Values.domain }}
+    MEILISEARCH_URL: https://bar.{{ .Values.domain }}/search
+
+valkey:
+  enabled: true
+  image:
+    repository: {{ .Values.imageRegistry }}/valkey/valkey
+    tag: "8.1"
+
+meilisearch:
+  enabled: true
+  image:
+    repository: {{ .Values.imageRegistry }}/getmeili/meilisearch
+    tag: "v1.15"
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 2Gi
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+    external-dns.alpha.kubernetes.io/hostname: bar.{{ .Values.domain }}
+  hosts:
+    - host: bar.{{ .Values.domain }}
+  tls:
+    - secretName: bar-assistant-tls
+      hosts:
+        - bar.{{ .Values.domain }}

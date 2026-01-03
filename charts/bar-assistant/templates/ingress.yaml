@@ -35,6 +35,13 @@ spec:
                 name: {{ include "bar-assistant.fullname" $ }}-api
                 port:
                   number: {{ $.Values.api.service.port }}
+          - path: /oauth
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "bar-assistant.fullname" $ }}-api
+                port:
+                  number: {{ $.Values.api.service.port }}
           {{- if $.Values.saltRim.enabled }}
           - path: /
             pathType: Prefix
