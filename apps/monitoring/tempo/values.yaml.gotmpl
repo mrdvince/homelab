@@ -1,0 +1,34 @@
+tempo:
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ (index .Values.tempo 0).image }}
+  tag: {{ (index .Values.tempo 0).tag }}
+  retention: 1080h
+  reportingEnabled: false
+  metricsGenerator:
+    enabled: true
+    remoteWriteUrl: "http://kps-prometheus.monitoring.svc:9090/api/v1/write"
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"
+        http:
+          endpoint: "0.0.0.0:4318"
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+      wal:
+        path: /var/tempo/wal
+
+persistence:
+  enabled: true
+  size: 50Gi
+  storageClassName: longhorn
+
+serviceMonitor:
+  enabled: true
+
+service:
+  type: ClusterIP

@@ -79,6 +79,23 @@ datasources:
         access: proxy
         jsonData:
           implementation: prometheus
+      - name: Tempo
+        type: tempo
+        url: http://tempo.monitoring.svc:3200
+        access: proxy
+        jsonData:
+          tracesToLogsV2:
+            datasourceUid: Loki
+            filterByTraceID: true
+            filterBySpanID: true
+          tracesToMetrics:
+            datasourceUid: Prometheus
+          serviceMap:
+            datasourceUid: Prometheus
+          nodeGraph:
+            enabled: true
+          lokiSearch:
+            datasourceUid: Loki
 
 sidecar:
   image:

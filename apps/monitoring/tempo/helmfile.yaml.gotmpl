@@ -1,0 +1,18 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+      - domain: home.mrdvince.me
+---
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+  - name: tempo
+    namespace: monitoring
+    chart: grafana/tempo
+    version: 1.24.1
+    values:
+      - values.yaml.gotmpl
