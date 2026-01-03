@@ -6,7 +6,6 @@ api:
     repository: {{ .Values.imageRegistry }}/barassistant/server
   env:
     APP_URL: https://bar.{{ .Values.domain }}
-    MEILISEARCH_KEY: ""
     ALLOW_REGISTRATION: "true"
     # authentik SSO
     AUTHENTIK_BASE_URL: https://auth.{{ .Values.domain }}
