@@ -40,37 +40,25 @@ Each application in `apps/` follows a standard layout: an `argocd.yaml` for Argo
 
 ## Stack
 
-**infrastructure**: Proxmox VE, Terragrunt, Terraform
-
-**kubernetes**: Talos (v1.12), Cilium CNI, Traefik ingress
-
-**gitops**: ArgoCD with Helmfile plugin, Helm charts published to GitLab
-
-**observability**: Prometheus, Grafana, Loki, Tempo, Alloy, Pyroscope
-
-**storage**: Longhorn for block storage, CloudNativePG for PostgreSQL
-
-**auth**: Authentik with OIDC configured for ArgoCD, Grafana, Proxmox, and apps
-
-**secrets**: SOPS with age encryption, pre-commit hooks for leak detection
+- **infrastructure**: Proxmox VE, Terragrunt, Terraform
+- **kubernetes**: Talos (v1.12), Cilium CNI, Traefik ingress
+- **gitops**: ArgoCD with Helmfile plugin, Helm charts published to GitLab
+- **observability**: Prometheus, Grafana, Loki, Tempo, Alloy, Pyroscope
+- **storage**: Longhorn for block storage, CloudNativePG for PostgreSQL
+- **auth**: Authentik with OIDC configured for ArgoCD, Grafana, Proxmox, and apps
+- **secrets**: SOPS with age encryption, pre-commit hooks for leak detection
 
 ## Backbone services
 
 Some of these services run outside the main Kubernetes cluster but form the foundation everything else depends on.
 
-**TrueNAS Scale** is the storage backbone, providing NFS shares and S3-compatible object storage via RustFS. All persistent data ultimately lives here.
-
-**RustFS** provides S3-compatible object storage, replacing MinIO. Used for Terraform state, GitLab artifacts, database backups, and anything else that speaks S3.
-
-**Container Registry** hosts all container images. GitLab CI syncs images from upstream registries (Docker Hub, ghcr.io, quay.io) to the private registry, keeping the cluster independent of external rate limits and deps.
-
-**GitLab** handles git hosting, CI/CD, and package registries. The CI pipeline syncs container images to the registry and publishes Helm charts to GitLab's package registry.
-
-**Authentik** provides identity and access management with OIDC, 2FA, and passkey support. Everything that supports it (ArgoCD, Grafana, Proxmox, apps) authenticates through Authentik. Services without native auth support use Traefik forward-auth with Authentik outposts.
-
-**Vaultwarden** stores sensitive credentials including the SOPS age key. The CLI can retrieve secrets and set them as environment variables when needed for decryption.
-
-**Uptime Kuma + ntfy** handle monitoring and notifications. Uptime Kuma checks service health and sends alerts via ntfy, which pushes to the phone.
+- **TrueNAS Scale** is the storage backbone, providing NFS shares and S3-compatible object storage via RustFS. All persistent data ultimately lives here.
+- **RustFS** provides S3-compatible object storage, replacing MinIO. Used for Terraform state, GitLab artifacts, database backups, and anything else that speaks S3.
+- **Container Registry** hosts all container images. GitLab CI syncs images from upstream registries (Docker Hub, ghcr.io, quay.io) to the private registry, keeping the cluster independent of external rate limits and deps.
+- **GitLab** handles git hosting, CI/CD, and package registries. The CI pipeline syncs container images to the registry and publishes Helm charts to GitLab's package registry.
+- **Authentik** provides identity and access management with OIDC, 2FA, and passkey support. Everything that supports it (ArgoCD, Grafana, Proxmox, apps) authenticates through Authentik. Services without native auth support use Traefik forward-auth with Authentik outposts.
+- **Vaultwarden** stores sensitive credentials including the SOPS age key. The CLI can retrieve secrets and set them as environment variables when needed for decryption.
+- **Uptime Kuma + ntfy** handle monitoring and notifications. Uptime Kuma checks service health and sends alerts via ntfy, which pushes to the phone.
 
 ## Modules
 
