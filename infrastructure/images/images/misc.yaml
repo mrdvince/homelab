@@ -23,7 +23,7 @@ alpine:
     image: library/alpine
     tag: latest
 
-actual:
+actualImages:
   - registry: docker.io
     image: actualbudget/actual-server
     tag: "25.12.0"

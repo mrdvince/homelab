@@ -1,6 +1,6 @@
 image:
-  repository: {{ .Values.imageRegistry }}/{{ (index .Values.actual 0).image }}
-  tag: {{ (index .Values.actual 0).tag }}
+  repository: {{ .Values.imageRegistry }}/{{ (index .Values.actualImages 0).image }}
+  tag: {{ (index .Values.actualImages 0).tag }}
 
 ingress:
   enabled: true
