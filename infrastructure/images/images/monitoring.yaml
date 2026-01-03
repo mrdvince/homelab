@@ -64,3 +64,8 @@ beyla:
   - registry: docker.io
     image: grafana/beyla
     tag: 2.8.4
+
+pyroscope:
+  - registry: docker.io
+    image: grafana/pyroscope
+    tag: 1.17.0
