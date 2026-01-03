@@ -66,8 +66,9 @@ tracing:
 
 metrics:
   prometheus:
-    serviceMonitor:
-      enabled: true
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
 
 service:
   ipFamilyPolicy: "PreferDualStack"
@@ -86,6 +87,12 @@ tolerations:
     effect: "NoSchedule"
 
 priorityClassName: "system-cluster-critical"
+
+deployment:
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9100"
+    prometheus.io/path: "/metrics"
 
 extraObjects:
   - apiVersion: traefik.io/v1alpha1

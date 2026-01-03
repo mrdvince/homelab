@@ -29,6 +29,56 @@ alloy:
         }
       }
 
+      // annotation-based pod scraping for apps without ServiceMonitors
+      discovery.kubernetes "annotated_pods" {
+        role = "pod"
+      }
+
+      discovery.relabel "annotated_pods" {
+        targets = discovery.kubernetes.annotated_pods.targets
+
+        rule {
+          source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+          regex         = "true"
+          action        = "keep"
+        }
+        rule {
+          source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+          regex         = "([^:]+)(?::\\d+)?;(\\d+)"
+          replacement   = "$1:$2"
+          target_label  = "__address__"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+          regex         = "(.+)"
+          target_label  = "__metrics_path__"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          target_label  = "app"
+        }
+        rule {
+          target_label = "env"
+          replacement  = "{{ .Environment.Name }}"
+        }
+      }
+
+      prometheus.scrape "annotated_pods" {
+        targets    = discovery.relabel.annotated_pods.output
+        forward_to = [prometheus.remote_write.prometheus.receiver]
+        clustering {
+          enabled = true
+        }
+      }
+
       // remote write to prometheus
       prometheus.remote_write "prometheus" {
         endpoint {
