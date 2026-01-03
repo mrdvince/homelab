@@ -43,6 +43,8 @@ inputs = {
       machine = {
         sysctls = {
           "user.max_user_namespaces" = "1024"
+          "kernel.kptr_restrict"     = "0"
+          "net.core.bpf_jit_harden"  = "0"
         }
         kubelet = {
           extraMounts = [
