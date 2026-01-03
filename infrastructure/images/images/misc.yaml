@@ -40,7 +40,7 @@ barAssistant:
     tag: "8.1"
   - registry: docker.io
     image: getmeili/meilisearch
-    tag: "v1.12.3"
+    tag: "v1.15"
 
 ghostImages:
   - registry: docker.io
