@@ -34,7 +34,7 @@ barAssistant:
     tag: "5.11.2"
   - registry: docker.io
     image: barassistant/salt-rim
-    tag: "3.16.0"
+    tag: "4.12.1"
   - registry: docker.io
     image: valkey/valkey
     tag: "8.1"
