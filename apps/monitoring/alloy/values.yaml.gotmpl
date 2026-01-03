@@ -231,11 +231,11 @@ rbac:
 controller:
   type: daemonset
   hostPID: true
-
-extraVolumes:
-  - name: sys-kernel-debug
-    hostPath:
-      path: /sys/kernel/debug
+  volumes:
+    extra:
+      - name: sys-kernel-debug
+        hostPath:
+          path: /sys/kernel/debug
 
 image:
   registry: {{ .Values.imageRegistry }}

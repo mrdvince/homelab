@@ -10,6 +10,8 @@ env:
 
 config:
   data:
+    otel_traces_export:
+      endpoint: http://{{ .Values.otlpEndpoint }}
     attributes:
       kubernetes:
         enable: true
