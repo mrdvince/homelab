@@ -1,0 +1,17 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+---
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+  - name: beyla
+    namespace: monitoring
+    chart: grafana/beyla
+    version: 1.10.4
+    values:
+      - values.yaml.gotmpl

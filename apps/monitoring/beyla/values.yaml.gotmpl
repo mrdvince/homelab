@@ -1,0 +1,30 @@
+image:
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ (index .Values.beyla 0).image }}
+  tag: {{ (index .Values.beyla 0).tag }}
+
+env:
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://{{ .Values.otlpEndpoint }}"
+  OTEL_RESOURCE_ATTRIBUTES: "env={{ .Environment.Name }}"
+
+config:
+  data:
+    attributes:
+      kubernetes:
+        enable: true
+    discovery:
+      services:
+        - k8s_namespace: gitlab
+        - k8s_namespace: blog
+        - k8s_namespace: cert-manager
+        - k8s_namespace: cnpg-system
+        - k8s_namespace: external-dns
+        - k8s_namespace: longhorn-system
+
+serviceMonitor:
+  enabled: false
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9090"
+  prometheus.io/path: "/metrics"
