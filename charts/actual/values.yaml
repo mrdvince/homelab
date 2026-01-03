@@ -138,7 +138,10 @@ login:
     enforce: false
     # hostname for OAuth callbacks (defaults to first ingress host)
     serverHostname: ""
-    # use existing secret for credentials
+    # credentials (chart creates secret from these)
+    clientId: ""
+    clientSecret: ""
+    # or use existing secret
     existingSecret: ""
     clientIdKey: "client_id"
     clientSecretKey: "client_secret"

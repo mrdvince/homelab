@@ -66,16 +66,17 @@ spec:
               value: "0"
             {{- end }}
             {{- if .Values.login.openid.enabled }}
-            {{- if .Values.login.openid.existingSecret }}
+            {{- $secretName := .Values.login.openid.existingSecret | default (printf "%s-openid" (include "actual.fullname" .)) }}
+            {{- if or .Values.login.openid.existingSecret (and .Values.login.openid.clientId .Values.login.openid.clientSecret) }}
             - name: ACTUAL_OPENID_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.login.openid.existingSecret }}
+                  name: {{ $secretName }}
                   key: {{ .Values.login.openid.clientIdKey }}
             - name: ACTUAL_OPENID_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.login.openid.existingSecret }}
+                  name: {{ $secretName }}
                   key: {{ .Values.login.openid.clientSecretKey }}
             {{- end }}
             {{- if .Values.login.openid.discoveryUrl }}

@@ -1,0 +1,46 @@
+image:
+  repository: {{ .Values.imageRegistry }}/{{ (index .Values.actual 0).image }}
+  tag: {{ (index .Values.actual 0).tag }}
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
+    external-dns.alpha.kubernetes.io/hostname: actual.{{ .Values.domain }}
+  hosts:
+    - host: actual.{{ .Values.domain }}
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: actual-tls
+      hosts:
+        - actual.{{ .Values.domain }}
+
+persistence:
+  enabled: true
+  storageClass: longhorn
+  size: 20Gi
+
+podSecurityContext:
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+
+login:
+  method: openid
+  openid:
+    enabled: true
+    discoveryUrl: https://{{ .Values.authentik_domain }}/application/o/actual/
+    authMethod: openid
+    enforce: false
+    clientId: {{ .Values.actual.client_id }}
+    clientSecret: {{ .Values.actual.client_secret }}

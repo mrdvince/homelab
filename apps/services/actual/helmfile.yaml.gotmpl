@@ -1,0 +1,23 @@
+environments:
+  aion:
+    values:
+      - domain: home.mrdvince.me
+        authentik_domain: auth.home.mrdvince.me
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: homelab
+    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
+    username: {{ .Values.gitlab_deploy_token.username }}
+    password: {{ .Values.gitlab_deploy_token.token }}
+
+releases:
+  - name: actual
+    namespace: actual
+    chart: homelab/actual
+    version: 0.6.0
+    values:
+      - values.yaml.gotmpl
