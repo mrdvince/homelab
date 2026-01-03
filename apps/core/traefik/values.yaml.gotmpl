@@ -59,8 +59,15 @@ tracing:
     enabled: true
     grpc:
       enabled: true
-      endpoint: "http://{{ .Values.otlpEndpoint }}"
+      endpoint: "{{ .Values.otlpEndpoint }}"
       insecure: true
+  resourceAttributes:
+    env: {{ .Environment.Name }}
+
+metrics:
+  prometheus:
+    serviceMonitor:
+      enabled: true
 
 service:
   ipFamilyPolicy: "PreferDualStack"

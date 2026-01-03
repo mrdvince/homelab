@@ -8,6 +8,7 @@ server:
   extraArgs:
     - --otlp-address={{ .Values.otlpEndpoint }}
     - --otlp-insecure=true
+    - --otlp-attrs=env:{{ .Environment.Name }}
   ingress:
     enabled: true
     ingressClassName: traefik
@@ -64,11 +65,13 @@ controller:
   extraArgs:
     - --otlp-address={{ .Values.otlpEndpoint }}
     - --otlp-insecure=true
+    - --otlp-attrs=env:{{ .Environment.Name }}
 
 repoServer:
   extraArgs:
     - --otlp-address={{ .Values.otlpEndpoint }}
     - --otlp-insecure=true
+    - --otlp-attrs=env:{{ .Environment.Name }}
   extraContainers:
     - name: helmfile
       image: {{ .Values.imageRegistry }}/{{ (index .Values.argocd 1).image }}:{{ (index .Values.argocd 1).tag }}
