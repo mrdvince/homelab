@@ -1,0 +1,144 @@
+replicaCount: 1
+
+image:
+  repository: actualbudget/actual-server
+  pullPolicy: IfNotPresent
+  # defaults to appVersion in Chart.yaml
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
+
+securityContext: {}
+  # allowPrivilegeEscalation: false
+  # capabilities:
+  #   drop:
+  #     - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 5006
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  # example:
+  #   cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts: []
+  # example:
+  #   - host: actual.example.com
+  #     paths:
+  #       - path: /
+  #         pathType: Prefix
+  tls: []
+  # example:
+  #   - secretName: actual-tls
+  #     hosts:
+  #       - actual.example.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+  annotations: {}
+
+# data directory configuration
+# see: https://actualbudget.org/docs/config/
+files:
+  dataDirectory: /data
+  server: /data/server-files
+  user: /data/user-files
+
+# upload size limits in MB
+# see: https://actualbudget.org/docs/config/
+upload:
+  fileSizeSyncLimitMB: 20
+  syncEncryptedFileSizeLimitMB: 50
+  fileSizeLimitMB: 20
+
+# authentication configuration
+# see: https://actualbudget.org/docs/config/
+login:
+  # options: password, header, openid
+  method: "password"
+  skipSSLVerification: false
+  allowedLoginMethods:
+    - password
+    - header
+    - openid
+
+  # OpenID/OAuth2 configuration
+  # see: https://actualbudget.org/docs/config/oauth-auth
+  openid:
+    enabled: false
+    # provider's .well-known/openid-configuration endpoint
+    discoveryUrl: ""
+    # manual endpoints (if discovery not supported)
+    authorizationEndpoint: ""
+    tokenEndpoint: ""
+    userInfoEndpoint: ""
+    # openid or oauth2
+    authMethod: "openid"
+    # force OpenID as only login method
+    enforce: false
+    # hostname for OAuth callbacks (defaults to first ingress host)
+    serverHostname: ""
+    # use existing secret for credentials
+    existingSecret: ""
+    clientIdKey: "client_id"
+    clientSecretKey: "client_secret"

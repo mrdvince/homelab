@@ -23,6 +23,11 @@ alpine:
     image: library/alpine
     tag: latest
 
+actual:
+  - registry: docker.io
+    image: actualbudget/actual-server
+    tag: "25.12.0"
+
 ghostImages:
   - registry: docker.io
     image: bitnamilegacy/ghost
