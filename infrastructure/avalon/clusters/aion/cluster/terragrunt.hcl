@@ -12,7 +12,7 @@ dependency "cp" {
 }
 
 dependency "workers" {
-  config_path = "../workers"
+  config_path = "../../../../elysium/clusters/aion/workers"
 }
 
 inputs = {
