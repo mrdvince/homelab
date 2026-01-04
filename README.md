@@ -61,9 +61,9 @@ Except gitlab these run outside the main Kubernetes cluster but form the foundat
 - **Container Registry** hosts all container images. GitLab CI syncs images from upstream registries (Docker Hub, ghcr.io, quay.io) to the private registry, keeping the cluster independent of external rate limits and deps.
 - **GitLab** handles git hosting, CI/CD, and package registries. The CI pipeline syncs container images to the registry and publishes Helm charts to GitLab's package registry.
 - **Authentik** provides identity and access management with OIDC, 2FA, and passkey support. Everything that supports it (ArgoCD, Grafana, Proxmox, apps) authenticates through Authentik. Services without native auth support use Traefik forward-auth with Authentik outposts.
-- **Vaultwarden** stores sensitive credentials including the SOPS age key. The CLI can retrieve secrets and set them as environment variables when needed for decryption.
-- **Uptime Kuma + ntfy** handle monitoring and notifications. Uptime Kuma checks service health and sends alerts via ntfy, which pushes to the phone.
-
+- **Vaultwarden** stores sensitive credentials including the SOPS age key. The CLI can be used to retrieve and set them as environment variables when needed for decryption.
+- **Uptime Kuma + ntfy** handle monitoring and notifications (and sending alerts to my phone)
+- **Tailscale** Since all services are internal-only access is exclusively through Tailscale (which is awesome btw)
 ## Modules
 
 The Terraform modules used for VM provisioning and cluster bootstrapping live in a separate repo: [homelab-modules](https://github.com/mrdvince/homelab-modules). This includes modules for Proxmox VMs, Talos clusters, ArgoCD bootstrap, and Authentik OIDC providers.
