@@ -8,6 +8,7 @@ include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - local: infrastructure/images/templates/sync.yml
+  - local: infrastructure/images/templates/build.yml
 
 variables:
   SECRET_DETECTION_DISABLED: "false"
@@ -48,6 +49,25 @@ generate-images-pipeline:
       EOF
       done
 
+      for file in builds/*.yaml; do
+        [ -f "$file" ] || continue
+        name=$(basename "${file}" .yaml)
+        cat >> child-pipeline.yml << EOF
+
+      build-${name}:
+        stage: sync
+        extends: .build-images
+        variables:
+          BUILD_FILE: "infrastructure/images/${file}"
+        rules:
+          - if: \$PARENT_PIPELINE_SOURCE == "web" || \$PARENT_PIPELINE_SOURCE == "schedule"
+          - if: \$BUILD_ALL == "true"
+          - changes:
+              - infrastructure/images/${file}
+              - infrastructure/images/templates/build.yml
+      EOF
+      done
+
       echo "Generated child pipeline:"
       cat child-pipeline.yml
       mv child-pipeline.yml ../../
@@ -58,6 +78,7 @@ generate-images-pipeline:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/templates/**/*.yml
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -75,6 +96,7 @@ trigger-images-sync:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/templates/**/*.yml
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "schedule"

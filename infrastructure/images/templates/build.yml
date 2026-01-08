@@ -1,0 +1,78 @@
+.build-images:
+  image:
+    name: registry.home.mrdvince.me/homelab/builder:1.0.0
+    entrypoint: [""]
+  variables:
+    DEST_REGISTRY: registry.home.mrdvince.me
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+    SEVERITY_THRESHOLD: "CRITICAL,HIGH"
+  before_script:
+    - mkdir -p ~/.docker
+    - echo "{\"auths\":{\"${DEST_REGISTRY}\":{\"username\":\"${REGISTRY_USER}\",\"password\":\"${REGISTRY_PASSWORD}\"}}}" > ~/.docker/config.json
+  script:
+    - |
+      echo "Processing ${BUILD_FILE}..."
+
+      for key in $(yq 'keys | .[]' "${BUILD_FILE}"); do
+        image=$(yq ".${key}.image" "${BUILD_FILE}")
+        tag=$(yq ".${key}.tag" "${BUILD_FILE}")
+        dest="${DEST_REGISTRY}/${image}:${tag}"
+
+        if skopeo inspect --raw "docker://${dest}" >/dev/null 2>&1; then
+          echo "Skipping ${image}:${tag}, already exists in registry"
+          continue
+        fi
+
+        repo=$(yq ".${key}.repo" "${BUILD_FILE}")
+        dockerfile=$(yq ".${key}.dockerfile" "${BUILD_FILE}")
+
+        if [ "${repo}" != "null" ]; then
+          commit=$(yq ".${key}.commit" "${BUILD_FILE}")
+          echo "Building ${image}:${tag} from ${repo}@${commit}"
+
+          git clone --depth 1 "${repo}" /tmp/build
+          cd /tmp/build
+          git fetch origin "${commit}"
+          git checkout "${commit}"
+          build_context="/tmp/build"
+          dockerfile_path="/tmp/build/Dockerfile"
+        elif [ "${dockerfile}" != "null" ]; then
+          echo "Building ${image}:${tag} from local ${dockerfile}"
+          build_context="."
+          dockerfile_path="${dockerfile}"
+        else
+          echo "No repo or dockerfile specified for ${key}, skipping"
+          continue
+        fi
+
+        echo "Scanning source for secrets..."
+        trivy fs --scanners secret --exit-code 1 "${build_context}" || {
+          echo "Secrets found in source, aborting"
+          exit 1
+        }
+
+        echo "Building image..."
+        buildctl-daemonless.sh build \
+          --frontend dockerfile.v0 \
+          --local context="${build_context}" \
+          --local dockerfile="$(dirname ${dockerfile_path})" \
+          --opt filename="$(basename ${dockerfile_path})" \
+          --output type=oci,dest=/tmp/image.tar
+
+        echo "Scanning image for vulnerabilities..."
+        trivy image --input /tmp/image.tar --exit-code 1 --severity "${SEVERITY_THRESHOLD}" || {
+          echo "Critical/High vulnerabilities found, aborting"
+          exit 1
+        }
+
+        echo "Pushing image..."
+        skopeo copy oci-archive:/tmp/image.tar "docker://${dest}"
+
+        echo "Successfully built and pushed ${image}:${tag}"
+
+        if [ "${repo}" != "null" ]; then
+          cd -
+          rm -rf /tmp/build
+        fi
+        rm -f /tmp/image.tar
+      done

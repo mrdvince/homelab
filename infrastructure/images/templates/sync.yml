@@ -5,10 +5,17 @@
   variables:
     DEST_REGISTRY: registry.home.mrdvince.me
     YQ_VERSION: v4.44.1
+    TRIVY_VERSION: "0.68.2"
+    SEVERITY_THRESHOLD: "CRITICAL,HIGH"
+    SCAN_IMAGES: "true"
   before_script:
     - |
       curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq
       chmod +x /usr/local/bin/yq
+    - |
+      if [ "${SCAN_IMAGES}" = "true" ]; then
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${TRIVY_VERSION}
+      fi
     - |
       skopeo login -u "${REGISTRY_USER}" -p "${REGISTRY_PASSWORD}" "${DEST_REGISTRY}"
   script:
@@ -30,12 +37,25 @@
           image=$(yq ".${key}[${i}].image" "${IMAGE_FILE}")
           tag=$(yq ".${key}[${i}].tag" "${IMAGE_FILE}")
 
+          if [ "${registry}" = "null" ] || [ -z "${registry}" ]; then
+            echo "Skipping ${image}:${tag}, built from source"
+            continue
+          fi
+
           source="docker://${registry}/${image}:${tag}"
           dest="docker://${DEST_REGISTRY}/${image}:${tag}"
 
           if skopeo inspect --raw "${dest}" >/dev/null 2>&1; then
             echo "Skipping ${image}:${tag} - already exists in registry"
             continue
+          fi
+
+          if [ "${SCAN_IMAGES}" = "true" ]; then
+            echo "Scanning ${registry}/${image}:${tag} for vulnerabilities..."
+            if ! trivy image --exit-code 1 --severity "${SEVERITY_THRESHOLD}" "${registry}/${image}:${tag}"; then
+              echo "WARNING: Critical/High vulnerabilities found in ${image}:${tag}"
+              echo "Continuing anyway (upstream image) - review recommended"
+            fi
           fi
 
           echo "Syncing ${source} -> ${dest}"

@@ -1,0 +1,4 @@
+builder:
+  dockerfile: infrastructure/images/dockerfiles/builder/Dockerfile
+  image: homelab/builder
+  tag: "1.1.0"
