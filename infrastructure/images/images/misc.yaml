@@ -3,6 +3,11 @@ dex:
     image: dexidp/dex
     tag: v2.44.0
 
+reflector:
+  - registry: docker.io
+    image: emberstack/kubernetes-reflector
+    tag: "9.1.45"
+
 adguardExternalDns:
   - registry: ghcr.io
     image: muhlba91/external-dns-provider-adguard
