@@ -1,7 +1,5 @@
 .build-images:
-  image:
-    name: registry.home.mrdvince.me/homelab/builder:1.0.0
-    pull_policy: always
+  image: registry.home.mrdvince.me/homelab/builder:1.0.0
   services:
     - name: docker:29-dind
       alias: docker
