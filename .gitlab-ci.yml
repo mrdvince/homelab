@@ -2,7 +2,6 @@ stages:
   - test
   - generate
   - trigger
-  - publish
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
@@ -103,7 +102,7 @@ trigger-images-sync:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
 publish-charts:
-  stage: publish
+  stage: generate
   needs: []
   image: registry.home.mrdvince.me/library/alpine:latest
   variables:
