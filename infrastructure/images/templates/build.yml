@@ -1,7 +1,10 @@
 .build-images:
-  image: registry.home.mrdvince.me/homelab/builder:1.0.0
+  image:
+    name: registry.home.mrdvince.me/homelab/builder:1.0.0
+    pull_policy: always
   services:
-    - name: docker:29-dind-rootless
+    - name: docker:29-dind
+      alias: docker
       command: ["--tls=false"]
   variables:
     DEST_REGISTRY: registry.home.mrdvince.me
