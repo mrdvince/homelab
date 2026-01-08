@@ -151,12 +151,22 @@ gitlab-runner:
         privileged = true
         logs_base_dir = "/tmp"
         scripts_base_dir = "/tmp"
-        [[runners.kubernetes.pod_spec]]
-          name = "user-namespaces"
-          patch = '''
-            [{"op": "add", "path": "/hostUsers", "value": false}]
-          '''
-          patch_type = "json"
+        [[runners.kubernetes.volumes.empty_dir]]
+          name = "docker-certs"
+          mount_path = "/certs/client"
+          medium = "Memory"
+        [[runners.kubernetes.volumes.empty_dir]]
+          name = "dind-storage"
+          mount_path = "/var/lib/docker"
+        [[runners.kubernetes.volumes.host_path]]
+          name = "hostpath-modules"
+          mount_path = "/lib/modules"
+          read_only = true
+          host_path = "/lib/modules"
+        [[runners.kubernetes.volumes.host_path]]
+          name = "hostpath-cgroup"
+          mount_path = "/sys/fs/cgroup"
+          host_path = "/sys/fs/cgroup"
 
 upgradeCheck:
   enabled: false
