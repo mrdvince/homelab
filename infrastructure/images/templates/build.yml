@@ -1,10 +1,12 @@
 .build-images:
   image: registry.home.mrdvince.me/homelab/builder:1.0.0
   services:
-    - docker:29-dind
+    - name: docker:29-dind-rootless
+      command: ["--tls=false"]
   variables:
     DEST_REGISTRY: registry.home.mrdvince.me
-    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
     DOCKER_BUILDKIT: "1"
     SEVERITY_THRESHOLD: "CRITICAL,HIGH"
   before_script:
