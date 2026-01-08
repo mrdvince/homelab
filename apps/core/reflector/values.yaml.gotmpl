@@ -1,0 +1,7 @@
+image:
+  repository: {{ .Values.imageRegistry }}/{{ (index .Values.reflector 0).image }}
+  tag: {{ (index .Values.reflector 0).tag }}
+
+configuration:
+  logging:
+    minimumLevel: Information

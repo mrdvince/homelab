@@ -1,0 +1,21 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+  athos:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+---
+repositories:
+  - name: emberstack
+    url: https://emberstack.github.io/helm-charts
+
+releases:
+  - name: reflector
+    namespace: reflector
+    chart: emberstack/reflector
+    version: 9.1.45
+    values:
+      - values.yaml.gotmpl

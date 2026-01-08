@@ -13,7 +13,6 @@ providers:
     allowCrossNamespace: true
     allowExternalNameServices: true
   kubernetesIngress:
-    allowCrossNamespace: true
     allowExternalNameServices: true
     allowEmptyServices: true
 
@@ -127,6 +126,12 @@ extraObjects:
         - "*.aion.home.mrdvince.me"
         - "home.mrdvince.me"
         - "aion.home.mrdvince.me"
+      secretTemplate:
+        annotations:
+          reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+          reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+          reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "apps,gitlab,blog"
+          reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "apps,gitlab,blog"
 
   - apiVersion: traefik.io/v1alpha1
     kind: IngressRoute
