@@ -26,9 +26,10 @@ generate-images-pipeline:
       cat > child-pipeline.yml << 'HEADER'
       include:
         - local: infrastructure/images/templates/sync.yml
+        - local: infrastructure/images/templates/build.yml
 
       stages:
-        - sync
+        - images
       HEADER
 
       for file in images/*.yaml; do
@@ -36,7 +37,7 @@ generate-images-pipeline:
         cat >> child-pipeline.yml << EOF
 
       sync-${name}:
-        stage: sync
+        stage: images
         extends: .sync-images
         variables:
           IMAGE_FILE: "infrastructure/images/${file}"
@@ -55,7 +56,7 @@ generate-images-pipeline:
         cat >> child-pipeline.yml << EOF
 
       build-${name}:
-        stage: sync
+        stage: images
         extends: .build-images
         variables:
           BUILD_FILE: "infrastructure/images/${file}"
