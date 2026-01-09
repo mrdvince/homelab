@@ -1,0 +1,4 @@
+pairdrop:
+  - registry: lscr.io
+    image: linuxserver/pairdrop
+    tag: "1.11.2"

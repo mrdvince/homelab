@@ -1,0 +1,4 @@
+omnitools:
+  - registry: docker.io
+    image: iib0011/omni-tools
+    tag: "0.6.0"

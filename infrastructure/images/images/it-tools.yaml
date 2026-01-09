@@ -1,0 +1,4 @@
+ittools:
+  - registry: ghcr.io
+    image: corentinth/it-tools
+    tag: "2024.10.22-7ca5933"
