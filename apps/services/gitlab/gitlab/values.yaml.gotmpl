@@ -10,10 +10,10 @@ global:
     class: traefik
     configureCertmanager: false
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
       external-dns.alpha.kubernetes.io/hostname: gitlab.{{ .Values.domain }}
     tls:
       enabled: true
+      secretName: wildcard-home-mrdvince-me-tls
 
   hpa:
     apiVersion: autoscaling/v2

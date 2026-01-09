@@ -48,7 +48,6 @@ gateway:
     enabled: true
     ingressClassName: traefik
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
       traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - host: loki.{{ .Values.domain }}
@@ -56,7 +55,7 @@ gateway:
           - path: /
             pathType: Prefix
     tls:
-      - secretName: loki-tls
+      - secretName: wildcard-home-mrdvince-me-tls
         hosts:
           - loki.{{ .Values.domain }}
 

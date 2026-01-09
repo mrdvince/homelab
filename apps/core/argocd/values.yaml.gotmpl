@@ -12,9 +12,11 @@ server:
   ingress:
     enabled: true
     ingressClassName: traefik
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
     tls: true
+    extraTls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - argocd.{{ .Values.domain }}
 
 configs:
   cm:

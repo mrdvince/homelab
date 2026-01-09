@@ -20,10 +20,9 @@ ingress:
   ingressClassName: traefik
   host: longhorn.{{ .Values.domain }}
   tls: true
-  tlsSecret: longhorn-tls
+  tlsSecret: wildcard-home-mrdvince-me-tls
   path: /
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
     traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
 
 image:

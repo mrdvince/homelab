@@ -56,11 +56,10 @@ ingress:
   enabled: true
   className: traefik
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
     external-dns.alpha.kubernetes.io/hostname: bar.{{ .Values.domain }}
   hosts:
     - host: bar.{{ .Values.domain }}
   tls:
-    - secretName: bar-assistant-tls
+    - secretName: wildcard-home-mrdvince-me-tls
       hosts:
         - bar.{{ .Values.domain }}

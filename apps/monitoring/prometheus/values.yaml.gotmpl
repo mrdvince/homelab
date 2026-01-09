@@ -94,12 +94,11 @@ prometheus:
     enabled: true
     ingressClassName: traefik
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
       traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - prometheus.{{ .Values.domain }}
     tls:
-      - secretName: prometheus-tls
+      - secretName: wildcard-home-mrdvince-me-tls
         hosts:
           - prometheus.{{ .Values.domain }}
 
@@ -108,12 +107,11 @@ alertmanager:
     enabled: true
     ingressClassName: traefik
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
       traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - alertmanager.{{ .Values.domain }}
     tls:
-      - secretName: alertmanager-tls
+      - secretName: wildcard-home-mrdvince-me-tls
         hosts:
           - alertmanager.{{ .Values.domain }}
 
