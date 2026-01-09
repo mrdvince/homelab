@@ -39,7 +39,7 @@ login:
   method: openid
   openid:
     enabled: true
-    discoveryUrl: https://{{ .Values.authentik_domain }}/application/o/actual/
+    discoveryUrl: https://auth.{{ .Values.domain }}/application/o/actual/
     authMethod: openid
     enforce: false
     clientId: {{ .Values.actual.client_id }}

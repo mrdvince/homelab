@@ -14,12 +14,12 @@ inputs = {
   proxy_application = {
     longhorn = {
       name          = "Longhorn"
-      external_host = "https://longhorn.aion.home.mrdvince.me"
+      external_host = "https://longhorn.home.mrdvince.me"
       mode          = "forward_single"
     }
     traefik = {
       name          = "Traefik"
-      external_host = "https://traefik.aion.home.mrdvince.me"
+      external_host = "https://traefik.home.mrdvince.me"
       mode          = "forward_single"
     }
     prometheus = {
@@ -35,6 +35,31 @@ inputs = {
     loki = {
       name          = "Loki"
       external_host = "https://loki.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    excalidraw = {
+      name          = "Excalidraw"
+      external_host = "https://excalidraw.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    pairdrop = {
+      name          = "PairDrop"
+      external_host = "https://pairdrop.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    it-tools = {
+      name          = "IT Tools"
+      external_host = "https://it-tools.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    omni-tools = {
+      name          = "Omni Tools"
+      external_host = "https://omni-tools.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    drawio = {
+      name          = "Draw.io"
+      external_host = "https://drawio.home.mrdvince.me"
       mode          = "forward_single"
     }
   }

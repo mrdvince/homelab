@@ -2,7 +2,6 @@ environments:
   aion:
     values:
       - domain: home.mrdvince.me
-        authentik_domain: auth.home.mrdvince.me
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/*.yaml
     secrets:
@@ -76,7 +75,7 @@ releases:
               - profile
               - email
             response_type: code
-            issuer: https://{{ .Values.authentik_domain }}/application/o/gitlab/
+            issuer: https://auth.{{ .Values.domain }}/application/o/gitlab/
             discovery: true
             client_auth_method: query
             uid_field: preferred_username

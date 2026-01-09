@@ -141,7 +141,7 @@ extraObjects:
       entryPoints:
         - websecure
       routes:
-        - match: Host(`traefik.aion.home.mrdvince.me`)
+        - match: Host(`traefik.{{ .Values.domain }}`)
           kind: Rule
           services:
             - name: api@internal

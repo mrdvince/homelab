@@ -4,17 +4,15 @@ environments:
       - domain: home.mrdvince.me
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/*.yaml
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: argo
-    url: https://argoproj.github.io/argo-helm
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
 
 releases:
-  - name: argocd
-    namespace: argocd
-    chart: argo/argo-cd
-    version: 9.1.7
+  - name: excalidraw
+    namespace: apps
+    chart: bjw-s/app-template
+    version: 4.6.0
     values:
       - values.yaml.gotmpl

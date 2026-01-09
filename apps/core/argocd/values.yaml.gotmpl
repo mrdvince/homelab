@@ -22,7 +22,7 @@ configs:
     dex.config: |
       connectors:
       - config:
-          issuer: https://{{ .Values.authentik_domain }}/application/o/argocd/
+          issuer: https://auth.{{ .Values.domain }}/application/o/argocd/
           clientID: {{ .Values | get "argo-oidc.client_id" }}
           clientSecret: $dex.authentik.clientSecret
           insecureEnableGroups: true
