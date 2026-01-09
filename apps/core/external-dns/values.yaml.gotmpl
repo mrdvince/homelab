@@ -2,6 +2,10 @@ image:
   repository: {{ .Values.imageRegistry }}/{{ (index .Values.externalDns 0).image }}
   tag: {{ (index .Values.externalDns 0).tag }}
 
+sources:
+  - ingress
+  - traefik-proxy
+
 provider:
   name: webhook
   webhook:

@@ -74,7 +74,7 @@ service:
   ipFamilyPolicy: "PreferDualStack"
   type: LoadBalancer
   annotations:
-    io.cilium/lb-ipam-ips: "10.30.40.50"
+    io.cilium/lb-ipam-ips: {{ .Values.loadBalancerIP }}
 
 tolerations:
   - key: "CriticalAddonsOnly"
@@ -137,6 +137,9 @@ extraObjects:
     metadata:
       name: traefik-dashboard
       namespace: traefik
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: traefik.{{ .Values.domain }}
+        external-dns.alpha.kubernetes.io/target: {{ .Values.loadBalancerIP }}
     spec:
       entryPoints:
         - websecure
