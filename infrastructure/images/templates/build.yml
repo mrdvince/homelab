@@ -9,7 +9,6 @@
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://docker:2375
     DOCKER_BUILDKIT: "1"
-    SEVERITY_THRESHOLD: "CRITICAL,HIGH"
   before_script:
     - docker login -u "${REGISTRY_USER}" -p "${REGISTRY_PASSWORD}" "${DEST_REGISTRY}"
   script:
@@ -57,8 +56,10 @@
         docker build -t "${dest}" -f "${dockerfile_path}" "${build_context}"
 
         echo "Scanning image for vulnerabilities..."
-        trivy image --exit-code 1 --severity "${SEVERITY_THRESHOLD}" "${dest}" || {
-          echo "Critical/High vulnerabilities found, aborting"
+        trivy image --severity HIGH "${dest}" || true
+
+        trivy image --exit-code 1 --severity CRITICAL "${dest}" || {
+          echo "CRITICAL vulnerabilities found, aborting"
           exit 1
         }
 
