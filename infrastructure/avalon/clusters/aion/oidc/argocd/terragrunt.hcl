@@ -14,7 +14,7 @@ inputs = {
       allowed_redirect_uris = [
         {
           matching_mode = "strict"
-          url           = "https://argocd.aion.home.mrdvince.me/api/dex/callback"
+          url           = "https://argocd.home.mrdvince.me/api/dex/callback"
         },
         {
           matching_mode = "strict"
