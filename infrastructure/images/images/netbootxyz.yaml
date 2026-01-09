@@ -1,0 +1,4 @@
+netbootxyz:
+  - registry: lscr.io
+    image: linuxserver/netbootxyz
+    tag: "0.7.6"

@@ -1,0 +1,4 @@
+freshrss:
+  - registry: docker.io
+    image: freshrss/freshrss
+    tag: "1.28.0"
