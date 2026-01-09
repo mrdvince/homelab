@@ -1,5 +1,5 @@
 .build-images:
-  image: registry.home.mrdvince.me/homelab/builder:1.0.0
+  image: registry.home.mrdvince.me/homelab/builder:1.1.0
   services:
     - name: docker:29-dind
       alias: docker
