@@ -62,6 +62,26 @@ inputs = {
       external_host = "https://drawio.home.mrdvince.me"
       mode          = "forward_single"
     }
+    netbootxyz = {
+      name          = "NetBoot.xyz"
+      external_host = "https://netboot.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    freshrss = {
+      name          = "FreshRSS"
+      external_host = "https://rss.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    grist = {
+      name          = "Grist"
+      external_host = "https://grist.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    termix = {
+      name          = "Termix"
+      external_host = "https://termix.home.mrdvince.me"
+      mode          = "forward_single"
+    }
   }
 
   outpost_name = "aion-forward-auth-outpost"

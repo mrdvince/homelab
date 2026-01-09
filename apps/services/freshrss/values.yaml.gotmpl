@@ -1,0 +1,89 @@
+controllers:
+  main:
+    initContainers:
+      fix-permissions:
+        image:
+          repository: busybox
+          tag: latest
+        command:
+          - sh
+          - -c
+          - |
+            chown -R 33:33 /var/www/FreshRSS/data
+            chown -R 33:33 /var/www/FreshRSS/extensions
+        securityContext:
+          runAsUser: 0
+          capabilities:
+            add:
+              - CHOWN
+              - DAC_OVERRIDE
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.freshrss 0).image }}
+          tag: "{{ (index .Values.freshrss 0).tag }}"
+        env:
+          TZ: "Europe/Amsterdam"
+          CRON_MIN: "1,31"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - DAC_OVERRIDE
+
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: longhorn
+    globalMounts:
+      - path: /var/www/FreshRSS/data
+  extensions:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClass: longhorn
+    globalMounts:
+      - path: /var/www/FreshRSS/extensions
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
+    hosts:
+      - host: rss.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - rss.{{ .Values.domain }}

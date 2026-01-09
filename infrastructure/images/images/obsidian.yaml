@@ -1,4 +1,0 @@
-obsidian:
-  - registry: lscr.io
-    image: linuxserver/obsidian
-    tag: "1.10.6"
