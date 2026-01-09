@@ -10,6 +10,15 @@
     DOCKER_HOST: tcp://docker:2375
     DOCKER_BUILDKIT: "1"
   before_script:
+    - |
+      echo "Waiting for docker daemon..."
+      for i in $(seq 1 30); do
+        if docker info >/dev/null 2>&1; then
+          echo "Docker daemon ready"
+          break
+        fi
+        sleep 2
+      done
     - docker login -u "${REGISTRY_USER}" -p "${REGISTRY_PASSWORD}" "${DEST_REGISTRY}"
   script:
     - |
@@ -28,6 +37,8 @@
         repo=$(yq ".${key}.repo" "${BUILD_FILE}")
         dockerfile=$(yq ".${key}.dockerfile" "${BUILD_FILE}")
 
+        original_dir=$(pwd)
+
         if [ "${repo}" != "null" ]; then
           commit=$(yq ".${key}.commit" "${BUILD_FILE}")
           echo "Building ${image}:${tag} from ${repo}@${commit}"
@@ -38,7 +49,7 @@
           build_context="/tmp/build"
 
           if [ "${dockerfile}" != "null" ]; then
-            dockerfile_path="${dockerfile}"
+            dockerfile_path="${original_dir}/${dockerfile}"
           else
             dockerfile_path="/tmp/build/Dockerfile"
           fi
@@ -61,9 +72,9 @@
         docker build -t "${dest}" -f "${dockerfile_path}" "${build_context}"
 
         echo "Scanning image for vulnerabilities..."
-        trivy image --severity HIGH,CRITICAL --format table --quiet "${dest}"
+        trivy image --severity HIGH,CRITICAL "${dest}"
 
-        trivy image --exit-code 1 --severity CRITICAL --quiet "${dest}" || {
+        trivy image --exit-code 1 --severity CRITICAL "${dest}" || {
           echo "CRITICAL vulnerabilities found, aborting"
           exit 1
         }
