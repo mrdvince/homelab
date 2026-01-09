@@ -36,7 +36,12 @@
           cd /tmp/build
           git checkout "${commit}"
           build_context="/tmp/build"
-          dockerfile_path="/tmp/build/Dockerfile"
+
+          if [ "${dockerfile}" != "null" ]; then
+            dockerfile_path="${dockerfile}"
+          else
+            dockerfile_path="/tmp/build/Dockerfile"
+          fi
         elif [ "${dockerfile}" != "null" ]; then
           echo "Building ${image}:${tag} from local ${dockerfile}"
           build_context="."
@@ -56,9 +61,9 @@
         docker build -t "${dest}" -f "${dockerfile_path}" "${build_context}"
 
         echo "Scanning image for vulnerabilities..."
-        trivy image --severity HIGH "${dest}" || true
+        trivy image --severity HIGH,CRITICAL --format table --quiet "${dest}"
 
-        trivy image --exit-code 1 --severity CRITICAL "${dest}" || {
+        trivy image --exit-code 1 --severity CRITICAL --quiet "${dest}" || {
           echo "CRITICAL vulnerabilities found, aborting"
           exit 1
         }
