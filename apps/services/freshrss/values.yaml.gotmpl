@@ -43,6 +43,7 @@ controllers:
           OIDC_CLIENT_CRYPTO_KEY: {{ index .Values "freshrss-oidc" "crypto_key" }}
           FRESHRSS_INSTALL: |-
             --api-enabled
+            --auth-type http_auth
             --base-url https://rss.{{ .Values.domain }}
             --db-base freshrss
             --db-host freshrss-postgres-rw.apps.svc.cluster.local
