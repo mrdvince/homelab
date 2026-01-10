@@ -67,11 +67,6 @@ inputs = {
       external_host = "https://netboot.home.mrdvince.me"
       mode          = "forward_single"
     }
-    freshrss = {
-      name          = "FreshRSS"
-      external_host = "https://rss.home.mrdvince.me"
-      mode          = "forward_single"
-    }
     grist = {
       name          = "Grist"
       external_host = "https://grist.home.mrdvince.me"

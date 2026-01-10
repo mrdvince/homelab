@@ -33,6 +33,12 @@ controllers:
               secretKeyRef:
                 name: freshrss-postgres-app
                 key: password
+          OIDC_ENABLED: "1"
+          OIDC_PROVIDER_METADATA_URL: https://auth.{{ .Values.domain }}/application/o/freshrss/.well-known/openid-configuration
+          OIDC_CLIENT_ID: {{ index .Values "freshrss-oidc" "client_id" }}
+          OIDC_CLIENT_SECRET: {{ index .Values "freshrss-oidc" "client_secret" }}
+          OIDC_X_FORWARDED_HEADERS: "X-Forwarded-Port X-Forwarded-Proto X-Forwarded-Host"
+          OIDC_SCOPES: "openid email profile"
           FRESHRSS_INSTALL: |-
             --api-enabled
             --base-url https://rss.{{ .Values.domain }}
@@ -41,7 +47,7 @@ controllers:
             --db-password ${DB_PASSWORD}
             --db-type pgsql
             --db-user freshrss
-            --default-user admin
+            --default-user {{ index .Values "freshrss-oidc" "admin_uname" }}
             --language en
         resources:
           requests:
@@ -91,8 +97,6 @@ ingress:
   main:
     enabled: true
     className: traefik
-    annotations:
-      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - host: rss.{{ .Values.domain }}
         paths:
