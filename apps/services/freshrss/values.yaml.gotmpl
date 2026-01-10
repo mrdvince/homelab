@@ -25,6 +25,24 @@ controllers:
         env:
           TZ: "Europe/Amsterdam"
           CRON_MIN: "1,31"
+          DB_HOST: freshrss-postgres-rw.apps.svc.cluster.local
+          DB_BASE: freshrss
+          DB_USER: freshrss
+          DB_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: freshrss-postgres-app
+                key: password
+          FRESHRSS_INSTALL: |-
+            --api-enabled
+            --base-url https://rss.{{ .Values.domain }}
+            --db-base freshrss
+            --db-host freshrss-postgres-rw.apps.svc.cluster.local
+            --db-password ${DB_PASSWORD}
+            --db-type pgsql
+            --db-user freshrss
+            --default-user admin
+            --language en
         resources:
           requests:
             cpu: 10m

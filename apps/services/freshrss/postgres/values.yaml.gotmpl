@@ -1,0 +1,68 @@
+fullnameOverride: freshrss-postgres
+type: postgresql
+
+version:
+  postgresql: "17"
+
+mode: standalone
+
+cluster:
+  imageName: {{ .Values.imageRegistry }}/{{ (index .Values.cnpg 1).image }}:{{ (index .Values.cnpg 1).tag }}
+  instances: 1
+  storage:
+    size: 2Gi
+    storageClass: longhorn
+  walStorage:
+    enabled: true
+    size: 1Gi
+    storageClass: longhorn
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  postgresql:
+    parameters:
+      max_slot_wal_keep_size: "1GB"
+
+  initdb:
+    database: freshrss
+    owner: freshrss
+    postInitApplicationSQL:
+      - CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+backups:
+  enabled: true
+  provider: s3
+  destinationPath: "s3://cnpg-backups/freshrss"
+  endpointURL: https://s3.{{ .Values.domain }}
+  s3:
+    region: "home"
+    bucket: "cnpg-backups"
+    accessKey: {{ .Values.s3.accessKey | quote }}
+    secretKey: {{ .Values.s3.secretKey | quote }}
+  secret:
+    create: true
+    name: "freshrss-postgres-s3-creds"
+
+  wal:
+    compression: gzip
+    encryption: ""
+    maxParallel: 1
+
+  data:
+    compression: gzip
+    encryption: ""
+    jobs: 1
+
+  scheduledBackups:
+    - name: daily-backup
+      schedule: "0 0 1 * * *"
+      backupOwnerReference: self
+      method: barmanObjectStore
+
+  retentionPolicy: "7d"
