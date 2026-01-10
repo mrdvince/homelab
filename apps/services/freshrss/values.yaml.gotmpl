@@ -39,6 +39,8 @@ controllers:
           OIDC_CLIENT_SECRET: {{ index .Values "freshrss-oidc" "client_secret" }}
           OIDC_X_FORWARDED_HEADERS: "X-Forwarded-Port X-Forwarded-Proto X-Forwarded-Host"
           OIDC_SCOPES: "openid email profile"
+          OIDC_REMOTE_USER_CLAIM: "preferred_username"
+          OIDC_CLIENT_CRYPTO_KEY: {{ index .Values "freshrss-oidc" "crypto_key" }}
           FRESHRSS_INSTALL: |-
             --api-enabled
             --base-url https://rss.{{ .Values.domain }}
@@ -63,6 +65,9 @@ controllers:
               - ALL
             add:
               - DAC_OVERRIDE
+              - SETGID
+              - SETUID
+              - CHOWN
 
 defaultPodOptions:
   securityContext:
