@@ -51,6 +51,9 @@ controllers:
             --db-user freshrss
             --default-user {{ index .Values "freshrss-oidc" "admin_uname" }}
             --language en
+          FRESHRSS_USER: |-
+            --user {{ index .Values "freshrss-oidc" "admin_uname" }}
+            --password ${OIDC_CLIENT_CRYPTO_KEY}
         resources:
           requests:
             cpu: 10m
