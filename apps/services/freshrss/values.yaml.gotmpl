@@ -66,6 +66,7 @@ controllers:
                   sleep 30
                   if [ -f /feeds/feeds.opml ] && [ ! -f /var/www/FreshRSS/data/.feeds-imported ]; then
                     ./cli/import-for-user.php --user {{ index .Values "freshrss-oidc" "admin_uname" }} --filename /feeds/feeds.opml && \
+                    ./cli/actualize-user.php --user {{ index .Values "freshrss-oidc" "admin_uname" }} && \
                     touch /var/www/FreshRSS/data/.feeds-imported
                   fi
         resources:
