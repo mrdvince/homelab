@@ -55,6 +55,19 @@ controllers:
           FRESHRSS_USER: |-
             --user {{ index .Values "freshrss-oidc" "admin_uname" }}
             --password ${OIDC_CLIENT_CRYPTO_KEY}
+            --api-password ${OIDC_CLIENT_CRYPTO_KEY}
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  sleep 30
+                  if [ -f /feeds/feeds.opml ] && [ ! -f /var/www/FreshRSS/data/.feeds-imported ]; then
+                    ./cli/import-for-user.php --user {{ index .Values "freshrss-oidc" "admin_uname" }} --filename /feeds/feeds.opml && \
+                    touch /var/www/FreshRSS/data/.feeds-imported
+                  fi
         resources:
           requests:
             cpu: 10m
@@ -79,6 +92,107 @@ defaultPodOptions:
     runAsUser: 0
     runAsGroup: 0
 
+configMaps:
+  feeds:
+    data:
+      feeds.opml: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <opml version="2.0">
+          <head><title>RSS Feeds</title></head>
+          <body>
+            <outline text="Engineering" title="Engineering">
+              <outline text="Airbnb" title="Airbnb">
+                <outline type="rss" text="Airbnb Tech Blog" xmlUrl="https://medium.com/feed/airbnb-engineering"/>
+              </outline>
+              <outline text="Cloudflare" title="Cloudflare">
+                <outline type="rss" text="Cloudflare Blog" xmlUrl="https://blog.cloudflare.com/rss/"/>
+              </outline>
+              <outline text="Discord" title="Discord">
+                <outline type="rss" text="Discord Blog" xmlUrl="https://discord.com/blog/rss.xml"/>
+              </outline>
+              <outline text="Docker" title="Docker">
+                <outline type="rss" text="Docker Blog" xmlUrl="https://www.docker.com/blog/feed/"/>
+              </outline>
+              <outline text="Dropbox" title="Dropbox">
+                <outline type="rss" text="Dropbox Tech" xmlUrl="https://dropbox.tech/feed"/>
+              </outline>
+              <outline text="GitHub" title="GitHub">
+                <outline type="rss" text="GitHub Blog" xmlUrl="https://github.blog/feed/"/>
+              </outline>
+              <outline text="Google" title="Google">
+                <outline type="rss" text="Google Research" xmlUrl="https://research.google/blog/rss/"/>
+              </outline>
+              <outline text="Groupon" title="Groupon">
+                <outline type="rss" text="Groupon Engineering" xmlUrl="https://medium.com/feed/groupon-eng"/>
+              </outline>
+              <outline text="Netflix" title="Netflix">
+                <outline type="rss" text="Netflix Tech Blog" xmlUrl="https://netflixtechblog.com/feed"/>
+              </outline>
+              <outline text="Nextdoor" title="Nextdoor">
+                <outline type="rss" text="Nextdoor Engineering" xmlUrl="https://medium.com/feed/nextdoor-engineering"/>
+              </outline>
+              <outline text="PayPal" title="PayPal">
+                <outline type="rss" text="PayPal Tech Blog" xmlUrl="https://medium.com/feed/paypal-tech"/>
+              </outline>
+              <outline text="Pinterest" title="Pinterest">
+                <outline type="rss" text="Pinterest Engineering" xmlUrl="https://medium.com/feed/pinterest-engineering"/>
+              </outline>
+              <outline text="Salesforce" title="Salesforce">
+                <outline type="rss" text="Salesforce Engineering" xmlUrl="https://engineering.salesforce.com/feed/"/>
+              </outline>
+              <outline text="Slack" title="Slack">
+                <outline type="rss" text="Slack Engineering" xmlUrl="https://slack.engineering/feed/"/>
+              </outline>
+              <outline text="SoundCloud" title="SoundCloud">
+                <outline type="rss" text="SoundCloud Backstage" xmlUrl="https://developers.soundcloud.com/blog/blog.rss"/>
+              </outline>
+              <outline text="Spotify" title="Spotify">
+                <outline type="rss" text="Spotify Engineering" xmlUrl="https://engineering.atspotify.com/feed"/>
+              </outline>
+              <outline text="Tailscale" title="Tailscale">
+                <outline type="rss" text="Tailscale Blog" xmlUrl="https://tailscale.com/blog/index.xml"/>
+              </outline>
+              <outline text="Yelp" title="Yelp">
+                <outline type="rss" text="Yelp Engineering" xmlUrl="https://engineeringblog.yelp.com/feed"/>
+              </outline>
+              <outline text="People" title="People">
+                <outline type="rss" text="Julia Evans" xmlUrl="https://jvns.ca/atom.xml"/>
+                <outline type="rss" text="Dan Luu" xmlUrl="https://danluu.com/atom.xml"/>
+                <outline type="rss" text="Rachel by the Bay" xmlUrl="https://rachelbythebay.com/w/atom.xml"/>
+              </outline>
+              <outline text="Languages" title="Languages">
+                <outline type="rss" text="Go Blog" xmlUrl="https://blog.golang.org/feed.atom"/>
+              </outline>
+              <outline text="ML" title="ML">
+                <outline type="rss" text="PyTorch Blog" xmlUrl="https://pytorch.org/blog/feed.xml"/>
+              </outline>
+            </outline>
+            <outline text="DevOps" title="DevOps">
+              <outline text="Kubernetes" title="Kubernetes">
+                <outline type="rss" text="Kubernetes Blog" xmlUrl="https://kubernetes.io/feed.xml"/>
+                <outline type="rss" text="CNCF" xmlUrl="https://www.cncf.io/feed/"/>
+              </outline>
+              <outline text="Tools" title="Tools">
+                <outline type="rss" text="Grafana" xmlUrl="https://grafana.com/blog/index.xml"/>
+                <outline type="rss" text="HashiCorp" xmlUrl="https://www.hashicorp.com/blog/feed.xml"/>
+              </outline>
+            </outline>
+            <outline text="News" title="News">
+              <outline text="Tech" title="Tech">
+                <outline type="rss" text="Hacker News" xmlUrl="https://hnrss.org/frontpage"/>
+                <outline type="rss" text="Ars Technica" xmlUrl="https://arstechnica.com/feed/"/>
+                <outline type="rss" text="LWN" xmlUrl="https://lwn.net/headlines/rss"/>
+              </outline>
+            </outline>
+            <outline text="High Scalability" title="High Scalability">
+              <outline type="rss" text="High Scalability" xmlUrl="https://highscalability.com/rss/"/>
+            </outline>
+            <outline text="Security" title="Security">
+              <outline type="rss" text="Krebs on Security" xmlUrl="https://krebsonsecurity.com/feed/"/>
+            </outline>
+          </body>
+        </opml>
+
 persistence:
   data:
     type: persistentVolumeClaim
@@ -94,6 +208,11 @@ persistence:
     storageClass: longhorn
     globalMounts:
       - path: /var/www/FreshRSS/extensions
+  feeds:
+    type: configMap
+    identifier: feeds
+    globalMounts:
+      - path: /feeds
 
 service:
   main:
