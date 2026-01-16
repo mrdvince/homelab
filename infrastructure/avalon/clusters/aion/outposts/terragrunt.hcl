@@ -72,11 +72,6 @@ inputs = {
       external_host = "https://grist.home.mrdvince.me"
       mode          = "forward_single"
     }
-    termix = {
-      name          = "Termix"
-      external_host = "https://termix.home.mrdvince.me"
-      mode          = "forward_single"
-    }
   }
 
   outpost_name = "aion-forward-auth-outpost"
