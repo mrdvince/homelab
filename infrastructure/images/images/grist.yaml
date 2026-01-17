@@ -1,4 +1,0 @@
-grist:
-  - registry: docker.io
-    image: gristlabs/grist
-    tag: "1.7.9"

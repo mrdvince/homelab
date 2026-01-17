@@ -67,11 +67,6 @@ inputs = {
       external_host = "https://netboot.home.mrdvince.me"
       mode          = "forward_single"
     }
-    grist = {
-      name          = "Grist"
-      external_host = "https://grist.home.mrdvince.me"
-      mode          = "forward_single"
-    }
   }
 
   outpost_name = "aion-forward-auth-outpost"
