@@ -3,7 +3,6 @@
   "extends": [
     "config:recommended"
   ],
-  "automerge": false,
   "customManagers": [
     {
       "customType": "regex",
@@ -28,6 +27,31 @@
       "matchManagers": ["regex"],
       "matchFileNames": ["infrastructure/images/images/**"],
       "groupName": "container images"
+    },
+    {
+      "matchManagers": ["helmfile"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "helm charts (minor/patch)"
+    },
+    {
+      "matchPackagePatterns": ["^gitlab-org/"],
+      "groupName": "gitlab stack"
+    },
+    {
+      "matchPackagePatterns": ["^grafana/", "^prometheus", "kube-prometheus-stack"],
+      "groupName": "monitoring stack"
+    },
+    {
+      "matchPackagePatterns": ["^cilium/"],
+      "groupName": "cilium"
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
     }
   ]
 }
