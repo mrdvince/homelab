@@ -9,10 +9,10 @@
       "customType": "regex",
       "fileMatch": ["^infrastructure/images/images/.*\\.yaml$"],
       "matchStrings": [
-        "registry:\\s*(?<registryUrl>[^\\n]+)\\n\\s*image:\\s*(?<depName>[^\\n]+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\n]+)[\"']?"
+        "registry:\\s*(?<registry>[^\\n]+)\\n\\s*image:\\s*(?<depName>[^\\n]+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\n]+)[\"']?"
       ],
       "datasourceTemplate": "docker",
-      "packageNameTemplate": "{{registryUrl}}/{{depName}}"
+      "packageNameTemplate": "{{registry}}/{{depName}}"
     }
   ],
   "ignoreDeps": [
