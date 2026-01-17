@@ -6,7 +6,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^infrastructure/images/images/.*\\.yaml$"],
+      "managerFilePatterns": [
+        "/^infrastructure/images/images/.*\\.yaml$/"
+      ],
       "matchStrings": [
         "registry:\\s*(?<registry>[^\\n]+)\\n\\s*image:\\s*(?<depName>[^\\n]+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\n]+)[\"']?"
       ],
@@ -24,33 +26,55 @@
   ],
   "packageRules": [
     {
-      "matchManagers": ["regex"],
-      "matchFileNames": ["infrastructure/images/images/**"],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "infrastructure/images/images/**"
+      ],
       "groupName": "container images"
     },
     {
-      "matchManagers": ["helmfile"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchManagers": [
+        "helmfile"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "groupName": "helm charts (minor/patch)"
     },
     {
-      "matchPackagePatterns": ["^gitlab-org/"],
-      "groupName": "gitlab stack"
+      "groupName": "gitlab stack",
+      "matchPackageNames": [
+        "/^gitlab-org//"
+      ]
     },
     {
-      "matchPackagePatterns": ["^grafana/", "^prometheus", "kube-prometheus-stack"],
-      "groupName": "monitoring stack"
+      "groupName": "monitoring stack",
+      "matchPackageNames": [
+        "/^grafana//",
+        "/^prometheus/",
+        "/kube-prometheus-stack/"
+      ]
     },
     {
-      "matchPackagePatterns": ["^cilium/"],
-      "groupName": "cilium"
+      "groupName": "cilium",
+      "matchPackageNames": [
+        "/^cilium//"
+      ]
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "automerge": true
     },
     {
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "dependencyDashboardApproval": true
     }
   ]
