@@ -1,7 +1,7 @@
 argocd:
   - registry: quay.io
     image: argoproj/argocd
-    tag: v3.2.1
+    tag: v3.2.5
   - registry: ghcr.io
     image: helmfile/helmfile
-    tag: v1.2.2
+    tag: v1.2.3
