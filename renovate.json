@@ -2,5 +2,32 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "automerge": false,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^infrastructure/images/images/.*\\.yaml$"],
+      "matchStrings": [
+        "registry:\\s*(?<registryUrl>[^\\n]+)\\n\\s*image:\\s*(?<depName>[^\\n]+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\n]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "packageNameTemplate": "{{registryUrl}}/{{depName}}"
+    }
+  ],
+  "ignoreDeps": [
+    "registry.home.mrdvince.me/homelab/builder",
+    "secret",
+    "clusterissuer",
+    "cilium-config",
+    "actual",
+    "bar-assistant"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["regex"],
+      "matchFileNames": ["infrastructure/images/images/**"],
+      "groupName": "container images"
+    }
   ]
 }
