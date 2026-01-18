@@ -4,12 +4,9 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
 
-
 jobs:
-  claude-review:
-    if: |
-      github.event.pull_request.user.login != 'renovate[bot]' ||
-      contains(toJson(github.event.pull_request.labels.*.name), 'major-update')
+  code-review:
+    if: github.event.pull_request.user.login != 'renovate[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,7 +25,51 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          allowed_bots: 'renovate[bot]'
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
+
+  dependency-review:
+    if: |
+      github.event.pull_request.user.login == 'renovate[bot]' &&
+      contains(toJson(github.event.pull_request.labels.*.name), 'major-update')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Review major dependency update
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: 'renovate[bot]'
+          prompt: |
+            Review this major dependency update PR: ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+
+            Steps:
+            1. Use gh to get the PR diff and identify what's being updated (package name, old version, new version)
+            2. Determine the package type (container image, helm chart, github action)
+            3. Find and fetch the changelog or release notes:
+               - For container images: check the project's GitHub releases or CHANGELOG
+               - For helm charts: check the chart's GitHub releases or artifacthub.io
+               - For github actions: check the action's GitHub releases
+            4. Identify breaking changes between the old and new versions
+            5. Assess impact on this homelab setup by checking how the dependency is used in the codebase
+
+            Post a PR comment with (Don't use overly verbose markdown or emojis):
+            - Summary of what's being updated
+            - Key changes and new features
+            - Breaking changes (if any)
+            - Migration steps needed (if any)
+            - Recommendation: safe to merge, needs manual testing, or needs code changes
+
+            Use WebFetch to get changelogs/release notes. Use gh CLI for GitHub API calls.
+            Be concise but thorough. Focus on actionable information.
