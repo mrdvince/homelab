@@ -34,7 +34,7 @@ grafanaImages:
     tag: 12.3.1
   - registry: quay.io
     image: kiwigrid/k8s-sidecar
-    tag: 1.30.11
+    tag: 1.30.9
   - registry: docker.io
     image: library/busybox
     tag: 1.37.0

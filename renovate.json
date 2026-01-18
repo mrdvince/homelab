@@ -23,7 +23,8 @@
     "clusterissuer",
     "cilium-config",
     "actual",
-    "bar-assistant"
+    "bar-assistant",
+    "quay.io/kiwigrid/k8s-sidecar"
   ],
   "packageRules": [
     {
