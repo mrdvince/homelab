@@ -75,6 +75,7 @@
       "matchUpdateTypes": [
         "major"
       ],
+      "addLabels": ["major-update"],
       "dependencyDashboardApproval": true
     }
   ]
