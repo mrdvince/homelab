@@ -53,8 +53,11 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: 'renovate[bot]'
+          allowed_tools: 'Bash,Read,Grep,Glob,WebFetch,mcp__github__create_or_update_file,mcp__github__create_pull_request_review,mcp__github__add_issue_comment,mcp__github__get_pull_request,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files'
           prompt: |
             Review this major dependency update PR: ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+            
+            IMPORTANT! you are running in headless/non-interactive so do not ask user questions, just make decisions and proceed
 
             Steps:
             1. Use gh to get the PR diff and identify what's being updated (package name, old version, new version)
@@ -66,7 +69,7 @@ jobs:
             4. Identify breaking changes between the old and new versions
             5. Assess impact on this homelab setup by checking how the dependency is used in the codebase
 
-            Post a PR comment with (Don't use overly verbose markdown or emojis):
+            Post a PR comment with (don't ask just do it if it fails due to a tool mention it and exit):
             - Summary of what's being updated
             - Key changes and new features
             - Breaking changes (if any)
@@ -75,3 +78,10 @@ jobs:
 
             Use WebFetch to get changelogs/release notes. Use gh CLI for GitHub API calls.
             Be concise but thorough. Focus on actionable information.
+
+            Rules:
+            - NO explanations of what the software is or does - assume reader knows
+            - NO generic descriptions of what major updates typically include
+            - ONLY specific breaking changes from the actual changelog
+            - Keep it short, concise and actionable
+            - Use plain markdown, no emojis
