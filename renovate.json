@@ -23,8 +23,7 @@
     "clusterissuer",
     "cilium-config",
     "actual",
-    "bar-assistant",
-    "quay.io/kiwigrid/k8s-sidecar"
+    "bar-assistant"
   ],
   "packageRules": [
     {
@@ -70,6 +69,10 @@
       "matchManagers": ["helmfile"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "matchPackageNames": ["quay.io/kiwigrid/k8s-sidecar"],
+      "enabled": false
     },
     {
       "matchUpdateTypes": [
