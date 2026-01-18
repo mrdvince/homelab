@@ -67,10 +67,8 @@
       ]
     },
     {
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchManagers": ["helmfile"],
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
     },
     {

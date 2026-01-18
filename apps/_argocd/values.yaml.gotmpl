@@ -14,7 +14,7 @@ applicationsets:
       metadata:
         name: '{{`{{ .path.basename }}`}}'
       spec:
-        project: '{{`{{ default "default" .project }}`}}'
+        project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
           targetRevision: HEAD
@@ -55,7 +55,7 @@ applicationsets:
       metadata:
         name: '{{`{{ .path.basename }}`}}'
       spec:
-        project: '{{`{{ default "default" .project }}`}}'
+        project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
           targetRevision: HEAD
@@ -103,7 +103,7 @@ applicationsets:
       metadata:
         name: '{{`{{ .path.basename }}`}}'
       spec:
-        project: '{{`{{ default "default" .project }}`}}'
+        project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
           targetRevision: HEAD
@@ -144,7 +144,7 @@ applicationsets:
       metadata:
         name: '{{`{{ .path.basename }}`}}'
       spec:
-        project: '{{`{{ default "default" .project }}`}}'
+        project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
           targetRevision: HEAD
