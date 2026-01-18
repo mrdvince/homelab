@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "prBodyTemplate": "{{{table}}}{{{changelogs}}}{{{controls}}}",
   "customManagers": [
     {
       "customType": "regex",
