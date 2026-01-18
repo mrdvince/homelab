@@ -2,8 +2,6 @@ applicationsets:
   core-apps:
     namespace: argocd
     goTemplate: true
-    goTemplateOptions:
-      - missingkey=error
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
@@ -35,7 +33,7 @@ applicationsets:
             - CreateNamespace=true
             - ServerSideApply=true
     templatePatch: |
-      {{`{{- if .ignoreDifferences }}`}}
+      {{`{{- if hasKey . "ignoreDifferences" }}`}}
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
       {{`{{- end }}`}}
@@ -43,8 +41,6 @@ applicationsets:
   service-apps:
     namespace: argocd
     goTemplate: true
-    goTemplateOptions:
-      - missingkey=error
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
@@ -74,7 +70,7 @@ applicationsets:
             selfHeal: true
     templatePatch: |
       spec:
-        {{`{{- if .ignoreDifferences }}`}}
+        {{`{{- if hasKey . "ignoreDifferences" }}`}}
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 6 }}`}}
         {{`{{- end }}`}}
         {{`{{- if and (hasKey . "serverSideApply") (not .serverSideApply) }}`}}
@@ -91,8 +87,6 @@ applicationsets:
   storage-apps:
     namespace: argocd
     goTemplate: true
-    goTemplateOptions:
-      - missingkey=error
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
@@ -124,7 +118,7 @@ applicationsets:
             - CreateNamespace=true
             - ServerSideApply=true
     templatePatch: |
-      {{`{{- if .ignoreDifferences }}`}}
+      {{`{{- if hasKey . "ignoreDifferences" }}`}}
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
       {{`{{- end }}`}}
@@ -132,8 +126,6 @@ applicationsets:
   monitoring-apps:
     namespace: argocd
     goTemplate: true
-    goTemplateOptions:
-      - missingkey=error
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
@@ -165,7 +157,7 @@ applicationsets:
             - CreateNamespace=true
             - ServerSideApply=true
     templatePatch: |
-      {{`{{- if .ignoreDifferences }}`}}
+      {{`{{- if hasKey . "ignoreDifferences" }}`}}
       spec:
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
       {{`{{- end }}`}}
