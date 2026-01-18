@@ -1,10 +1,10 @@
 prometheus:
   - registry: quay.io
     image: prometheus/prometheus
-    tag: v3.8.1
+    tag: v3.9.1
   - registry: quay.io
     image: prometheus/alertmanager
-    tag: v0.30.0
+    tag: v0.30.1
   - registry: quay.io
     image: prometheus/node-exporter
     tag: v1.10.2
@@ -12,13 +12,13 @@ prometheus:
 prometheusOperator:
   - registry: quay.io
     image: prometheus-operator/prometheus-operator
-    tag: v0.87.1
+    tag: v0.88.0
   - registry: quay.io
     image: prometheus-operator/prometheus-config-reloader
-    tag: v0.87.1
+    tag: v0.88.0
   - registry: quay.io
     image: prometheus-operator/prometheus-config-reloader
-    tag: v0.81.0
+    tag: v0.88.0
   - registry: ghcr.io
     image: jkroepke/kube-webhook-certgen
     tag: 1.7.4
@@ -34,18 +34,18 @@ grafanaImages:
     tag: 12.3.1
   - registry: quay.io
     image: kiwigrid/k8s-sidecar
-    tag: 1.30.9
+    tag: 1.30.11
   - registry: docker.io
     image: library/busybox
-    tag: 1.31.1
+    tag: 1.37.0
   - registry: docker.io
     image: bats/bats
-    tag: v1.4.1
+    tag: 1.13.0
 
 alloy:
   - registry: docker.io
     image: grafana/alloy
-    tag: v1.12.1
+    tag: v1.12.2
 
 loki:
   - registry: docker.io
@@ -63,9 +63,9 @@ tempo:
 beyla:
   - registry: docker.io
     image: grafana/beyla
-    tag: 2.8.4
+    tag: 2.8.5
 
 pyroscope:
   - registry: docker.io
     image: grafana/pyroscope
-    tag: 1.17.0
+    tag: 1.18.0

@@ -37,4 +37,4 @@ longhorn:
     tag: v1.10.1
   - registry: docker.io
     image: longhornio/support-bundle-kit
-    tag: v0.0.71
+    tag: v0.0.78

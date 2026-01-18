@@ -16,7 +16,7 @@ adguardExternalDns:
 argocdRedis:
   - registry: ecr-public.aws.com
     image: docker/library/redis
-    tag: 8.2.2-alpine
+    tag: 8.4.0-alpine
 
 skopeo:
   - registry: quay.io
@@ -36,16 +36,16 @@ actualImages:
 barAssistant:
   - registry: docker.io
     image: barassistant/server
-    tag: "5.11.2"
+    tag: "5.12.0"
   - registry: docker.io
     image: barassistant/salt-rim
-    tag: "4.12.1"
+    tag: "4.13.0"
   - registry: docker.io
     image: valkey/valkey
     tag: "8.1"
   - registry: docker.io
     image: getmeili/meilisearch
-    tag: "v1.15"
+    tag: "v1.32"
 
 ghostImages:
   - registry: docker.io
@@ -56,7 +56,7 @@ ghostImages:
     tag: 9.4.0-debian-12-r1
   - registry: docker.io
     image: bitnamilegacy/redis
-    tag: 7.2.4-debian-12-r9
+    tag: 7.4.2-debian-12-r9
   - registry: docker.io
     image: bitnamilegacy/redis-exporter
-    tag: 1.58.0-debian-12-r4
+    tag: 1.74.0-debian-12-r4

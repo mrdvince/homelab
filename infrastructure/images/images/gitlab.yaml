@@ -1,43 +1,43 @@
 gitlab:
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-webservice-ee
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-sidekiq-ee
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-toolbox-ee
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-workhorse-ee
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitaly
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-shell
     tag: v14.45.5
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-kas
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-exporter
-    tag: "16.2.0"
+    tag: "v16.11.10"
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-base
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/certificates
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/gitlab-runner
     tag: alpine-v18.6.3
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/kubectl
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/cfssl-self-sign
-    tag: v18.7.0
+    tag: v18.8.0
   - registry: registry.gitlab.com
     image: gitlab-org/gitlab-runner/gitlab-runner-helper
     tag: x86_64-v18.6.3
