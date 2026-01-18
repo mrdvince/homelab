@@ -54,6 +54,7 @@ configs:
             - bash
             - "-c"
             - |
+              helmfile repos
               if [[ -v ENV_NAME ]]; then
                 helmfile -n "$ARGOCD_APP_NAMESPACE" -e $ENV_NAME template --include-crds -q
               elif [[ -v ARGOCD_ENV_ENV_NAME ]]; then
