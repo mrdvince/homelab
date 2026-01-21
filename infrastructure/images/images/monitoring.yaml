@@ -26,7 +26,7 @@ prometheusOperator:
 kubeStateMetrics:
   - registry: registry.k8s.io
     image: kube-state-metrics/kube-state-metrics
-    tag: v2.17.0
+    tag: v2.18.0
 
 grafanaImages:
   - registry: docker.io
@@ -50,7 +50,7 @@ alloy:
 loki:
   - registry: docker.io
     image: grafana/loki
-    tag: 3.6.3
+    tag: 3.6.4
   - registry: docker.io
     image: nginxinc/nginx-unprivileged
     tag: 1.29-alpine
@@ -58,7 +58,7 @@ loki:
 tempo:
   - registry: docker.io
     image: grafana/tempo
-    tag: 2.9.0
+    tag: 2.9.1
 
 beyla:
   - registry: docker.io
