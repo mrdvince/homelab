@@ -45,7 +45,7 @@ barAssistant:
     tag: "8.1"
   - registry: docker.io
     image: getmeili/meilisearch
-    tag: "v1.32"
+    tag: "v1.33"
 
 codeServer:
   - registry: ghcr.io
