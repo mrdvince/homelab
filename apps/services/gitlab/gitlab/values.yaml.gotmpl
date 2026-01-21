@@ -190,6 +190,13 @@ gitlab:
     workhorse:
       image: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 3).image }}
       tag: {{ (index .Values.gitlab 3).tag }}
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1
+          memory: 1Gi
     replicas: 1
     minReplicas: 1
     workerProcesses: 3
@@ -200,13 +207,20 @@ gitlab:
       limits:
         cpu: 2
         memory: 6Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
 
   sidekiq:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 1).image }}
       tag: {{ (index .Values.gitlab 1).tag }}
-    replicas: 1
-    minReplicas: 1
+    replicas: 2
+    minReplicas: 2
     resources:
       requests:
         cpu: 100m
@@ -214,6 +228,13 @@ gitlab:
       limits:
         cpu: 500m
         memory: 2.5Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: DoesNotExist
 
   gitaly:
     image:
