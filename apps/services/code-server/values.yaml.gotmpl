@@ -8,6 +8,8 @@ controllers:
         args:
           - --auth
           - none
+        env:
+          EXTENSIONS_GALLERY: '{"serviceUrl":"https://marketplace.visualstudio.com/_apis/public/gallery","itemUrl":"https://marketplace.visualstudio.com/items","cacheUrl":"https://vscode.blob.core.windows.net/gallery/index","controlUrl":"","recommendationsUrl":""}'
         resources:
           requests:
             cpu: 100m
