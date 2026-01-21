@@ -47,6 +47,11 @@ barAssistant:
     image: getmeili/meilisearch
     tag: "v1.32"
 
+codeServer:
+  - registry: ghcr.io
+    image: coder/code-server
+    tag: "4.108.1"
+
 ghostImages:
   - registry: docker.io
     image: bitnamilegacy/ghost

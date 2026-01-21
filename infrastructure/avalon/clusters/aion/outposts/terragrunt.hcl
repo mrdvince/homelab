@@ -67,6 +67,11 @@ inputs = {
       external_host = "https://netboot.home.mrdvince.me"
       mode          = "forward_single"
     }
+    code-server = {
+      name          = "Code Server"
+      external_host = "https://code.home.mrdvince.me"
+      mode          = "forward_single"
+    }
   }
 
   outpost_name = "aion-forward-auth-outpost"
