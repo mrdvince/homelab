@@ -1,2 +1,3 @@
 imageRegistry: registry.home.mrdvince.me
 otlpEndpoint: alloy.monitoring.svc:4317
+domain: home.mrdvince.me
