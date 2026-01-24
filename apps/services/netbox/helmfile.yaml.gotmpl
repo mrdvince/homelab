@@ -1,0 +1,30 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: netbox
+    url: https://charts.netbox.oss.netboxlabs.com/
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+
+releases:
+  - name: netbox-postgres
+    namespace: apps
+    chart: cnpg/cluster
+    version: 0.5.0
+    values:
+      - postgres/values.yaml.gotmpl
+
+  - name: netbox
+    namespace: apps
+    chart: netbox/netbox
+    version: 7.3.5
+    values:
+      - netbox/values.yaml.gotmpl
+    needs:
+      - netbox-postgres
