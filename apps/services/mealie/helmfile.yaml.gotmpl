@@ -1,0 +1,30 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+
+releases:
+  - name: mealie-postgres
+    namespace: apps
+    chart: cnpg/cluster
+    version: 0.5.0
+    values:
+      - postgres/values.yaml.gotmpl
+
+  - name: mealie
+    namespace: apps
+    chart: bjw-s/app-template
+    version: 4.6.2
+    values:
+      - mealie/values.yaml.gotmpl
+    needs:
+      - mealie-postgres
