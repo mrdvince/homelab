@@ -89,3 +89,11 @@ worker:
     limits:
       cpu: 500m
       memory: 512Mi
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: netbox
+              app.kubernetes.io/component: netbox
+          topologyKey: kubernetes.io/hostname
