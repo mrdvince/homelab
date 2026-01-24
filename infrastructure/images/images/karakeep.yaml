@@ -1,0 +1,9 @@
+karakeep:
+  - registry: ghcr.io
+    image: karakeep-app/karakeep
+    tag: "0.30.0"
+
+chrome:
+  - registry: docker.io
+    image: zenika/alpine-chrome
+    tag: "124"
