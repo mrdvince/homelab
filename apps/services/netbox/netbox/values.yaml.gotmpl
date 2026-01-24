@@ -37,17 +37,18 @@ remoteAuth:
     - social_core.backends.open_id_connect.OpenIdConnectAuth
   autoCreateUser: true
   autoCreateGroups: true
+  groupSyncEnabled: true
 
 extraConfig:
   - values:
       SOCIAL_AUTH_OIDC_OIDC_ENDPOINT: "https://auth.{{ .Values.domain }}/application/o/netbox/"
       SOCIAL_AUTH_OIDC_KEY: "{{ index .Values "netbox-oidc" "client_id" }}"
       SOCIAL_AUTH_OIDC_SECRET: "{{ index .Values "netbox-oidc" "client_secret" }}"
-      SOCIAL_AUTH_OIDC_SCOPE: ["openid", "profile", "email", "groups"]
+      SOCIAL_AUTH_OIDC_SCOPE: ["openid", "profile", "email", "roles"]
       SOCIAL_AUTH_REDIRECT_IS_HTTPS: true
       LOGOUT_REDIRECT_URL: "https://auth.{{ .Values.domain }}/application/o/netbox/end-session/"
-      REMOTE_AUTH_SUPERUSER_GROUPS: ["netbox-admins"]
-      REMOTE_AUTH_STAFF_GROUPS: ["netbox-admins", "netbox-users"]
+      REMOTE_AUTH_SUPERUSER_GROUPS: ["superusers"]
+      REMOTE_AUTH_STAFF_GROUPS: ["superusers", "staff"]
 
 persistence:
   enabled: true
