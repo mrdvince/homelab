@@ -1,5 +1,6 @@
 image:
-  repository: {{ .Values.imageRegistry }}/{{ (index .Values.netbox 0).image }}
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ (index .Values.netbox 0).image }}
   tag: {{ (index .Values.netbox 0).tag }}
 
 superuser:
