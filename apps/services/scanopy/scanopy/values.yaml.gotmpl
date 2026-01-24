@@ -14,7 +14,7 @@ controllers:
               secretKeyRef:
                 name: scanopy-postgres-app
                 key: uri
-          SCANOPY_OIDC_PROVIDERS: '[[providers]] name = "Authentik" slug = "authentik" issuer_url = "https://auth.{{ .Values.domain }}/application/o/scanopy/" client_id = "{{ index .Values "scanopy-oidc" "client_id" }}" client_secret = "{{ index .Values "scanopy-oidc" "client_secret" }}"'
+          SCANOPY_OIDC_PROVIDERS: '[{name="Authentik",slug="authentik",issuer_url="https://auth.{{ .Values.domain }}/application/o/scanopy/",client_id="{{ index .Values "scanopy-oidc" "client_id" }}",client_secret="{{ index .Values "scanopy-oidc" "client_secret" }}"}]'
         resources:
           requests:
             cpu: 100m
