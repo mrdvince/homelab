@@ -1,0 +1,105 @@
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.karakeep 0).image }}
+          tag: "{{ (index .Values.karakeep 0).tag }}"
+        env:
+          DATA_DIR: /data
+          NEXTAUTH_URL: https://karakeep.{{ .Values.domain }}
+          NEXTAUTH_SECRET: {{ index .Values "karakeep-oidc" "client_secret" }}
+          BROWSER_WEB_URL: http://localhost:9222
+          MEILI_ADDR: http://localhost:7700
+          MEILI_MASTER_KEY: {{ .Values.meilisearch_master_key }}
+          OAUTH_CLIENT_ID: {{ index .Values "karakeep-oidc" "client_id" }}
+          OAUTH_CLIENT_SECRET: {{ index .Values "karakeep-oidc" "client_secret" }}
+          OAUTH_WELLKNOWN_URL: https://auth.{{ .Values.domain }}/application/o/karakeep/.well-known/openid-configuration
+          OAUTH_PROVIDER_NAME: authentik
+          OAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING: "true"
+          DISABLE_SIGNUPS: "true"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+      chrome:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.chrome 0).image }}
+          tag: "{{ (index .Values.chrome 0).tag }}"
+        command:
+          - chromium-browser
+        args:
+          - --headless
+          - --no-sandbox
+          - --disable-gpu
+          - --disable-dev-shm-usage
+          - --remote-debugging-address=0.0.0.0
+          - --remote-debugging-port=9222
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      meilisearch:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 3).image }}
+          tag: "{{ (index .Values.barAssistant 3).tag }}"
+        env:
+          MEILI_NO_ANALYTICS: "true"
+          MEILI_MASTER_KEY: {{ .Values.meilisearch_master_key }}
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: longhorn
+    advancedMounts:
+      main:
+        main:
+          - path: /data
+  meili-data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: longhorn
+    advancedMounts:
+      main:
+        meilisearch:
+          - path: /meili_data
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 3000
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: karakeep.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - karakeep.{{ .Values.domain }}
