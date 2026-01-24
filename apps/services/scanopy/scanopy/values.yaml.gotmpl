@@ -9,6 +9,7 @@ controllers:
           SCANOPY_LOG_LEVEL: info
           SCANOPY_SERVER_PORT: "60072"
           SCANOPY_PUBLIC_URL: https://scanopy.{{ .Values.domain }}
+          SCANOPY_WEB_EXTERNAL_PATH: /app/static
           SCANOPY_DATABASE_URL:
             valueFrom:
               secretKeyRef:
