@@ -18,14 +18,18 @@ provider:
       httpGet:
         path: /healthz
         port: 8080
-      initialDelaySeconds: 10
-      timeoutSeconds: 5
+      initialDelaySeconds: 15
+      timeoutSeconds: 10
+      periodSeconds: 15
+      failureThreshold: 3
     readinessProbe:
       httpGet:
         path: /healthz
         port: 8080
-      initialDelaySeconds: 10
-      timeoutSeconds: 5
+      initialDelaySeconds: 15
+      timeoutSeconds: 10
+      periodSeconds: 10
+      failureThreshold: 3
     env:
       - name: ADGUARD_URL
         valueFrom:
