@@ -1,0 +1,4 @@
+mealie:
+  - registry: ghcr.io
+    image: mealie-recipes/mealie
+    tag: "v3.9.2"
