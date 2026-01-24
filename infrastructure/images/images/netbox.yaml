@@ -1,0 +1,4 @@
+netbox:
+  - registry: ghcr.io
+    image: netbox-community/netbox
+    tag: "v4.5.1"
