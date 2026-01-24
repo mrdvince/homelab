@@ -1,0 +1,24 @@
+externalSnapshotter:
+  enabled: true
+
+controller:
+  runOnControlPlane: true
+  replicas: 2
+
+storageClasses:
+  - name: nfs-csi
+    parameters:
+      server: {{ .Values.nfs_server }}
+      share: {{ .Values.nfs.share }}
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    mountOptions:
+      - nfsvers=4.1
+  - name: nfs-csi-retain
+    parameters:
+      server: {{ .Values.nfs_server }}
+      share: {{ .Values.nfs.share }}
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    mountOptions:
+      - nfsvers=4.1
