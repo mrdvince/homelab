@@ -1,0 +1,88 @@
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.mealie 0).image }}
+          tag: "{{ (index .Values.mealie 0).tag }}"
+        env:
+          TZ: UTC
+          PUID: "1000"
+          PGID: "1000"
+          BASE_URL: https://mealie.{{ .Values.domain }}
+          DB_ENGINE: postgres
+          POSTGRES_USER:
+            valueFrom:
+              secretKeyRef:
+                name: mealie-postgres-app
+                key: username
+          POSTGRES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: mealie-postgres-app
+                key: password
+          POSTGRES_SERVER:
+            valueFrom:
+              secretKeyRef:
+                name: mealie-postgres-app
+                key: host
+          POSTGRES_PORT:
+            valueFrom:
+              secretKeyRef:
+                name: mealie-postgres-app
+                key: port
+          POSTGRES_DB:
+            valueFrom:
+              secretKeyRef:
+                name: mealie-postgres-app
+                key: dbname
+          OIDC_AUTH_ENABLED: "true"
+          OIDC_CONFIGURATION_URL: https://auth.{{ .Values.domain }}/application/o/mealie/.well-known/openid-configuration
+          OIDC_CLIENT_ID: {{ index .Values "mealie-oidc" "client_id" }}
+          OIDC_CLIENT_SECRET: {{ index .Values "mealie-oidc" "client_secret" }}
+          OIDC_SIGNUP_ENABLED: "true"
+          OIDC_AUTO_REDIRECT: "true"
+          OIDC_REMEMBER_ME: "true"
+          OIDC_PROVIDER_NAME: Authentik
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: longhorn
+    advancedMounts:
+      main:
+        main:
+          - path: /app/data
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 9000
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: mealie.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - mealie.{{ .Values.domain }}
