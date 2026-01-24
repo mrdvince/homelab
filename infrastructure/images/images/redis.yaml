@@ -1,0 +1,4 @@
+redis:
+  - registry: docker.io
+    image: redis
+    tag: "7-alpine"
