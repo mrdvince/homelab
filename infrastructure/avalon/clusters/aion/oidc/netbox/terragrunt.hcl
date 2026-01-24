@@ -22,7 +22,7 @@ inputs = {
   policy_expression = null
 
   groups = {
-    "netbox-admins" = {}
-    "netbox-users"  = {}
+    "superusers" = {}
+    "staff"      = {}
   }
 }
