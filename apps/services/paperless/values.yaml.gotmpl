@@ -1,0 +1,118 @@
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.paperless 0).image }}
+          tag: "{{ (index .Values.paperless 0).tag }}"
+        env:
+          TZ: "UTC"
+          PAPERLESS_URL: https://paperless.{{ .Values.domain }}
+          PAPERLESS_SECRET_KEY: {{ index .Values "paperless-oidc" "client_secret" }}
+          # Database
+          PAPERLESS_DBENGINE: postgresql
+          PAPERLESS_DBHOST: paperless-postgres-rw.apps.svc.cluster.local
+          PAPERLESS_DBPORT: "5432"
+          PAPERLESS_DBNAME: paperless
+          PAPERLESS_DBUSER: paperless
+          PAPERLESS_DBPASS:
+            valueFrom:
+              secretKeyRef:
+                name: paperless-postgres-app
+                key: password
+          # Redis
+          PAPERLESS_REDIS: redis://localhost:6379
+          # OIDC
+          PAPERLESS_ENABLE_ALLAUTH: "true"
+          PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
+          PAPERLESS_SOCIALACCOUNT_PROVIDERS: |
+            {
+              "openid_connect": {
+                "APPS": [
+                  {
+                    "provider_id": "authentik",
+                    "name": "Authentik",
+                    "client_id": "{{ index .Values "paperless-oidc" "client_id" }}",
+                    "secret": "{{ index .Values "paperless-oidc" "client_secret" }}",
+                    "settings": {
+                      "server_url": "https://auth.{{ .Values.domain }}/application/o/paperless/.well-known/openid-configuration"
+                    }
+                  }
+                ],
+                "OAUTH_PKCE_ENABLED": "True"
+              }
+            }
+          PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
+          PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: "true"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+      redis:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.redis 0).image }}
+          tag: "{{ (index .Values.redis 0).tag }}"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: longhorn
+    globalMounts:
+      - path: /usr/src/paperless/data
+  media:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 20Gi
+    storageClass: longhorn
+    globalMounts:
+      - path: /usr/src/paperless/media
+  consume:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: longhorn
+    globalMounts:
+      - path: /usr/src/paperless/consume
+  export:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: longhorn
+    globalMounts:
+      - path: /usr/src/paperless/export
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 8000
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: paperless.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - paperless.{{ .Values.domain }}
