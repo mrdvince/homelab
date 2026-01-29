@@ -1,19 +1,19 @@
 longhorn:
   - registry: docker.io
     image: longhornio/longhorn-manager
-    tag: v1.10.1
+    tag: v1.11.0
   - registry: docker.io
     image: longhornio/longhorn-engine
-    tag: v1.10.1
+    tag: v1.11.0
   - registry: docker.io
     image: longhornio/longhorn-instance-manager
-    tag: v1.10.1
+    tag: v1.11.0
   - registry: docker.io
     image: longhornio/longhorn-share-manager
-    tag: v1.10.1
+    tag: v1.11.0
   - registry: docker.io
     image: longhornio/longhorn-ui
-    tag: v1.10.1
+    tag: v1.11.0
   - registry: docker.io
     image: longhornio/csi-attacher
     tag: v4.10.0-20251030
@@ -34,7 +34,7 @@ longhorn:
     tag: v2.17.0-20251030
   - registry: docker.io
     image: longhornio/backing-image-manager
-    tag: v1.10.1
+    tag: v1.11.0
   - registry: docker.io
     image: longhornio/support-bundle-kit
-    tag: v0.0.78
+    tag: v0.0.79

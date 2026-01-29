@@ -45,12 +45,12 @@ barAssistant:
     tag: "8.1"
   - registry: docker.io
     image: getmeili/meilisearch
-    tag: "v1.33"
+    tag: "v1.34"
 
 codeServer:
   - registry: ghcr.io
     image: coder/code-server
-    tag: "4.108.1"
+    tag: "4.108.2"
 
 ghostImages:
   - registry: docker.io

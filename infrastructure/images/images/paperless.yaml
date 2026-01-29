@@ -1,4 +1,4 @@
 paperless:
   - registry: ghcr.io
     image: paperless-ngx/paperless-ngx
-    tag: "2.14.7"
+    tag: "2.20.5"
