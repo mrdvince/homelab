@@ -21,12 +21,12 @@ argocdRedis:
 skopeo:
   - registry: quay.io
     image: skopeo/stable
-    tag: latest
+    tag: v1.21.0
 
 alpine:
   - registry: docker.io
     image: library/alpine
-    tag: latest
+    tag: "3.23.2"
 
 actualImages:
   - registry: docker.io
