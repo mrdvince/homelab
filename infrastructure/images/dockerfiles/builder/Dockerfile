@@ -1,7 +1,7 @@
 FROM docker:29
 
 ARG YQ_VERSION=v4.50.1
-ARG TRIVY_VERSION=0.68.2
+ARG TRIVY_VERSION=0.69.1
 ARG HELM_VERSION=v4.0.1
 ARG TERRAGRUNT_VERSION=v0.97.2
 ARG HELMFILE_VERSION=1.2.3
@@ -12,6 +12,7 @@ RUN apk add --no-cache \
     tar \
     gzip \
     skopeo \
+    && apk upgrade --no-cache \
     && curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq \
     && chmod +x /usr/local/bin/yq \
     && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${TRIVY_VERSION} \
