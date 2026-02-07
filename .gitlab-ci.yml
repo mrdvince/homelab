@@ -35,7 +35,6 @@ validate-helmfile:
       changes:
         - apps/**/*
         - charts/**/*
-        - infrastructure/images/**/*
         - secrets/secrets.enc.yaml
     - if: $CI_PIPELINE_SOURCE == "web"
 
