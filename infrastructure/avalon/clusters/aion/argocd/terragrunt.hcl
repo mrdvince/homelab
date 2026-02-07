@@ -25,13 +25,14 @@ inputs = {
 
   repositories = {
     homelab = {
-      url     = "git@github.com:mrdvince/homelab.git"
-      ssh_key = local.secrets.github_deploy_key
+      url     = "git@gitlab.home.mrdvince.me:homelab/homelab.git"
+      ssh_key = local.secrets.gitlab_deploy_key
+      insecure = true
     }
   }
 
   root_app = {
-    repo_url = "git@github.com:mrdvince/homelab.git"
+    repo_url = "git@gitlab.home.mrdvince.me:homelab/homelab.git"
     env_name = "aion"
   }
 }

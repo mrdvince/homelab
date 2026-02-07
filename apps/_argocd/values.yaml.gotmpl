@@ -4,7 +4,7 @@ applicationsets:
     goTemplate: true
     generators:
       - git:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           revision: {{ .Values.repoRevision }}
           files:
             - path: apps/core/*/argocd.yaml
@@ -14,7 +14,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
@@ -43,7 +43,7 @@ applicationsets:
     goTemplate: true
     generators:
       - git:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           revision: {{ .Values.repoRevision }}
           files:
             - path: apps/services/*/argocd.yaml
@@ -53,7 +53,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
@@ -89,7 +89,7 @@ applicationsets:
     goTemplate: true
     generators:
       - git:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           revision: {{ .Values.repoRevision }}
           files:
             - path: apps/storage/*/argocd.yaml
@@ -99,7 +99,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
@@ -128,7 +128,7 @@ applicationsets:
     goTemplate: true
     generators:
       - git:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           revision: {{ .Values.repoRevision }}
           files:
             - path: apps/monitoring/*/argocd.yaml
@@ -138,7 +138,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@github.com:mrdvince/homelab.git
+          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
