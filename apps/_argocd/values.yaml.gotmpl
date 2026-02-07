@@ -5,7 +5,7 @@ applicationsets:
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
-          revision: HEAD
+          revision: {{ .Values.repoRevision }}
           files:
             - path: apps/core/*/argocd.yaml
     template:
@@ -15,7 +15,7 @@ applicationsets:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
-          targetRevision: HEAD
+          targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
             name: helmfile
@@ -44,7 +44,7 @@ applicationsets:
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
-          revision: HEAD
+          revision: {{ .Values.repoRevision }}
           files:
             - path: apps/services/*/argocd.yaml
     template:
@@ -54,7 +54,7 @@ applicationsets:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
-          targetRevision: HEAD
+          targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
             name: helmfile
@@ -90,7 +90,7 @@ applicationsets:
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
-          revision: HEAD
+          revision: {{ .Values.repoRevision }}
           files:
             - path: apps/storage/*/argocd.yaml
     template:
@@ -100,7 +100,7 @@ applicationsets:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
-          targetRevision: HEAD
+          targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
             name: helmfile
@@ -129,7 +129,7 @@ applicationsets:
     generators:
       - git:
           repoURL: git@github.com:mrdvince/homelab.git
-          revision: HEAD
+          revision: {{ .Values.repoRevision }}
           files:
             - path: apps/monitoring/*/argocd.yaml
     template:
@@ -139,7 +139,7 @@ applicationsets:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
           repoURL: git@github.com:mrdvince/homelab.git
-          targetRevision: HEAD
+          targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
             name: helmfile
