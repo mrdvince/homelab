@@ -19,7 +19,9 @@ variables:
 
 validate-helmfile:
   stage: validate
-  image: $BUILDER_IMAGE
+  image:
+    name: $BUILDER_IMAGE
+    pull_policy: always
   allow_failure: true
   script:
     - |
@@ -133,7 +135,9 @@ trigger-images-sync:
 publish-charts:
   stage: generate
   needs: []
-  image: $BUILDER_IMAGE
+  image:
+    name: $BUILDER_IMAGE
+    pull_policy: always
   script:
     - |
       for chart in charts/*/Chart.yaml; do
