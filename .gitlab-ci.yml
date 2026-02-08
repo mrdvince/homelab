@@ -15,7 +15,7 @@ variables:
   SAST_DISABLED: "false"
   SCAN_KUBERNETES_MANIFESTS: "true"
   ALPINE_IMAGE: "registry.home.mrdvince.me/library/alpine:3.23.2"
-  BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.0"
+  BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.1"
 
 validate-helmfile:
   stage: validate
