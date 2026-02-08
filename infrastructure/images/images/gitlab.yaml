@@ -16,13 +16,13 @@ gitlab:
     tag: v18.8.3
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-shell
-    tag: v14.45.5
+    tag: v18.8.3
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-kas
     tag: v18.8.3
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-exporter
-    tag: "v16.11.10"
+    tag: "v18.8.3"
   - registry: registry.gitlab.com
     image: gitlab-org/build/cng/gitlab-base
     tag: v18.8.3
