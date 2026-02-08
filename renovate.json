@@ -97,6 +97,15 @@
       ]
     },
     {
+      "matchManagers": [
+        "helmfile"
+      ],
+      "matchPackageNames": [
+        "bitnami/ghost"
+      ],
+      "enabled": false
+    },
+    {
       "matchPackageNames": ["quay.io/kiwigrid/k8s-sidecar"],
       "enabled": false
     },
