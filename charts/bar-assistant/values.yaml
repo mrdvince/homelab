@@ -72,7 +72,7 @@ valkey:
   image:
     repository: valkey/valkey
     pullPolicy: IfNotPresent
-    tag: "8.1"
+    tag: "9.0"
   resources:
     requests:
       cpu: 50m
