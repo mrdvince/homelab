@@ -4,4 +4,4 @@ cnpg:
     tag: "1.28.0"
   - registry: ghcr.io
     image: cloudnative-pg/postgresql
-    tag: "17"
+    tag: "18"
