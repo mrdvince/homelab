@@ -16,8 +16,8 @@ providers:
     allowExternalNameServices: true
     allowEmptyServices: true
 
-globalArguments:
-  - "--global.checknewversion"
+global:
+  checkNewVersion: true
 
 ingressRoute:
   dashboard:
@@ -29,14 +29,16 @@ additionalArguments:
 
 ports:
   web:
-    redirections:
-      entryPoint:
-        to: websecure
-        scheme: https
-        permanent: true
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
   websecure:
-    tls:
-      enabled: true
+    http:
+      tls:
+        enabled: true
     transport:
       respondingTimeouts:
         readTimeout: 30m
