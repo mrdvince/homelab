@@ -1,15 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
   "prBodyTemplate": "{{{table}}}{{{changelogs}}}{{{controls}}}",
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": [
-        "/^infrastructure/images/images/.*\\.yaml$/"
-      ],
+      "managerFilePatterns": ["/^infrastructure/images/images/.*\\.yaml$/"],
       "matchStrings": [
         "registry:\\s*(?<registry>[^\\n]+)\\n\\s*image:\\s*(?<depName>[^\\n]+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\n]+)[\"']?"
       ],
@@ -27,29 +23,18 @@
   ],
   "packageRules": [
     {
-      "matchManagers": [
-        "custom.regex"
-      ],
-      "matchFileNames": [
-        "infrastructure/images/images/**"
-      ],
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": ["infrastructure/images/images/**"],
       "groupName": "container images"
     },
     {
-      "matchManagers": [
-        "helmfile"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "matchManagers": ["helmfile"],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "helm charts (minor/patch)"
     },
     {
       "groupName": "gitlab stack",
-      "matchPackageNames": [
-        "/^gitlab-org//"
-      ]
+      "matchPackageNames": ["/^gitlab-org//"]
     },
     {
       "groupName": "monitoring stack",
@@ -66,43 +51,25 @@
     },
     {
       "description": "keep cilium updates isolated from bulk chart/image bumps",
-      "matchManagers": [
-        "helmfile",
-        "custom.regex"
-      ],
-      "matchPackageNames": [
-        "/(^|\\/)cilium($|[-/])/"
-      ],
+      "matchManagers": ["helmfile", "custom.regex"],
+      "matchPackageNames": ["/(^|\\/)cilium($|[-/])/"],
       "groupName": "cilium stack",
       "automerge": false,
       "dependencyDashboardApproval": true,
-      "addLabels": [
-        "critical-infra"
-      ]
+      "addLabels": ["critical-infra"]
     },
     {
       "description": "keep longhorn updates isolated from bulk chart/image bumps",
-      "matchManagers": [
-        "helmfile",
-        "custom.regex"
-      ],
-      "matchPackageNames": [
-        "/longhorn/"
-      ],
+      "matchManagers": ["helmfile", "custom.regex"],
+      "matchPackageNames": ["/longhorn/"],
       "groupName": "longhorn stack",
       "automerge": false,
       "dependencyDashboardApproval": true,
-      "addLabels": [
-        "critical-infra"
-      ]
+      "addLabels": ["critical-infra"]
     },
     {
-      "matchManagers": [
-        "helmfile"
-      ],
-      "matchPackageNames": [
-        "bitnami/ghost"
-      ],
+      "matchManagers": ["helmfile"],
+      "matchPackageNames": ["bitnami/ghost"],
       "enabled": false
     },
     {
@@ -110,9 +77,7 @@
       "enabled": false
     },
     {
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchUpdateTypes": ["major"],
       "addLabels": ["major-update"],
       "dependencyDashboardApproval": true
     }
