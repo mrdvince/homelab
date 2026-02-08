@@ -1,7 +1,7 @@
 scanopy:
   - registry: ghcr.io
     image: scanopy/scanopy/server
-    tag: "v0.13.6"
+    tag: "v0.14.3"
   - registry: ghcr.io
     image: scanopy/scanopy/daemon
-    tag: "v0.13.6"
+    tag: "v0.14.3"

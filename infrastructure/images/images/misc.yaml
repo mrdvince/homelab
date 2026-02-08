@@ -11,7 +11,7 @@ reflector:
 adguardExternalDns:
   - registry: ghcr.io
     image: muhlba91/external-dns-provider-adguard
-    tag: v11.0.1
+    tag: v11.0.2
 
 argocdRedis:
   - registry: ecr-public.aws.com
@@ -26,7 +26,7 @@ skopeo:
 alpine:
   - registry: docker.io
     image: library/alpine
-    tag: "3.23.2"
+    tag: "3.23.3"
 
 actualImages:
   - registry: docker.io
@@ -36,21 +36,21 @@ actualImages:
 barAssistant:
   - registry: docker.io
     image: barassistant/server
-    tag: "5.12.0"
+    tag: "5.13.1"
   - registry: docker.io
     image: barassistant/salt-rim
-    tag: "4.13.0"
+    tag: "4.14.0"
   - registry: docker.io
     image: valkey/valkey
     tag: "8.1"
   - registry: docker.io
     image: getmeili/meilisearch
-    tag: "v1.33"
+    tag: "v1.35"
 
 codeServer:
   - registry: ghcr.io
     image: coder/code-server
-    tag: "4.108.1"
+    tag: "4.108.2"
 
 ghostImages:
   - registry: docker.io
