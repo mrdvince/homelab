@@ -62,7 +62,7 @@ tracing:
     grpc:
       enabled: true
       endpoint: "{{ .Values.otlpEndpoint }}"
-      insecure: true
+      insecure: false
   resourceAttributes:
     env: {{ .Environment.Name }}
 

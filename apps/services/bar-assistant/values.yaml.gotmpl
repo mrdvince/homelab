@@ -4,7 +4,7 @@ podSecurityContext:
 api:
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 0).image }}
-    tag: {{ (index .Values.barAssistant 0).tag }}
+    tag: "{{ (index .Values.barAssistant 0).tag }}"
   env:
     APP_URL: https://bar.{{ .Values.domain }}
     ALLOW_REGISTRATION: "true"
@@ -30,7 +30,7 @@ saltRim:
   enabled: true
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 1).image }}
-    tag: {{ (index .Values.barAssistant 1).tag }}
+    tag: "{{ (index .Values.barAssistant 1).tag }}"
   env:
     API_URL: https://bar.{{ .Values.domain }}
     MEILISEARCH_URL: https://bar.{{ .Values.domain }}/search
@@ -39,13 +39,13 @@ valkey:
   enabled: true
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 2).image }}
-    tag: {{ (index .Values.barAssistant 2).tag }}
+    tag: "{{ (index .Values.barAssistant 2).tag }}"
 
 meilisearch:
   enabled: true
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 3).image }}
-    tag: {{ (index .Values.barAssistant 3).tag }}
+    tag: "{{ (index .Values.barAssistant 3).tag }}"
   environment:
     MEILI_MASTER_KEY: {{ .Values.meilisearch_master_key }}
   persistence:
