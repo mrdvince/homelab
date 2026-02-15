@@ -1,1 +1,12 @@
 namespace: kube-system
+ignoreDifferences:
+  - group: storage.k8s.io
+    kind: StorageClass
+    name: nfs-csi
+    jsonPointers:
+      - /parameters
+  - group: storage.k8s.io
+    kind: StorageClass
+    name: nfs-csi-retain
+    jsonPointers:
+      - /parameters
