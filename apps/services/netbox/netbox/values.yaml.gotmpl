@@ -70,6 +70,19 @@ ingress:
       hosts:
         - netbox.{{ .Values.domain }}
 
+livenessProbe:
+  enabled: false
+
+customLivenessProbe:
+  httpGet:
+    path: /login/
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+
 resources:
   requests:
     cpu: 100m
