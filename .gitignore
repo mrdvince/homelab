@@ -21,3 +21,4 @@ charts/*/Chart.lock
 .idea/
 .vscode/
 *.swp
+.codex/*
