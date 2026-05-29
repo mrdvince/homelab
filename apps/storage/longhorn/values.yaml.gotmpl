@@ -1,3 +1,6 @@
+global:
+  imageRegistry: {{ .Values.imageRegistry }}
+
 persistence:
   defaultClass: true
   defaultClassReplicaCount: {{ .Values.defaultReplicaCount }}
