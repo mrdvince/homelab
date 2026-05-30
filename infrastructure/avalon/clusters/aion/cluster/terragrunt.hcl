@@ -15,10 +15,14 @@ dependency "workers" {
   config_path = "../../../../elysium/clusters/aion/workers"
 }
 
+locals {
+  network_interface = "eth0"
+}
+
 inputs = {
   cluster_name      = "aion"
   cluster_endpoint  = "https://10.30.30.145:6443"
-  talos_version     = "v1.12.0"
+  talos_version     = "v1.12.8"
   config_apply_mode = "reboot"
 
   controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
@@ -33,25 +37,43 @@ inputs = {
   }
 
   network = {
-    interface   = "enp6s18"
+    interface   = local.network_interface
     vip         = "10.30.30.145"
     nameservers = ["192.168.50.120", "1.1.1.1"]
   }
+
+  ethernet_configs = [
+    {
+      name = local.network_interface
+      features = {
+        "rx-gro"                       = false
+        "rx-gro-hw"                    = false
+        "tx-checksum-ip-generic"       = false
+        "tx-generic-segmentation"      = false
+        "tx-tcp-ecn-segmentation"      = false
+        "tx-tcp-segmentation"          = false
+        "tx-tcp6-segmentation"         = false
+        "tx-udp-segmentation"          = false
+        "tx-udp_tnl-csum-segmentation" = false
+        "tx-udp_tnl-segmentation"      = false
+      }
+    }
+  ]
 
   config_patches = [
     yamlencode({
       machine = {
         sysctls = {
-          "user.max_user_namespaces"           = "11255"
-          "kernel.kptr_restrict"               = "0"
-          "net.core.bpf_jit_harden"            = "0"
-          "fs.inotify.max_user_instances"      = "8192"
-          "fs.inotify.max_user_watches"        = "1048576"
+          "user.max_user_namespaces"      = "11255"
+          "kernel.kptr_restrict"          = "0"
+          "net.core.bpf_jit_harden"       = "0"
+          "fs.inotify.max_user_instances" = "8192"
+          "fs.inotify.max_user_watches"   = "1048576"
         }
         files = [
           {
-            op   = "create"
-            path = "/etc/cri/conf.d/20-customization.part"
+            op      = "create"
+            path    = "/etc/cri/conf.d/20-customization.part"
             content = <<-EOT
               [plugins]
                 [plugins."io.containerd.grpc.v1.cri"]

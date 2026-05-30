@@ -1,7 +1,7 @@
 locals {
-  environment_vars   = read_terragrunt_config(find_in_parent_folders("env.hcl"))
-  base_source_url    = "git@github.com:mrdvince/homelab-modules.git"
-  base_source_ref    = "1627fdc"
+  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  base_source_url  = "git@gitlab.home.mrdvince.me:homelab/terraform-modules.git"
+  base_source_ref  = "main"
 }
 
 terraform {

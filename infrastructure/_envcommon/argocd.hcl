@@ -1,6 +1,6 @@
 locals {
-  base_source_url    = "git@github.com:mrdvince/homelab-modules.git"
-  base_source_ref    = "1627fdc"
+  base_source_url = "git@gitlab.home.mrdvince.me:homelab/terraform-modules.git"
+  base_source_ref = "main"
 }
 
 terraform {
