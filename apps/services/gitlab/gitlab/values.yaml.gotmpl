@@ -283,6 +283,8 @@ gitlab:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 1).image }}
       tag: {{ (index .Values.gitlab 1).tag }}
     tolerations: *gitlabTolerations
+    hpa:
+      maxReplicas: 1
     extraEnv:
       SKIP_RAISE_ON_INITIALIZE_CONNECTIONS: "true"
     livenessProbe:
