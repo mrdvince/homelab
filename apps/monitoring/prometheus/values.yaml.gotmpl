@@ -86,10 +86,10 @@ prometheus:
               storage: 50Gi
     resources:
       requests:
-        memory: 512Mi
-        cpu: 250m
+        memory: 1Gi
+        cpu: 1024m
       limits:
-        memory: 2Gi
+        memory: 4Gi
   ingress:
     enabled: true
     ingressClassName: traefik
