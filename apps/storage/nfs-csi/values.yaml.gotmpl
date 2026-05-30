@@ -13,7 +13,8 @@ storageClasses:
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
     mountOptions:
-      - nfsvers=4.1
+      - nfsvers=3
+      - nolock
   - name: nfs-csi-retain
     parameters:
       server: {{ .Values.nfs_server }}
@@ -21,4 +22,5 @@ storageClasses:
     reclaimPolicy: Retain
     volumeBindingMode: Immediate
     mountOptions:
-      - nfsvers=4.1
+      - nfsvers=3
+      - nolock
