@@ -17,6 +17,18 @@ ghostEnableHttps: true
 extraEnvVars:
   - name: url
     value: https://blog.{{ .Values.domain }}
+  - name: NODE_OPTIONS
+    value: --require=/opt/bitnami/ghost-copyfile-fallback/fallback.cjs
+
+extraVolumes:
+  - name: ghost-copyfile-fallback
+    configMap:
+      name: ghost-copyfile-fallback
+
+extraVolumeMounts:
+  - name: ghost-copyfile-fallback
+    mountPath: /opt/bitnami/ghost-copyfile-fallback/fallback.cjs
+    subPath: fallback.cjs
 
 mysql:
   enabled: true
@@ -84,6 +96,32 @@ podSecurityContext:
   fsGroupChangePolicy: OnRootMismatch
 
 extraDeploy:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ghost-copyfile-fallback
+      namespace: blog
+    data:
+      fallback.cjs: |
+        const fs = require("fs");
+        const nativeCopyFileSync = fs.copyFileSync;
+
+        fs.copyFileSync = function copyFileSyncWithNfsFallback(source, destination, mode) {
+          try {
+            return nativeCopyFileSync.call(fs, source, destination, mode);
+          } catch (error) {
+            if (!error || error.code !== "EPERM") {
+              throw error;
+            }
+
+            fs.writeFileSync(destination, fs.readFileSync(source));
+            try {
+              fs.chmodSync(destination, fs.statSync(source).mode & 0o777);
+            } catch (_) {
+              // Best effort: NFS can reject mode changes even after a successful write.
+            }
+          }
+        };
   - apiVersion: traefik.io/v1alpha1
     kind: Middleware
     metadata:
