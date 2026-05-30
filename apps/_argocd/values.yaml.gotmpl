@@ -29,6 +29,7 @@ applicationsets:
           automated:
             prune: true
             selfHeal: true
+            allowEmpty: true
           syncOptions:
             - CreateNamespace=true
             - ServerSideApply=true
@@ -68,6 +69,7 @@ applicationsets:
           automated:
             prune: true
             selfHeal: true
+            allowEmpty: true
     templatePatch: |
       spec:
         {{`{{- if hasKey . "ignoreDifferences" }}`}}
@@ -114,6 +116,7 @@ applicationsets:
           automated:
             prune: true
             selfHeal: true
+            allowEmpty: true
           syncOptions:
             - CreateNamespace=true
             - ServerSideApply=true
@@ -153,6 +156,7 @@ applicationsets:
           automated:
             prune: true
             selfHeal: true
+            allowEmpty: true
           syncOptions:
             - CreateNamespace=true
             - ServerSideApply=true
