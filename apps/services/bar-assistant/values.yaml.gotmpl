@@ -23,7 +23,7 @@ api:
       memory: 512Mi
   persistence:
     enabled: true
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     size: 5Gi
 
 saltRim:
@@ -50,7 +50,7 @@ meilisearch:
     MEILI_MASTER_KEY: {{ .Values.meilisearch_master_key }}
   persistence:
     enabled: true
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     size: 2Gi
 
 ingress:

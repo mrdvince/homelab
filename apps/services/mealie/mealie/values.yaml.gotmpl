@@ -57,7 +57,7 @@ persistence:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 10Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     advancedMounts:
       main:
         main:

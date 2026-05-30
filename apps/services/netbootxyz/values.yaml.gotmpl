@@ -29,14 +29,14 @@ persistence:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 1Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /config
   assets:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 10Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /assets
 

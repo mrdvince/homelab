@@ -160,14 +160,14 @@ persistence:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 5Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /var/www/FreshRSS/data
   extensions:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 1Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /var/www/FreshRSS/extensions
   feeds:

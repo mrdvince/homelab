@@ -69,28 +69,28 @@ persistence:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 10Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /usr/src/paperless/data
   media:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 20Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /usr/src/paperless/media
   consume:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 5Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /usr/src/paperless/consume
   export:
     type: persistentVolumeClaim
     accessMode: ReadWriteOnce
     size: 5Gi
-    storageClass: longhorn
+    storageClass: nfs-csi-retain
     globalMounts:
       - path: /usr/src/paperless/export
 
