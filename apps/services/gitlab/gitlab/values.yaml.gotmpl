@@ -187,9 +187,50 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 0).image }}
       tag: {{ (index .Values.gitlab 0).tag }}
+    deployment:
+      startupProbe:
+        httpGet:
+          path: /-/readiness
+          port: 8080
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 60
+      livenessProbe:
+        initialDelaySeconds: 300
+        periodSeconds: 60
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 5
+      readinessProbe:
+        initialDelaySeconds: 0
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 12
     workhorse:
       image: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 3).image }}
       tag: {{ (index .Values.gitlab 3).tag }}
+      startupProbe:
+        exec:
+          command:
+            - /scripts/healthcheck
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 60
+      livenessProbe:
+        initialDelaySeconds: 300
+        periodSeconds: 60
+        timeoutSeconds: 30
+        successThreshold: 1
+        failureThreshold: 5
+      readinessProbe:
+        initialDelaySeconds: 0
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 12
       resources:
         requests:
           cpu: 100m
@@ -199,14 +240,14 @@ gitlab:
           memory: 1Gi
     replicas: 1
     minReplicas: 1
-    workerProcesses: 3
+    workerProcesses: 4
     resources:
       requests:
-        cpu: 300m
-        memory: 3Gi
+        cpu: 700m
+        memory: 4Gi
       limits:
-        cpu: 2
-        memory: 6Gi
+        cpu: 4
+        memory: 8Gi
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -219,15 +260,29 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 1).image }}
       tag: {{ (index .Values.gitlab 1).tag }}
+    extraEnv:
+      SKIP_RAISE_ON_INITIALIZE_CONNECTIONS: "true"
+    livenessProbe:
+      initialDelaySeconds: 300
+      periodSeconds: 60
+      timeoutSeconds: 30
+      successThreshold: 1
+      failureThreshold: 5
+    readinessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 12
     replicas: 2
     minReplicas: 2
     resources:
       requests:
-        cpu: 100m
+        cpu: 300m
         memory: 1.5Gi
       limits:
-        cpu: 500m
-        memory: 2.5Gi
+        cpu: 1
+        memory: 3Gi
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -242,11 +297,11 @@ gitlab:
       tag: {{ (index .Values.gitlab 4).tag }}
     resources:
       requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
         cpu: 500m
-        memory: 512Mi
+        memory: 1Gi
+      limits:
+        cpu: 2
+        memory: 3Gi
 
   gitlab-shell:
     image:

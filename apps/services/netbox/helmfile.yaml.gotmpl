@@ -15,6 +15,7 @@ repositories:
 releases:
   - name: netbox-postgres
     namespace: apps
+    installed: false
     chart: cnpg/cluster
     version: 0.5.0
     values:
@@ -22,6 +23,7 @@ releases:
 
   - name: netbox
     namespace: apps
+    installed: false
     chart: netbox/netbox
     version: 7.4.5
     values:

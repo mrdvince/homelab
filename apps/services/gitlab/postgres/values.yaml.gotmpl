@@ -19,11 +19,11 @@ cluster:
 
   resources:
     limits:
-      cpu: "1"
-      memory: 1Gi
+      cpu: "2"
+      memory: 3Gi
     requests:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 500m
+      memory: 1Gi
 
   postgresql:
     parameters:
@@ -39,7 +39,7 @@ cluster:
 backups:
   enabled: true
   provider: s3
-  destinationPath: "s3://cnpg-backups"
+  destinationPath: "s3://cnpg-backups/gitlab-postgres-after-restore"
   endpointURL: https://s3.{{ .Values.domain }}
   s3:
     region: "home"
