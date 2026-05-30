@@ -102,6 +102,9 @@ global:
   kas:
     enabled: true
 
+  nodeSelector: &gitlabNodeSelector
+    kubernetes.io/hostname: aion-24
+
 postgresql:
   install: false
 
@@ -116,6 +119,20 @@ redis:
       registry: {{ .Values.imageRegistry }}
       repository: {{ (index .Values.ghostImages 3).image }}
       tag: {{ (index .Values.ghostImages 3).tag }}
+  master:
+    nodeSelector: *gitlabNodeSelector
+    tolerations: &gitlabTolerations
+      - key: dedicated
+        operator: Equal
+        value: gitlab
+        effect: NoSchedule
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1
+        memory: 1Gi
 
 nginx-ingress:
   enabled: false
@@ -136,6 +153,8 @@ gitlab-runner:
     tag: {{ (index .Values.gitlab 10).tag }}
   rbac:
     create: true
+  nodeSelector: *gitlabNodeSelector
+  tolerations: *gitlabTolerations
   runners:
     locked: false
     secret: "nonempty"
@@ -172,6 +191,7 @@ upgradeCheck:
   enabled: false
 
 shared-secrets:
+  tolerations: *gitlabTolerations
   selfsign:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 12).image }}
@@ -182,11 +202,13 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 2).image }}
       tag: {{ (index .Values.gitlab 2).tag }}
+    tolerations: *gitlabTolerations
 
   webservice:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 0).image }}
       tag: {{ (index .Values.gitlab 0).tag }}
+    tolerations: *gitlabTolerations
     deployment:
       startupProbe:
         httpGet:
@@ -244,10 +266,10 @@ gitlab:
     resources:
       requests:
         cpu: 700m
-        memory: 4Gi
+        memory: 2Gi
       limits:
         cpu: 4
-        memory: 8Gi
+        memory: 6Gi
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -260,6 +282,7 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 1).image }}
       tag: {{ (index .Values.gitlab 1).tag }}
+    tolerations: *gitlabTolerations
     extraEnv:
       SKIP_RAISE_ON_INITIALIZE_CONNECTIONS: "true"
     livenessProbe:
@@ -274,12 +297,12 @@ gitlab:
       timeoutSeconds: 5
       successThreshold: 1
       failureThreshold: 12
-    replicas: 2
-    minReplicas: 2
+    replicas: 1
+    minReplicas: 1
     resources:
       requests:
         cpu: 300m
-        memory: 1.5Gi
+        memory: 1Gi
       limits:
         cpu: 1
         memory: 3Gi
@@ -295,10 +318,11 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 4).image }}
       tag: {{ (index .Values.gitlab 4).tag }}
+    tolerations: *gitlabTolerations
     resources:
       requests:
         cpu: 500m
-        memory: 1Gi
+        memory: 512Mi
       limits:
         cpu: 2
         memory: 3Gi
@@ -307,6 +331,7 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 5).image }}
       tag: {{ (index .Values.gitlab 5).tag }}
+    tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
 
@@ -314,6 +339,7 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 6).image }}
       tag: {{ (index .Values.gitlab 6).tag }}
+    tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
 
@@ -321,11 +347,13 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 7).image }}
       tag: {{ (index .Values.gitlab 7).tag }}
+    tolerations: *gitlabTolerations
 
   toolbox:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 2).image }}
       tag: {{ (index .Values.gitlab 2).tag }}
+    tolerations: *gitlabTolerations
     replicas: 1
     backups:
       objectStorage:
