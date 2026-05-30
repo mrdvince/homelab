@@ -26,14 +26,28 @@ inputs = {
       vmid    = 9006
       macaddr = "7E:99:DF:12:72:5F"
     },
+    {
+      vmname  = "aion-24"
+      vmid    = 9007
+      macaddr = "7A:0F:A7:BE:01:76"
+      resources = {
+        cores   = 4
+        memory  = 8192
+        balloon = 8192
+      }
+    },
   ]
 
-  cores   = 4
-  memory  = 16384
-  balloon = 16384
-  bios    = "ovmf"
-  machine = "q35"
-  on_boot = true
+  cores     = 4
+  memory    = 16384
+  balloon   = 16384
+  bios      = "ovmf"
+  cpu_flags = ["+aes"]
+  cpu_type  = "x86-64-v3"
+  machine   = "q35"
+  on_boot   = true
+
+  include_vmname_tag = true
 
   disk = {
     storage   = "local-lvm"
@@ -48,9 +62,9 @@ inputs = {
   efi_disk = {
     storage = "local-lvm"
   }
-  
+
   cdrom = {
-    iso       = "nfs-avalon:iso/talos-1.11.5.iso"
+    iso       = "realm-nfs:iso/metal-amd64.iso"
     interface = "ide2"
   }
 

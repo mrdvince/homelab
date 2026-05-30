@@ -26,7 +26,29 @@ inputs = {
   config_apply_mode = "reboot"
 
   controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
-  worker_nodes       = values(dependency.workers.outputs.vm_ipv4_addresses)
+  worker_node_endpoints = {
+    aion-21 = {
+      endpoint = "10.30.30.134"
+    }
+    aion-22 = {
+      endpoint = "10.30.30.135"
+    }
+    aion-23 = {
+      endpoint = "10.30.30.136"
+    }
+    aion-24 = {
+      endpoint = "10.30.30.137"
+    }
+  }
+  worker_node_initial_taints = {
+    aion-24 = [
+      {
+        key    = "dedicated"
+        value  = "gitlab"
+        effect = "NoSchedule"
+      }
+    ]
+  }
 
   extensions   = ["iscsi-tools", "util-linux-tools", "qemu-guest-agent"]
   auto_upgrade = true
