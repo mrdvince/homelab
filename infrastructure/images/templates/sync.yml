@@ -1,21 +1,12 @@
 .sync-images:
   image:
-    name: registry.home.mrdvince.me/skopeo/stable:latest
+    name: registry.home.mrdvince.me/homelab/builder:1.4.1
     entrypoint: [""]
   variables:
     DEST_REGISTRY: registry.home.mrdvince.me
-    YQ_VERSION: v4.44.1
-    TRIVY_VERSION: "0.68.2"
     SEVERITY_THRESHOLD: "CRITICAL,HIGH"
     SCAN_IMAGES: "true"
   before_script:
-    - |
-      curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq
-      chmod +x /usr/local/bin/yq
-    - |
-      if [ "${SCAN_IMAGES}" = "true" ]; then
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${TRIVY_VERSION}
-      fi
     - |
       skopeo login -u "${REGISTRY_USER}" -p "${REGISTRY_PASSWORD}" "${DEST_REGISTRY}"
   script:
