@@ -1,4 +1,4 @@
 termix:
   - registry: ghcr.io
     image: lukegus/termix
-    tag: "release-1.10.0"
+    tag: "release-2.2.1"
