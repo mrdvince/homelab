@@ -19,21 +19,16 @@ dependency "outposts" {
 }
 
 inputs = {
-  create_metrics      = true
-  create_pve_exporter = true
+  create_metrics = true
 
-  host                 = "192.168.50.250"
+  host                 = "192.168.50.235"
   ssh_user             = "root"
-  ssh_private_key_path = "${get_env("HOME")}/.ssh/elysium"
+  ssh_private_key_path = "${get_env("HOME")}/.ssh/avalon"
 
-  instance = "elysium"
+  instance = "tirnanog"
   platform = "proxmox"
 
   prometheus_remote_write_url = "https://prometheus.home.mrdvince.me/api/v1/write"
   prometheus_username         = "alloy"
   prometheus_password         = dependency.outposts.outputs.service_account_tokens["alloy"]
-
-  pve_exporter_token_id     = include.root.locals.secret_vars.pve.pve_exporter_token_id
-  pve_exporter_token_secret = include.root.locals.secret_vars.pve.pve_exporter_token_secret
-  pve_exporter_image        = "registry.home.mrdvince.me/prompve/prometheus-pve-exporter:3.9.0"
 }
