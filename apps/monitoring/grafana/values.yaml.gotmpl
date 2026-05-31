@@ -118,6 +118,32 @@ sidecar:
   datasources:
     enabled: false
 
+extraObjects:
+{{- $dashboardsRoot := "../../../dashboards" }}
+{{- range $folder := readDirEntries $dashboardsRoot }}
+{{- if $folder.IsDir }}
+{{- $folderName := $folder.Name }}
+{{- range $dashboard := readDirEntries (printf "%s/%s" $dashboardsRoot $folderName) }}
+{{- if and (not $dashboard.IsDir) (hasSuffix ".json" $dashboard.Name) }}
+{{- $dashboardName := trimSuffix ".json" $dashboard.Name }}
+{{- $dashboardPath := printf "%s/%s/%s" $dashboardsRoot $folderName $dashboard.Name }}
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: grafana-dashboard-{{ $folderName | kebabcase }}-{{ $dashboardName | kebabcase }}
+      namespace: monitoring
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        grafana_folder: {{ $folderName | title | quote }}
+    data:
+      {{ $dashboard.Name }}: |-
+{{ readFile $dashboardPath | replace "{{" "__GRAFANA_LBRACE__" | replace "}}" "__GRAFANA_RBRACE__" | replace "__GRAFANA_LBRACE__" "{{ \"{{\" }}" | replace "__GRAFANA_RBRACE__" "{{ \"}}\" }}" | nindent 8 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 serviceMonitor:
   enabled: true
 
