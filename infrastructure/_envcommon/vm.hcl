@@ -1,16 +1,22 @@
 locals {
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  node_vars        = read_terragrunt_config(find_in_parent_folders("node.hcl"))
+  secret_vars      = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
   base_source_url  = "git@gitlab.home.mrdvince.me:homelab/terraform-modules.git"
   base_source_ref  = "main"
 }
 
 terraform {
   source = "${local.base_source_url}//vm?ref=${local.base_source_ref}"
-  # source = "../../../../../homelab-modules/vm"
+  # source = "${dirname(find_in_parent_folders("root.hcl"))}/../../homelab-modules/vm"
 }
 
 inputs = {
   node_name = "avalon"
+
+  proxmox_endpoint  = local.node_vars.locals.pm_api_url
+  proxmox_api_token = "${local.secret_vars.pm_api_token_id}=${local.secret_vars.pm_api_token_secret}"
+  proxmox_insecure  = false
 
   network = {
     bridge   = "vmbr0"

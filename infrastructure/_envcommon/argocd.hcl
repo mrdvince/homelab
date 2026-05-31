@@ -5,5 +5,5 @@ locals {
 
 terraform {
   source = "${local.base_source_url}//argocd?ref=${local.base_source_ref}"
-  # source = "../../../../../../../homelab-modules/argocd"
+  # source = "${dirname(find_in_parent_folders("root.hcl"))}/../../homelab-modules/argocd"
 }

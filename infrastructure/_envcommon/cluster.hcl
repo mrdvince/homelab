@@ -5,7 +5,7 @@ locals {
 
 terraform {
   source = "${local.base_source_url}//talos-cluster?ref=${local.base_source_ref}"
-  # source = "../../../../../../homelab-modules/talos-cluster"
+  # source = "${dirname(find_in_parent_folders("root.hcl"))}/../../homelab-modules/talos-cluster"
 }
 
 inputs = {
