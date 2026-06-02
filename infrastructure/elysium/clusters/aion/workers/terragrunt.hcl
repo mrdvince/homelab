@@ -31,7 +31,7 @@ inputs = {
       vmid    = 9007
       macaddr = "7A:0F:A7:BE:01:76"
       resources = {
-        cores   = 4
+        cores   = 6
         memory  = 12288
         balloon = 12288
       }

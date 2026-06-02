@@ -23,7 +23,7 @@ inputs = {
   cluster_name      = "aion"
   cluster_endpoint  = "https://10.30.30.145:6443"
   talos_version     = "v1.12.8"
-  config_apply_mode = "reboot"
+  config_apply_mode = "auto"
 
   controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
   worker_node_endpoints = {
@@ -132,6 +132,22 @@ inputs = {
           extraConfig = {
             featureGates = {
               UserNamespacesSupport = true
+            }
+            kubeReserved = {
+              cpu               = "200m"
+              memory            = "512Mi"
+              ephemeral-storage = "2Gi"
+            }
+            systemReserved = {
+              cpu               = "200m"
+              memory            = "512Mi"
+              ephemeral-storage = "2Gi"
+            }
+            evictionHard = {
+              "memory.available"  = "500Mi"
+              "nodefs.available"  = "10%"
+              "imagefs.available" = "15%"
+              "nodefs.inodesFree" = "5%"
             }
           }
         }
