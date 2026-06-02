@@ -262,14 +262,15 @@ gitlab:
           memory: 1Gi
     replicas: 1
     minReplicas: 1
-    workerProcesses: 4
+    maxReplicas: 1
+    workerProcesses: 2
     resources:
       requests:
         cpu: 700m
         memory: 2Gi
       limits:
-        cpu: 4
-        memory: 6Gi
+        cpu: 3
+        memory: 4Gi
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -299,6 +300,7 @@ gitlab:
       failureThreshold: 12
     replicas: 1
     minReplicas: 1
+    maxReplicas: 1
     resources:
       requests:
         cpu: 300m
@@ -333,6 +335,7 @@ gitlab:
     tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
+    maxReplicas: 1
 
   kas:
     image:
@@ -341,6 +344,7 @@ gitlab:
     tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
+    maxReplicas: 1
 
   gitlab-exporter:
     image:
