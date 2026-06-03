@@ -2,6 +2,13 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "prBodyTemplate": "{{{table}}}{{{changelogs}}}{{{controls}}}",
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
+  "vulnerabilityAlerts": {
+    "minimumReleaseAge": null,
+    "dependencyDashboardApproval": false,
+    "prCreation": "immediate"
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -68,8 +75,15 @@
       "addLabels": ["critical-infra"]
     },
     {
-      "matchManagers": ["helmfile"],
-      "matchPackageNames": ["bitnami/ghost"],
+      "description": "ignore ghost app chart and bundled bitnami legacy images",
+      "matchPackageNames": [
+        "ghost",
+        "bitnami/ghost",
+        "docker.io/bitnamilegacy/ghost",
+        "docker.io/bitnamilegacy/mysql",
+        "docker.io/bitnamilegacy/redis",
+        "docker.io/bitnamilegacy/redis-exporter"
+      ],
       "enabled": false
     },
     {
