@@ -1,0 +1,4 @@
+renovate:
+  - registry: docker.io
+    image: renovate/renovate
+    tag: "43.197.0"
