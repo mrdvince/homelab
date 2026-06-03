@@ -45,7 +45,7 @@ inputs = {
       {
         key    = "dedicated"
         value  = "gitlab"
-        effect = "NoSchedule"
+        effect = "PreferNoSchedule"
       }
     ]
   }
