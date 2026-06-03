@@ -1,4 +1,4 @@
-.rendered-image-mirror:
+.rendered-image-pipeline:
   stage: generate
   image:
     name: $BUILDER_IMAGE
@@ -6,21 +6,24 @@
   variables:
     RENDERED_MANIFEST_DIR: /tmp/rendered-manifests
     RENDERED_IMAGE_LIST: imagelist.txt
-    FAIL_ON_IMAGE_VULNERABILITIES: "false"
+    CHILD_PIPELINE_FILE: rendered-pipeline.yml
     SYNC_IMAGES: "true"
-    SCAN_IMAGES: "true"
   script:
     - test -n "${SOPS_AGE_KEY:-}"
-    - ci/mirror.sh run
+    - touch rendered-pipeline.yml rendered-scan-pipeline.yml
+    - ci/mirror.sh pipeline
     - test -s "${RENDERED_IMAGE_LIST}"
+    - test -s "${CHILD_PIPELINE_FILE}"
   artifacts:
     when: always
     paths:
       - imagelist.txt
+      - rendered-pipeline.yml
+      - rendered-scan-pipeline.yml
     expire_in: 1 week
 
-rendered-image-sync:
-  extends: .rendered-image-mirror
+generate-rendered-image-pipeline:
+  extends: .rendered-image-pipeline
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
@@ -31,6 +34,7 @@ rendered-image-sync:
         - infrastructure/images/images/**/*.yaml
         - secrets/secrets.enc.yaml
         - ci/includes/mirror.yml
+        - ci/includes/imagegate.yml
         - ci/mirror.sh
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
@@ -39,13 +43,62 @@ rendered-image-sync:
         - infrastructure/images/images/**/*.yaml
         - secrets/secrets.enc.yaml
         - ci/includes/mirror.yml
+        - ci/includes/imagegate.yml
         - ci/mirror.sh
 
-scan-rendered-images:
-  extends: .rendered-image-mirror
+trigger-rendered-image-sync:
+  stage: trigger
+  needs:
+    - job: generate-rendered-image-pipeline
+      artifacts: true
+  trigger:
+    include:
+      - artifact: rendered-pipeline.yml
+        job: generate-rendered-image-pipeline
+    strategy: depend
+  rules:
+    - if: $RUN_RENOVATE == "true"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - apps/**/*
+        - charts/**/*
+        - infrastructure/images/images/**/*.yaml
+        - secrets/secrets.enc.yaml
+        - ci/includes/mirror.yml
+        - ci/includes/imagegate.yml
+        - ci/mirror.sh
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/**/*
+        - charts/**/*
+        - infrastructure/images/images/**/*.yaml
+        - secrets/secrets.enc.yaml
+        - ci/includes/mirror.yml
+        - ci/includes/imagegate.yml
+        - ci/mirror.sh
+
+generate-rendered-image-scan-pipeline:
+  extends: .rendered-image-pipeline
   variables:
-    FAIL_ON_IMAGE_VULNERABILITIES: "true"
+    CHILD_PIPELINE_FILE: rendered-scan-pipeline.yml
     SYNC_IMAGES: "false"
+  rules:
+    - if: $RUN_RENOVATE == "true"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCAN_RENDERED_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "web" && $SCAN_RENDERED_IMAGES == "true"
+
+trigger-rendered-image-scan:
+  stage: trigger
+  needs:
+    - job: generate-rendered-image-scan-pipeline
+      artifacts: true
+  trigger:
+    include:
+      - artifact: rendered-scan-pipeline.yml
+        job: generate-rendered-image-scan-pipeline
+    strategy: depend
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never

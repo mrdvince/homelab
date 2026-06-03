@@ -1,0 +1,23 @@
+.rendered-image-scan:
+  image:
+    name: registry.home.mrdvince.me/homelab/builder:1.4.1
+    entrypoint: [""]
+  variables:
+    SEVERITY_THRESHOLD: "CRITICAL,HIGH"
+  script:
+    - |
+      test -n "${SOURCE_IMAGE:-}"
+      echo "scanning ${SOURCE_IMAGE}"
+      trivy image --exit-code 1 --severity "${SEVERITY_THRESHOLD}" "${SOURCE_IMAGE}"
+
+.rendered-image-sync:
+  image:
+    name: registry.home.mrdvince.me/homelab/builder:1.4.1
+    entrypoint: [""]
+  variables:
+    DEST_REGISTRY: registry.home.mrdvince.me
+  before_script:
+    - |
+      printf '%s' "${REGISTRY_PASSWORD}" | skopeo login -u "${REGISTRY_USER}" --password-stdin "${DEST_REGISTRY}"
+  script:
+    - ci/mirror.sh sync-one

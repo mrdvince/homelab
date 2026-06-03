@@ -4,6 +4,8 @@ set -euo pipefail
 env_name="${ENV_NAME:-aion}"
 output_dir="${RENDERED_MANIFEST_DIR:-/tmp/rendered-manifests}"
 rendered_image_list="${RENDERED_IMAGE_LIST:-imagelist.txt}"
+child_pipeline_file="${CHILD_PIPELINE_FILE:-rendered-pipeline.yml}"
+rendered_template="${RENDERED_TEMPLATE:-ci/includes/imagegate.yml}"
 dest_registry="${DEST_REGISTRY:-registry.home.mrdvince.me}"
 map_dir="${IMAGE_MAP_DIR:-infrastructure/images/images}"
 build_dir="${IMAGE_BUILD_DIR:-infrastructure/images/builds}"
@@ -14,16 +16,20 @@ fail_on_vulnerabilities="${FAIL_ON_IMAGE_VULNERABILITIES:-false}"
 allow_upstream_rendered_images="${ALLOW_UPSTREAM_RENDERED_IMAGES:-false}"
 registry_map=""
 local_image_map=""
+image_ref_map=""
+scan_failure_list=""
 
 usage() {
   cat <<'EOF'
-usage: ci/mirror.sh [run|render|images|sync]
+usage: ci/mirror.sh [run|render|images|sync|sync-one|pipeline]
 
 environment overrides:
   ENV_NAME                         helmfile environment, default: aion
   HELMFILE_PATHS                   optional space-separated helmfiles to render
   RENDERED_MANIFEST_DIR            rendered manifest output directory
   RENDERED_IMAGE_LIST              extracted image list path
+  CHILD_PIPELINE_FILE              generated rendered image child pipeline path
+  RENDERED_TEMPLATE                generated child pipeline include path
   DEST_REGISTRY                    required rendered image registry
   IMAGE_MAP_DIR                    yaml registry mapping directory
   IMAGE_BUILD_DIR                  yaml local build mapping directory
@@ -96,7 +102,7 @@ build_registry_map() {
 
   registry_map="$(mktemp)"
   local_image_map="$(mktemp)"
-  trap 'rm -f "${registry_map}" "${local_image_map}"' EXIT
+  trap 'rm -f "${registry_map}" "${local_image_map}" "${image_ref_map:-}" "${scan_failure_list:-}"' EXIT
 
   for map_file in "${map_dir}"/*.yaml; do
     [ -f "${map_file}" ] || continue
@@ -178,34 +184,77 @@ normalize_ref() {
   echo "${source_registry}/${repository}${reference}"
 }
 
-process_image() {
-  local rendered_image="$1"
-  local source_image source_ref dest_ref pipeline_source
+vulnerability_gate_enabled() {
+  local pipeline_source
 
-  [ -n "${rendered_image}" ] || return
-
-  source_image="$(normalize_ref "${rendered_image}")"
-  source_ref="docker://${source_image}"
-  dest_ref="docker://${rendered_image}"
   pipeline_source="${CI_PIPELINE_SOURCE:-${PARENT_PIPELINE_SOURCE:-}}"
+  [ "${fail_on_vulnerabilities}" = "true" ] || [ "${pipeline_source}" = "merge_request_event" ]
+}
 
-  if [ "${scan_images}" = "true" ]; then
+prepare_image_refs() {
+  local rendered_image source_image
+
+  image_ref_map="$(mktemp)"
+
+  while IFS= read -r rendered_image; do
+    [ -n "${rendered_image}" ] || continue
+    source_image="$(normalize_ref "${rendered_image}")"
+    printf '%s\t%s\n' "${rendered_image}" "${source_image}" >>"${image_ref_map}"
+  done <"${rendered_image_list}"
+
+  if [ ! -s "${image_ref_map}" ]; then
+    echo "no image refs prepared" >&2
+    exit 1
+  fi
+}
+
+scan_image_refs() {
+  local source_image scan_failed
+
+  if [ "${scan_images}" != "true" ]; then
+    return
+  fi
+
+  scan_failed="false"
+  scan_failure_list="$(mktemp)"
+
+  while IFS= read -r source_image; do
+    [ -n "${source_image}" ] || continue
+
     echo "scanning ${source_image}"
     if ! trivy image --exit-code 1 --severity "${severity_threshold}" "${source_image}"; then
-      echo "warning: critical/high vulnerabilities found in ${source_image}"
-
-      if [ "${fail_on_vulnerabilities}" = "true" ] || [ "${pipeline_source}" = "merge_request_event" ]; then
-        echo "failing rendered image mirror because vulnerability gating is enabled"
-        exit 1
-      fi
-
-      echo "continuing anyway - review recommended"
+      echo "warning: critical/high vulnerabilities or scan errors found in ${source_image}"
+      printf '%s\n' "${source_image}" >>"${scan_failure_list}"
+      scan_failed="true"
     fi
+  done < <(cut -f2 "${image_ref_map}" | sort -u)
+
+  if [ "${scan_failed}" != "true" ]; then
+    return
   fi
+
+  echo "rendered image scan found problems in these source images:" >&2
+  sed 's/^/- /' "${scan_failure_list}" >&2
+
+  if vulnerability_gate_enabled; then
+    echo "failing rendered image mirror because vulnerability gating is enabled" >&2
+    exit 1
+  fi
+
+  echo "continuing anyway - review recommended" >&2
+}
+
+sync_image_ref() {
+  local rendered_image="$1"
+  local source_image="$2"
+  local source_ref dest_ref
 
   if [ "${sync_images}" != "true" ]; then
     return
   fi
+
+  source_ref="docker://${source_image}"
+  dest_ref="docker://${rendered_image}"
 
   if [ "${source_image}" = "${rendered_image}" ]; then
     if skopeo inspect --raw "${dest_ref}" >/dev/null 2>&1; then
@@ -227,24 +276,136 @@ process_image() {
   skopeo copy --all "${source_ref}" "${dest_ref}"
 }
 
-mirror_images() {
-  local image
+yaml_quote() {
+  local value="$1"
+
+  printf "'%s'" "${value//\'/\'\'}"
+}
+
+job_name_for_image() {
+  local index="$1"
+  local image="$2"
+  local normalized
+
+  normalized="$(printf '%s' "${image}" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed 's/[^a-z0-9]/-/g; s/--*/-/g; s/^-//; s/-$//' \
+    | cut -c1-70)"
+
+  printf 'image-%03d-%s' "${index}" "${normalized}"
+}
+
+write_pipeline_header() {
+  cat >"${child_pipeline_file}" <<EOF
+include:
+  - local: ${rendered_template}
+
+stages:
+  - scan
+  - sync
+EOF
+}
+
+append_scan_job() {
+  local job_name="$1"
+  local source_image="$2"
+
+  cat >>"${child_pipeline_file}" <<EOF
+
+scan-${job_name}:
+  stage: scan
+  extends: .rendered-image-scan
+  variables:
+    SOURCE_IMAGE: $(yaml_quote "${source_image}")
+EOF
+}
+
+append_sync_job() {
+  local job_name="$1"
+  local rendered_image="$2"
+  local source_image="$3"
+
+  cat >>"${child_pipeline_file}" <<EOF
+
+sync-${job_name}:
+  stage: sync
+  extends: .rendered-image-sync
+  needs:
+    - job: scan-${job_name}
+  variables:
+    SOURCE_IMAGE: $(yaml_quote "${source_image}")
+    RENDERED_IMAGE: $(yaml_quote "${rendered_image}")
+EOF
+}
+
+generate_pipeline() {
+  local rendered_image source_image job_name index
 
   build_registry_map
+  prepare_image_refs
+  write_pipeline_header
+
+  index=0
+  while IFS=$'\t' read -r rendered_image source_image; do
+    index=$((index + 1))
+    job_name="$(job_name_for_image "${index}" "${rendered_image}")"
+    append_scan_job "${job_name}" "${source_image}"
+
+    if [ "${sync_images}" = "true" ]; then
+      append_sync_job "${job_name}" "${rendered_image}" "${source_image}"
+    fi
+  done <"${image_ref_map}"
+
+  echo "generated rendered image child pipeline:"
+  cat "${child_pipeline_file}"
+}
+
+mirror_images() {
+  local rendered_image source_image
+
+  build_registry_map
+  prepare_image_refs
+  scan_image_refs
 
   if [ "${sync_images}" = "true" ]; then
     printf '%s' "${REGISTRY_PASSWORD}" | skopeo login -u "${REGISTRY_USER}" --password-stdin "${dest_registry}"
   fi
 
-  while IFS= read -r image; do
-    process_image "${image}"
-  done <"${rendered_image_list}"
+  while IFS=$'\t' read -r rendered_image source_image; do
+    sync_image_ref "${rendered_image}" "${source_image}"
+  done <"${image_ref_map}"
+}
+
+sync_one_image() {
+  local rendered_image source_image
+
+  rendered_image="${RENDERED_IMAGE:-}"
+  source_image="${SOURCE_IMAGE:-}"
+
+  if [ -z "${rendered_image}" ]; then
+    echo "RENDERED_IMAGE is required" >&2
+    exit 1
+  fi
+
+  if [ -z "${source_image}" ]; then
+    echo "SOURCE_IMAGE is required" >&2
+    exit 1
+  fi
+
+  sync_images="true"
+  sync_image_ref "${rendered_image}" "${source_image}"
 }
 
 run_all() {
   render_helmfiles
   extract_images
   mirror_images
+}
+
+run_pipeline() {
+  render_helmfiles
+  extract_images
+  generate_pipeline
 }
 
 case "${1:-run}" in
@@ -259,6 +420,12 @@ case "${1:-run}" in
     ;;
   sync)
     mirror_images
+    ;;
+  sync-one)
+    sync_one_image
+    ;;
+  pipeline)
+    run_pipeline
     ;;
   help|-h|--help)
     usage
