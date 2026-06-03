@@ -8,3 +8,6 @@ certManager:
   - registry: quay.io
     image: jetstack/cert-manager-cainjector
     tag: v1.19.3
+  - registry: quay.io
+    image: jetstack/cert-manager-startupapicheck
+    tag: v1.19.3

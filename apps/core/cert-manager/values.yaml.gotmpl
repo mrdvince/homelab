@@ -15,3 +15,7 @@ cainjector:
   image:
     registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.certManager 2).image }}
+
+startupapicheck:
+  image:
+    repository: {{ .Values.imageRegistry }}/{{ (index .Values.certManager 3).image }}
