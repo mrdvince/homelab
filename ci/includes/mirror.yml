@@ -82,6 +82,7 @@ generate-rendered-image-scan-pipeline:
   extends: .rendered-image-pipeline
   variables:
     CHILD_PIPELINE_FILE: rendered-scan-pipeline.yml
+    FAIL_ON_IMAGE_VULNERABILITIES: "true"
     SYNC_IMAGES: "false"
   rules:
     - if: $RUN_RENOVATE == "true"

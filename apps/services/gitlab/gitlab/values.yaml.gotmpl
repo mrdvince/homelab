@@ -147,6 +147,7 @@ registry:
 
 gitlab-runner:
   install: true
+  concurrent: 5
   image:
     registry: {{ .Values.imageRegistry }}
     image: {{ (index .Values.gitlab 10).image }}

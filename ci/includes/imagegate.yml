@@ -1,16 +1,20 @@
 .rendered-image-scan:
+  interruptible: true
   image:
     name: registry.home.mrdvince.me/homelab/builder:1.4.1
     entrypoint: [""]
   variables:
     SEVERITY_THRESHOLD: "CRITICAL,HIGH"
   script:
-    - |
-      test -n "${SOURCE_IMAGE:-}"
-      echo "scanning ${SOURCE_IMAGE}"
-      trivy image --exit-code 1 --severity "${SEVERITY_THRESHOLD}" "${SOURCE_IMAGE}"
+    - ci/mirror.sh scan-one
+  artifacts:
+    when: always
+    paths:
+      - trivy-report.json
+    expire_in: 1 week
 
 .rendered-image-sync:
+  interruptible: true
   image:
     name: registry.home.mrdvince.me/homelab/builder:1.4.1
     entrypoint: [""]

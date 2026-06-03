@@ -6,10 +6,13 @@ output_dir="${RENDERED_MANIFEST_DIR:-/tmp/rendered-manifests}"
 rendered_image_list="${RENDERED_IMAGE_LIST:-imagelist.txt}"
 child_pipeline_file="${CHILD_PIPELINE_FILE:-rendered-pipeline.yml}"
 rendered_template="${RENDERED_TEMPLATE:-ci/includes/imagegate.yml}"
+parent_pipeline_source="${PARENT_PIPELINE_SOURCE:-${CI_PIPELINE_SOURCE:-}}"
 dest_registry="${DEST_REGISTRY:-registry.home.mrdvince.me}"
 map_dir="${IMAGE_MAP_DIR:-infrastructure/images/images}"
 build_dir="${IMAGE_BUILD_DIR:-infrastructure/images/builds}"
 severity_threshold="${SEVERITY_THRESHOLD:-CRITICAL,HIGH}"
+trivy_report="${TRIVY_REPORT:-trivy-report.json}"
+trivy_summary_limit="${TRIVY_SUMMARY_LIMIT:-25}"
 scan_images="${SCAN_IMAGES:-true}"
 sync_images="${SYNC_IMAGES:-true}"
 fail_on_vulnerabilities="${FAIL_ON_IMAGE_VULNERABILITIES:-false}"
@@ -21,7 +24,7 @@ scan_failure_list=""
 
 usage() {
   cat <<'EOF'
-usage: ci/mirror.sh [run|render|images|sync|sync-one|pipeline]
+usage: ci/mirror.sh [run|render|images|scan-one|sync|sync-one|pipeline]
 
 environment overrides:
   ENV_NAME                         helmfile environment, default: aion
@@ -34,6 +37,8 @@ environment overrides:
   IMAGE_MAP_DIR                    yaml registry mapping directory
   IMAGE_BUILD_DIR                  yaml local build mapping directory
   SCAN_IMAGES                      true/false, run trivy before sync
+  TRIVY_REPORT                     per-image json report path, default: trivy-report.json
+  TRIVY_SUMMARY_LIMIT              max findings printed in scan-one logs, default: 25
   SYNC_IMAGES                      true/false, copy images to DEST_REGISTRY
   FAIL_ON_IMAGE_VULNERABILITIES    true/false, fail on high/critical findings
   ALLOW_UPSTREAM_RENDERED_IMAGES   true/false, permit rendered upstream images
@@ -187,7 +192,7 @@ normalize_ref() {
 vulnerability_gate_enabled() {
   local pipeline_source
 
-  pipeline_source="${CI_PIPELINE_SOURCE:-${PARENT_PIPELINE_SOURCE:-}}"
+  pipeline_source="${PARENT_PIPELINE_SOURCE:-${CI_PIPELINE_SOURCE:-}}"
   [ "${fail_on_vulnerabilities}" = "true" ] || [ "${pipeline_source}" = "merge_request_event" ]
 }
 
@@ -238,6 +243,76 @@ scan_image_refs() {
 
   if vulnerability_gate_enabled; then
     echo "failing rendered image mirror because vulnerability gating is enabled" >&2
+    exit 1
+  fi
+
+  echo "continuing anyway - review recommended" >&2
+}
+
+scan_one_image() {
+  local source_image critical_count high_count total_count fixed_count unfixed_count
+
+  source_image="${SOURCE_IMAGE:-}"
+
+  if [ -z "${source_image}" ]; then
+    echo "SOURCE_IMAGE is required" >&2
+    exit 1
+  fi
+
+  echo "scanning ${source_image}"
+  trivy image \
+    --quiet \
+    --skip-version-check \
+    --scanners vuln \
+    --format json \
+    --severity "${severity_threshold}" \
+    --output "${trivy_report}" \
+    "${source_image}"
+
+  critical_count="$(yq -r '[.Results[].Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' "${trivy_report}")"
+  high_count="$(yq -r '[.Results[].Vulnerabilities[]? | select(.Severity == "HIGH")] | length' "${trivy_report}")"
+  total_count=$((critical_count + high_count))
+
+  echo "scan summary for ${source_image}"
+  echo "critical: ${critical_count}"
+  echo "high: ${high_count}"
+
+  if [ "${total_count}" -eq 0 ]; then
+    echo "no ${severity_threshold} vulnerabilities found"
+    return
+  fi
+
+  fixed_count="$(yq -r '[.Results[].Vulnerabilities[]? | select(.FixedVersion != null and .FixedVersion != "")] | length' "${trivy_report}")"
+  unfixed_count=$((total_count - fixed_count))
+
+  echo "fixed version available: ${fixed_count}"
+  echo "no fixed version listed: ${unfixed_count}"
+  echo "showing top ${trivy_summary_limit} findings:"
+  yq -r '
+    .Results[] |
+    select(.Vulnerabilities != null) |
+    .Target as $target |
+    .Vulnerabilities[] |
+    [
+      .Severity,
+      .PkgName,
+      .VulnerabilityID,
+      (.InstalledVersion // "-"),
+      (.FixedVersion // "-"),
+      $target
+    ] |
+    @tsv
+  ' "${trivy_report}" \
+    | sort \
+    | head -n "${trivy_summary_limit}" \
+    | while IFS="$(printf '\t')" read -r severity package cve installed fixed target; do
+        printf -- '- %s %s %s installed=%s fixed=%s target=%s\n' "${severity}" "${package}" "${cve}" "${installed}" "${fixed}" "${target}"
+      done
+
+  echo "full trivy json report written to ${trivy_report}"
+
+  if vulnerability_gate_enabled; then
+    echo "failing rendered image scan because vulnerability gating is enabled" >&2
     exit 1
   fi
 
@@ -303,6 +378,10 @@ include:
 stages:
   - scan
   - sync
+
+variables:
+  PARENT_PIPELINE_SOURCE: $(yaml_quote "${parent_pipeline_source}")
+  FAIL_ON_IMAGE_VULNERABILITIES: $(yaml_quote "${fail_on_vulnerabilities}")
 EOF
 }
 
@@ -417,6 +496,9 @@ case "${1:-run}" in
     ;;
   images)
     extract_images
+    ;;
+  scan-one)
+    scan_one_image
     ;;
   sync)
     mirror_images
