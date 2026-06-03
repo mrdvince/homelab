@@ -23,6 +23,7 @@
   ],
   "ignoreDeps": [
     "registry.home.mrdvince.me/homelab/builder",
+    "registry.home.mrdvince.me/renovate/renovate",
     "secret",
     "clusterissuer",
     "cilium-config",

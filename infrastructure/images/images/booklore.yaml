@@ -1,4 +1,4 @@
 booklore:
-  - registry: docker.io
-    image: booklore/booklore
+  - registry: ghcr.io
+    image: booklore-app/booklore
     tag: "v1.18.5"
