@@ -7,3 +7,26 @@ metricsServer:
   - registry: registry.k8s.io
     image: metrics-server/metrics-server
     tag: v0.8.1
+
+csiDriverNfs:
+  - registry: registry.k8s.io
+    image: sig-storage/nfsplugin
+    tag: v4.13.2
+  - registry: registry.k8s.io
+    image: sig-storage/csi-provisioner
+    tag: v6.1.0
+  - registry: registry.k8s.io
+    image: sig-storage/csi-resizer
+    tag: v2.0.0
+  - registry: registry.k8s.io
+    image: sig-storage/csi-snapshotter
+    tag: v8.4.0
+  - registry: registry.k8s.io
+    image: sig-storage/livenessprobe
+    tag: v2.17.0
+  - registry: registry.k8s.io
+    image: sig-storage/csi-node-driver-registrar
+    tag: v2.15.0
+  - registry: registry.k8s.io
+    image: sig-storage/snapshot-controller
+    tag: v8.4.0

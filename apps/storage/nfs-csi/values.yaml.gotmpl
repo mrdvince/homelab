@@ -1,6 +1,11 @@
 externalSnapshotter:
   enabled: true
 
+image:
+  baseRepo: {{ .Values.imageRegistry }}
+  nfs:
+    repository: {{ .Values.imageRegistry }}/sig-storage/nfsplugin
+
 controller:
   runOnControlPlane: true
   replicas: 2

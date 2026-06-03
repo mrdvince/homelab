@@ -3,7 +3,7 @@ controllers:
     initContainers:
       fix-permissions:
         image:
-          repository: busybox
+          repository: {{ .Values.imageRegistry }}/library/busybox
           tag: "1.37.0"
         command:
           - sh
