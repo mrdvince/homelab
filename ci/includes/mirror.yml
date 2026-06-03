@@ -6,7 +6,7 @@
   variables:
     RENDERED_MANIFEST_DIR: /tmp/rendered-manifests
     RENDERED_IMAGE_LIST: imagelist.txt
-    FAIL_ON_IMAGE_VULNERABILITIES: "true"
+    FAIL_ON_IMAGE_VULNERABILITIES: "false"
     SYNC_IMAGES: "true"
     SCAN_IMAGES: "true"
   script:
@@ -44,6 +44,7 @@ rendered-image-sync:
 scan-rendered-images:
   extends: .rendered-image-mirror
   variables:
+    FAIL_ON_IMAGE_VULNERABILITIES: "true"
     SYNC_IMAGES: "false"
   rules:
     - if: $RUN_RENOVATE == "true"
