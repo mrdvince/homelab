@@ -20,7 +20,7 @@ releases:
   - name: gitlab-postgres
     namespace: gitlab
     chart: cnpg/cluster
-    version: 0.5.0
+    version: 0.6.1
     values:
       - postgres/values.yaml.gotmpl
 
@@ -87,7 +87,7 @@ releases:
   - name: gitlab
     namespace: gitlab
     chart: gitlab/gitlab
-    version: 9.8.3
+    version: 9.11.5
     needs:
       - gitlab-postgres
       - gitlab-s3-secrets
