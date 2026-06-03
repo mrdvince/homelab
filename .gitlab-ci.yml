@@ -86,7 +86,7 @@ generate-images-pipeline:
         variables:
           IMAGE_FILE: "infrastructure/images/${file}"
         rules:
-          - if: \$PARENT_PIPELINE_SOURCE == "web" || \$PARENT_PIPELINE_SOURCE == "schedule"
+          - if: \$PARENT_PIPELINE_SOURCE == "web"
           - if: \$SYNC_ALL == "true"
           - changes:
               - infrastructure/images/${file}
@@ -106,7 +106,7 @@ generate-images-pipeline:
         variables:
           BUILD_FILE: "infrastructure/images/${file}"
         rules:
-          - if: \$PARENT_PIPELINE_SOURCE == "web" || \$PARENT_PIPELINE_SOURCE == "schedule"
+          - if: \$PARENT_PIPELINE_SOURCE == "web"
           - if: \$BUILD_ALL == "true"
           - changes:
               - infrastructure/images/${file}
@@ -129,7 +129,7 @@ generate-images-pipeline:
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
     - if: $CI_PIPELINE_SOURCE == "web"
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && ($SYNC_ALL == "true" || $BUILD_ALL == "true")
 
 trigger-images-sync:
   stage: trigger
@@ -148,7 +148,7 @@ trigger-images-sync:
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
     - if: $CI_PIPELINE_SOURCE == "web"
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && ($SYNC_ALL == "true" || $BUILD_ALL == "true")
 
 publish-charts:
   stage: generate
