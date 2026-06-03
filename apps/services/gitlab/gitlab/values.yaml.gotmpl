@@ -1,3 +1,6 @@
+x-gitlabNodeSelector: &gitlabNodeSelector
+  kubernetes.io/hostname: aion-24
+
 global:
   hosts:
     domain: {{ .Values.domain }}
@@ -101,9 +104,6 @@ global:
 
   kas:
     enabled: true
-
-  nodeSelector: &gitlabNodeSelector
-    kubernetes.io/hostname: aion-24
 
 postgresql:
   install: false
@@ -210,6 +210,10 @@ gitlab:
       tag: {{ (index .Values.gitlab 0).tag }}
     tolerations: *gitlabTolerations
     deployment:
+      strategy:
+        rollingUpdate:
+          maxSurge: 0
+          maxUnavailable: 1
       startupProbe:
         httpGet:
           path: /-/readiness
@@ -301,6 +305,11 @@ gitlab:
     replicas: 1
     minReplicas: 1
     maxReplicas: 1
+    deployment:
+      strategy:
+        rollingUpdate:
+          maxSurge: 0
+          maxUnavailable: 1
     resources:
       requests:
         cpu: 300m
@@ -319,6 +328,7 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 4).image }}
       tag: {{ (index .Values.gitlab 4).tag }}
+    nodeSelector: *gitlabNodeSelector
     tolerations: *gitlabTolerations
     resources:
       requests:

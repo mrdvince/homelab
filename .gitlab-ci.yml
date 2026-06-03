@@ -100,6 +100,10 @@ generate-images-pipeline:
         rules:
           - if: \$PARENT_PIPELINE_SOURCE == "web"
           - if: \$SYNC_ALL == "true"
+          - if: \$PARENT_PIPELINE_SOURCE == "merge_request_event"
+            changes:
+              - infrastructure/images/${file}
+              - infrastructure/images/templates/sync.yml
           - changes:
               - infrastructure/images/${file}
               - infrastructure/images/templates/sync.yml
@@ -120,6 +124,11 @@ generate-images-pipeline:
         rules:
           - if: \$PARENT_PIPELINE_SOURCE == "web"
           - if: \$BUILD_ALL == "true"
+          - if: \$PARENT_PIPELINE_SOURCE == "merge_request_event"
+            changes:
+              - infrastructure/images/${file}
+              - infrastructure/images/templates/build.yml
+      ${dockerfile_changes}
           - changes:
               - infrastructure/images/${file}
               - infrastructure/images/templates/build.yml
@@ -136,6 +145,12 @@ generate-images-pipeline:
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/builds/**/*.yaml
+        - infrastructure/images/dockerfiles/**/*
+        - infrastructure/images/templates/**/*.yml
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/**/*.yaml
@@ -157,6 +172,12 @@ trigger-images-sync:
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/builds/**/*.yaml
+        - infrastructure/images/dockerfiles/**/*
+        - infrastructure/images/templates/**/*.yml
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/**/*.yaml

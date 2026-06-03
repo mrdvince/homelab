@@ -43,7 +43,10 @@
     },
     {
       "groupName": "gitlab stack",
-      "matchPackageNames": ["/^gitlab-org//"]
+      "matchPackageNames": ["/^gitlab-org//", "gitlab"],
+      "automerge": false,
+      "dependencyDashboardApproval": true,
+      "addLabels": ["critical-infra"]
     },
     {
       "groupName": "monitoring stack",
@@ -52,11 +55,6 @@
         "/^prometheus/",
         "/kube-prometheus-stack/"
       ]
-    },
-    {
-      "matchManagers": ["helmfile"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
     },
     {
       "description": "keep cilium updates isolated from bulk chart/image bumps",

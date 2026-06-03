@@ -6,6 +6,7 @@
     DEST_REGISTRY: registry.home.mrdvince.me
     SEVERITY_THRESHOLD: "CRITICAL,HIGH"
     SCAN_IMAGES: "true"
+    FAIL_ON_IMAGE_VULNERABILITIES: "false"
   before_script:
     - |
       skopeo login -u "${REGISTRY_USER}" -p "${REGISTRY_PASSWORD}" "${DEST_REGISTRY}"
@@ -45,6 +46,12 @@
             echo "Scanning ${registry}/${image}:${tag} for vulnerabilities..."
             if ! trivy image --exit-code 1 --severity "${SEVERITY_THRESHOLD}" "${registry}/${image}:${tag}"; then
               echo "WARNING: Critical/High vulnerabilities found in ${image}:${tag}"
+
+              if [ "${FAIL_ON_IMAGE_VULNERABILITIES}" = "true" ] || [ "${PARENT_PIPELINE_SOURCE:-}" = "merge_request_event" ]; then
+                echo "Failing image sync because vulnerability gating is enabled"
+                exit 1
+              fi
+
               echo "Continuing anyway (upstream image) - review recommended"
             fi
           fi
