@@ -1,3 +1,4 @@
 creation_rules:
   - path_regex: .*\.yaml$
     age: age1zupk7rz0e9xgd8kk025t762th9gc20nuaed2x8jk8w7rdknmv5rq0857u8
+    pgp: 7C122BA77B0994D8D8D57F0BA6A17661B50D0D8B
