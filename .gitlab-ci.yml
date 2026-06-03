@@ -8,6 +8,7 @@ stages:
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
+  - local: ci/includes/mirror.yml
   - local: infrastructure/images/templates/sync.yml
   - local: infrastructure/images/templates/build.yml
 
@@ -29,7 +30,6 @@ variables:
 validate-helmfile:
   stage: validate
   image: $BUILDER_IMAGE
-  allow_failure: true
   script:
     - |
       test -n "${SOPS_AGE_KEY:-}"
@@ -43,6 +43,11 @@ validate-helmfile:
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - apps/**/*
+        - charts/**/*
+        - secrets/secrets.enc.yaml
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/**/*
@@ -73,72 +78,10 @@ renovate:
 
 generate-images-pipeline:
   stage: generate
-  image: $ALPINE_IMAGE
-  before_script:
-    - apk add --no-cache yq
+  needs: []
+  image: $BUILDER_IMAGE
   script:
-    - |
-      cd infrastructure/images
-      cat > child-pipeline.yml << 'HEADER'
-      include:
-        - local: infrastructure/images/templates/sync.yml
-        - local: infrastructure/images/templates/build.yml
-
-      stages:
-        - images
-      HEADER
-
-      for file in images/*.yaml; do
-        name=$(basename "${file}" .yaml)
-        cat >> child-pipeline.yml << EOF
-
-      sync-${name}:
-        stage: images
-        extends: .sync-images
-        variables:
-          IMAGE_FILE: "infrastructure/images/${file}"
-        rules:
-          - if: \$PARENT_PIPELINE_SOURCE == "web"
-          - if: \$SYNC_ALL == "true"
-          - if: \$PARENT_PIPELINE_SOURCE == "merge_request_event"
-            changes:
-              - infrastructure/images/${file}
-              - infrastructure/images/templates/sync.yml
-          - changes:
-              - infrastructure/images/${file}
-              - infrastructure/images/templates/sync.yml
-      EOF
-      done
-
-      for file in builds/*.yaml; do
-        [ -f "$file" ] || continue
-        name=$(basename "${file}" .yaml)
-        dockerfile_changes=$(yq e '.. | .dockerfile? | select(.)' "$file" | sed '/^$/d' | sort -u | sed 's|^|        - |')
-        cat >> child-pipeline.yml << EOF
-
-      build-${name}:
-        stage: images
-        extends: .build-images
-        variables:
-          BUILD_FILE: "infrastructure/images/${file}"
-        rules:
-          - if: \$PARENT_PIPELINE_SOURCE == "web"
-          - if: \$BUILD_ALL == "true"
-          - if: \$PARENT_PIPELINE_SOURCE == "merge_request_event"
-            changes:
-              - infrastructure/images/${file}
-              - infrastructure/images/templates/build.yml
-      ${dockerfile_changes}
-          - changes:
-              - infrastructure/images/${file}
-              - infrastructure/images/templates/build.yml
-      ${dockerfile_changes}
-      EOF
-      done
-
-      echo "Generated child pipeline:"
-      cat child-pipeline.yml
-      mv child-pipeline.yml ../../
+    - ci/images.sh pipeline
   artifacts:
     paths:
       - child-pipeline.yml
@@ -151,17 +94,22 @@ generate-images-pipeline:
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
+        - ci/images.sh
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/**/*.yaml
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
+        - ci/images.sh
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "schedule" && ($SYNC_ALL == "true" || $BUILD_ALL == "true")
 
 trigger-images-sync:
   stage: trigger
+  needs:
+    - job: generate-images-pipeline
+      artifacts: true
   variables:
     PARENT_PIPELINE_SOURCE: $CI_PIPELINE_SOURCE
   trigger:
@@ -178,45 +126,26 @@ trigger-images-sync:
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
+        - ci/images.sh
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/**/*.yaml
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
+        - ci/images.sh
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "schedule" && ($SYNC_ALL == "true" || $BUILD_ALL == "true")
 
 publish-charts:
   stage: generate
-  needs: []
   image: $BUILDER_IMAGE
   script:
-    - |
-      for chart in charts/*/Chart.yaml; do
-        dir=$(dirname "$chart")
-        name=$(grep '^name:' "$chart" | awk '{print $2}')
-        version=$(grep '^version:' "$chart" | awk '{print $2}')
-        echo "Packaging ${name}..."
-        helm dependency update "$dir"
-        helm package "$dir" --destination .
-
-        tgz="${name}-${version}.tgz"
-        if [ ! -f "$tgz" ]; then
-          echo "Failed to package ${name}"
-          exit 1
-        fi
-
-        echo "Pushing ${tgz} to Helm registry..."
-        curl --fail-with-body --user "gitlab-ci-token:${CI_JOB_TOKEN}" \
-          --form "chart=@${tgz}" \
-          "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/stable/charts"
-
-        rm -f "$tgz"
-      done
+    - ci/charts.sh publish
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - charts/**/*
+        - ci/charts.sh

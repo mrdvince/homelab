@@ -1,0 +1,52 @@
+.rendered-image-mirror:
+  stage: generate
+  image:
+    name: $BUILDER_IMAGE
+    entrypoint: [""]
+  variables:
+    RENDERED_MANIFEST_DIR: /tmp/rendered-manifests
+    RENDERED_IMAGE_LIST: imagelist.txt
+    FAIL_ON_IMAGE_VULNERABILITIES: "true"
+    SYNC_IMAGES: "true"
+    SCAN_IMAGES: "true"
+  script:
+    - test -n "${SOPS_AGE_KEY:-}"
+    - ci/mirror.sh run
+    - test -s "${RENDERED_IMAGE_LIST}"
+  artifacts:
+    when: always
+    paths:
+      - imagelist.txt
+    expire_in: 1 week
+
+rendered-image-sync:
+  extends: .rendered-image-mirror
+  rules:
+    - if: $RUN_RENOVATE == "true"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - apps/**/*
+        - charts/**/*
+        - infrastructure/images/images/**/*.yaml
+        - secrets/secrets.enc.yaml
+        - ci/includes/mirror.yml
+        - ci/mirror.sh
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/**/*
+        - charts/**/*
+        - infrastructure/images/images/**/*.yaml
+        - secrets/secrets.enc.yaml
+        - ci/includes/mirror.yml
+        - ci/mirror.sh
+
+scan-rendered-images:
+  extends: .rendered-image-mirror
+  variables:
+    SYNC_IMAGES: "false"
+  rules:
+    - if: $RUN_RENOVATE == "true"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCAN_RENDERED_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "web" && $SCAN_RENDERED_IMAGES == "true"

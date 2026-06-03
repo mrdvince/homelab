@@ -9,7 +9,7 @@
     FAIL_ON_IMAGE_VULNERABILITIES: "false"
   before_script:
     - |
-      skopeo login -u "${REGISTRY_USER}" -p "${REGISTRY_PASSWORD}" "${DEST_REGISTRY}"
+      printf '%s' "${REGISTRY_PASSWORD}" | skopeo login -u "${REGISTRY_USER}" --password-stdin "${DEST_REGISTRY}"
   script:
     - |
       echo "Processing ${IMAGE_FILE}..."
