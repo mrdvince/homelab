@@ -6,12 +6,14 @@ output_dir="${RENDERED_MANIFEST_DIR:-/tmp/rendered-manifests}"
 rendered_image_list="${RENDERED_IMAGE_LIST:-imagelist.txt}"
 dest_registry="${DEST_REGISTRY:-registry.home.mrdvince.me}"
 map_dir="${IMAGE_MAP_DIR:-infrastructure/images/images}"
+build_dir="${IMAGE_BUILD_DIR:-infrastructure/images/builds}"
 severity_threshold="${SEVERITY_THRESHOLD:-CRITICAL,HIGH}"
 scan_images="${SCAN_IMAGES:-true}"
 sync_images="${SYNC_IMAGES:-true}"
 fail_on_vulnerabilities="${FAIL_ON_IMAGE_VULNERABILITIES:-false}"
 allow_upstream_rendered_images="${ALLOW_UPSTREAM_RENDERED_IMAGES:-false}"
 registry_map=""
+local_image_map=""
 
 usage() {
   cat <<'EOF'
@@ -24,6 +26,7 @@ environment overrides:
   RENDERED_IMAGE_LIST              extracted image list path
   DEST_REGISTRY                    required rendered image registry
   IMAGE_MAP_DIR                    yaml registry mapping directory
+  IMAGE_BUILD_DIR                  yaml local build mapping directory
   SCAN_IMAGES                      true/false, run trivy before sync
   SYNC_IMAGES                      true/false, copy images to DEST_REGISTRY
   FAIL_ON_IMAGE_VULNERABILITIES    true/false, fail on high/critical findings
@@ -61,8 +64,10 @@ render_helmfiles() {
     output_path="${output_dir}/${output_name}"
 
     echo "rendering ${helmfile_path}"
+    helmfile -f "${helmfile_path}" -e "${env_name}" list --skip-charts --output json \
+      | yq -r '.[] | "release \(.namespace)/\(.name): \(.chart)@\(.version)"'
     helmfile -f "${helmfile_path}" -e "${env_name}" repos >/dev/null
-    helmfile -f "${helmfile_path}" -e "${env_name}" template --include-crds -q >"${output_path}"
+    helmfile -f "${helmfile_path}" -e "${env_name}" template --include-crds --skip-tests -q >"${output_path}"
   done
 }
 
@@ -76,7 +81,7 @@ extract_images() {
     exit 1
   fi
 
-  yq -N -r '.. | select(tag == "!!map" and has("image")) | .image | select(. != null)' "${rendered_files[@]}" \
+  yq -N -r '.. | select(tag == "!!map" and has("image")) | .image | select(tag == "!!str") | select(test("^[^[:space:]]+$"))' "${rendered_files[@]}" \
     | sed '/^$/d' \
     | sort -u >"${rendered_image_list}"
 
@@ -87,15 +92,28 @@ extract_images() {
 }
 
 build_registry_map() {
-  local map_file
+  local map_file build_file
 
   registry_map="$(mktemp)"
-  trap 'rm -f "${registry_map}"' EXIT
+  local_image_map="$(mktemp)"
+  trap 'rm -f "${registry_map}" "${local_image_map}"' EXIT
 
   for map_file in "${map_dir}"/*.yaml; do
     [ -f "${map_file}" ] || continue
     yq -r '.. | select(tag == "!!map" and has("registry") and has("image")) | select(.registry != null and .image != null) | [.image, .registry] | @tsv' "${map_file}"
   done | sort -u >"${registry_map}"
+
+  for map_file in "${map_dir}"/*.yaml; do
+    [ -f "${map_file}" ] || continue
+    yq -r '.. | select(tag == "!!map" and has("image")) | select(.image != null) | select((has("registry") | not) or .registry == null) | .image' "${map_file}"
+  done >"${local_image_map}"
+
+  for build_file in "${build_dir}"/*.yaml; do
+    [ -f "${build_file}" ] || continue
+    yq -r '.. | select(tag == "!!map" and has("image")) | select(.image != null) | .image' "${build_file}"
+  done >>"${local_image_map}"
+
+  sort -u "${local_image_map}" -o "${local_image_map}"
 
   if [ ! -s "${registry_map}" ]; then
     echo "no image registry mappings found in ${map_dir}" >&2
@@ -111,6 +129,12 @@ lookup_registry() {
     $1 == repository { print $2; found = 1; exit }
     END { if (!found) exit 1 }
   ' "${registry_map}"
+}
+
+is_local_image() {
+  local repository="$1"
+
+  grep -Fxq "${repository}" "${local_image_map}"
 }
 
 normalize_ref() {
@@ -141,6 +165,11 @@ normalize_ref() {
   fi
 
   source_registry="$(lookup_registry "${repository}")" || {
+    if is_local_image "${repository}"; then
+      echo "${image}"
+      return
+    fi
+
     echo "no upstream registry mapping for rendered image repository: ${repository}" >&2
     echo "add ${repository} to ${map_dir} with its upstream registry" >&2
     exit 1
@@ -176,6 +205,17 @@ process_image() {
 
   if [ "${sync_images}" != "true" ]; then
     return
+  fi
+
+  if [ "${source_image}" = "${rendered_image}" ]; then
+    if skopeo inspect --raw "${dest_ref}" >/dev/null 2>&1; then
+      echo "skipping ${rendered_image} - local build already exists in registry"
+      return
+    fi
+
+    echo "rendered image ${rendered_image} is built locally but is missing from registry" >&2
+    echo "run the image build pipeline for this image before rendered image sync" >&2
+    exit 1
   fi
 
   if skopeo inspect --raw "${dest_ref}" >/dev/null 2>&1; then
