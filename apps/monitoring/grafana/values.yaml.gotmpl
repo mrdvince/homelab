@@ -1,7 +1,6 @@
 image:
   registry: {{ .Values.imageRegistry }}
   repository: {{ (index .Values.grafanaImages 0).image }}
-  tag: {{ (index .Values.grafanaImages 0).tag }}
 
 adminUser: {{ .Values.grafana.adminUser }}
 adminPassword: {{ .Values.grafana.adminPassword }}
@@ -106,7 +105,6 @@ sidecar:
   image:
     registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.grafanaImages 1).image }}
-    tag: {{ (index .Values.grafanaImages 1).tag }}
   dashboards:
     enabled: true
     label: grafana_dashboard
@@ -151,10 +149,8 @@ testFramework:
   image:
     registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.grafanaImages 3).image }}
-    tag: {{ (index .Values.grafanaImages 3).tag }}
 
 initChownData:
   image:
     registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.grafanaImages 2).image }}
-    tag: {{ (index .Values.grafanaImages 2).tag }}

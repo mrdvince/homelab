@@ -2,6 +2,7 @@
 set -eu
 
 image_root="${IMAGE_ROOT:-infrastructure/images}"
+local_image_dir="${IMAGE_LOCAL_DIR:-${image_root}/images/local}"
 output_file="${CHILD_PIPELINE_FILE:-child-pipeline.yml}"
 sync_template="${SYNC_TEMPLATE:-infrastructure/images/templates/sync.yml}"
 build_template="${BUILD_TEMPLATE:-infrastructure/images/templates/build.yml}"
@@ -12,10 +13,19 @@ usage: ci/images.sh [pipeline|retag-local-builds]
 
 environment overrides:
   IMAGE_ROOT           image config root, default: infrastructure/images
+  IMAGE_LOCAL_DIR      local image catalog directory, default: infrastructure/images/images/local
   CHILD_PIPELINE_FILE  generated child pipeline path, default: child-pipeline.yml
   SYNC_TEMPLATE        sync template include path
   BUILD_TEMPLATE       build template include path
 EOF
+}
+
+image_files() {
+  find "${local_image_dir}" -type f -name '*.yaml' -print | sort
+}
+
+local_image_files() {
+  find "${local_image_dir}" -type f -name '*.yaml' -print | sort
 }
 
 target_branch="${CI_MERGE_REQUEST_TARGET_BRANCH_NAME:-${CI_DEFAULT_BRANCH:-main}}"
@@ -71,7 +81,7 @@ retag_local_builds() {
       echo "setting ${image} tag to ${tag} because ${dockerfile} changed"
       yq -i ".${key}.tag = \"${tag}\"" "${build_file}"
 
-      for image_file in "${image_root}"/images/*.yaml; do
+      for image_file in $(local_image_files); do
         [ -f "${image_file}" ] || continue
         update_image_map_tag "${image}" "${tag}" "${image_file}"
       done
@@ -108,7 +118,7 @@ EOF
 
 append_sync_job() {
   file="$1"
-  name="$(basename "${file}" .yaml)"
+  name="$(printf '%s' "${file#${image_root}/images/}" | sed 's/\.yaml$//; s#[^A-Za-z0-9]#-#g; s/--*/-/g; s/^-//; s/-$//')"
 
   cat >>"${output_file}" <<EOF
 
@@ -169,7 +179,7 @@ EOF
 generate_pipeline() {
   write_header
 
-  for file in "${image_root}"/images/*.yaml; do
+  for file in $(image_files); do
     [ -f "${file}" ] || continue
     append_sync_job "${file}"
   done

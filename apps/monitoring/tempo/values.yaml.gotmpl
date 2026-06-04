@@ -1,7 +1,6 @@
 tempo:
   registry: {{ .Values.imageRegistry }}
   repository: {{ (index .Values.tempo 0).image }}
-  tag: {{ (index .Values.tempo 0).tag }}
   retention: 1080h
   reportingEnabled: false
   metricsGenerator:

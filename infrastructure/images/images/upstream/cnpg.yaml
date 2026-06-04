@@ -1,7 +1,6 @@
 cnpg:
   - registry: ghcr.io
     image: cloudnative-pg/cloudnative-pg
-    tag: "1.28.1"
   - registry: ghcr.io
     image: cloudnative-pg/postgresql
     tag: "18"

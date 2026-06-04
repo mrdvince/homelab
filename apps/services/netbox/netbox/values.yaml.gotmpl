@@ -1,7 +1,6 @@
 image:
   registry: {{ .Values.imageRegistry }}
   repository: {{ (index .Values.netbox 0).image }}
-  tag: {{ (index .Values.netbox 0).tag }}
 
 superuser:
   name: {{ index .Values "netbox-oidc" "superuser_name" }}

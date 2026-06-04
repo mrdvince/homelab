@@ -1,7 +1,6 @@
 pyroscope:
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.pyroscope 0).image }}
-    tag: {{ (index .Values.pyroscope 0).tag }}
 
   persistence:
     enabled: true

@@ -1,4 +1,3 @@
 traefik:
   - registry: docker.io
     image: traefik
-    tag: v3.6.7

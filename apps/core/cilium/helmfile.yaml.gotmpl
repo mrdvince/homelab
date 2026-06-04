@@ -11,7 +11,7 @@ environments:
         lb_pool_stop: "10.30.40.254"
         cilium_op: 2
       - ../../../infrastructure/images/config.yaml
-      - ../../../infrastructure/images/images/*.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
 
@@ -27,7 +27,7 @@ environments:
         lb_pool_stop: "10.30.50.254"
         cilium_op: 1
       - ../../../infrastructure/images/config.yaml
-      - ../../../infrastructure/images/images/*.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
 ---

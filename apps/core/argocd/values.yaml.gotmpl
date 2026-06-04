@@ -2,7 +2,6 @@ global:
   domain: argocd.{{ .Values.domain }}
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.argocd 0).image }}
-    tag: {{ (index .Values.argocd 0).tag }}
 
 server:
   extraArgs:
@@ -120,9 +119,7 @@ repoServer:
 dex:
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.dex 0).image }}
-    tag: {{ (index .Values.dex 0).tag }}
 
 redis:
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.argocdRedis 0).image }}
-    tag: {{ (index .Values.argocdRedis 0).tag }}

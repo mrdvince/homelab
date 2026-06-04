@@ -1,7 +1,6 @@
 image:
   registry: {{ .Values.imageRegistry }}
   repository: {{ (index .Values.beyla 0).image }}
-  tag: {{ (index .Values.beyla 0).tag }}
 
 env:
   OTEL_RESOURCE_ATTRIBUTES: "env={{ .Environment.Name }}"

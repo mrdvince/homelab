@@ -2,13 +2,13 @@ environments:
   aion:
     values:
       - ../../../infrastructure/images/config.yaml
-      - ../../../infrastructure/images/images/*.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - ../../../infrastructure/images/config.yaml
-      - ../../../infrastructure/images/images/*.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
     secrets:
       - ../../../secrets/secrets.enc.yaml
 ---

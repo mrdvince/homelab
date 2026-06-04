@@ -1,12 +1,10 @@
 image:
   repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 0).image }}
-  tag: {{ (index .Values.cilium 0).tag }}
   useDigest: false
 
 envoy:
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 1).image }}
-    tag: {{ (index .Values.cilium 1).tag }}
     useDigest: false
 
 kubeProxyReplacement: true
@@ -60,7 +58,6 @@ hubble:
     enabled: true
     image:
       repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 3).image }}
-      tag: {{ (index .Values.cilium 3).tag }}
       useDigest: false
     prometheus:
       enabled: true
@@ -71,12 +68,10 @@ hubble:
     frontend:
       image:
         repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 4).image }}
-        tag: {{ (index .Values.cilium 4).tag }}
         useDigest: false
     backend:
       image:
         repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 5).image }}
-        tag: {{ (index .Values.cilium 5).tag }}
         useDigest: false
 
   metrics:
@@ -105,7 +100,7 @@ prometheus:
 
 operator:
   image:
-    override: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 2).image }}:{{ (index .Values.cilium 2).tag }}
+    repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 2).image | trimSuffix "-generic" }}
     useDigest: false
   dashboards:
     enabled: true

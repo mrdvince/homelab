@@ -1,6 +1,5 @@
 image:
   repository: {{ .Values.imageRegistry }}/{{ (index .Values.cnpg 0).image }}
-  tag: {{ (index .Values.cnpg 0).tag }}
 
 monitoring:
   grafanaDashboard:

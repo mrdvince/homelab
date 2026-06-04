@@ -240,13 +240,11 @@ controller:
 image:
   registry: {{ .Values.imageRegistry }}
   repository: {{ (index .Values.alloy 0).image }}
-  tag: {{ (index .Values.alloy 0).tag }}
 
 configReloader:
   image:
     registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.prometheusOperator 2).image }}
-    tag: {{ (index .Values.prometheusOperator 2).tag }}
 
 crds:
   create: false

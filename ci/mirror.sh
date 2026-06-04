@@ -113,15 +113,15 @@ build_registry_map() {
   local_image_map="$(mktemp)"
   trap 'rm -f "${registry_map}" "${local_image_map}" "${image_ref_map:-}" "${scan_failure_list:-}"' EXIT
 
-  for map_file in "${map_dir}"/*.yaml; do
+  while IFS= read -r map_file; do
     [ -f "${map_file}" ] || continue
     yq -r '.. | select(tag == "!!map" and has("registry") and has("image")) | select(.registry != null and .image != null) | [.image, .registry] | @tsv' "${map_file}"
-  done | sort -u >"${registry_map}"
+  done < <(find "${map_dir}" -type f -name '*.yaml' -print | sort) | sort -u >"${registry_map}"
 
-  for map_file in "${map_dir}"/*.yaml; do
+  while IFS= read -r map_file; do
     [ -f "${map_file}" ] || continue
     yq -r '.. | select(tag == "!!map" and has("image")) | select(.image != null) | select((has("registry") | not) or .registry == null) | .image' "${map_file}"
-  done >"${local_image_map}"
+  done < <(find "${map_dir}" -type f -name '*.yaml' -print | sort) >"${local_image_map}"
 
   for build_file in "${build_dir}"/*.yaml; do
     [ -f "${build_file}" ] || continue
@@ -154,7 +154,7 @@ is_local_image() {
 
 normalize_ref() {
   local image="$1"
-  local image_without_registry repository reference source_registry
+  local image_without_registry image_without_digest repository reference digest source_registry
 
   if [[ "${image}" != "${dest_registry}/"* ]]; then
     if [ "${allow_upstream_rendered_images}" = "true" ]; then
@@ -169,13 +169,21 @@ normalize_ref() {
   image_without_registry="${image#${dest_registry}/}"
 
   if [[ "${image_without_registry}" == *@* ]]; then
-    repository="${image_without_registry%@*}"
-    reference="@${image_without_registry#*@}"
-  elif [[ "${image_without_registry}" == *:* ]]; then
-    repository="${image_without_registry%:*}"
-    reference=":${image_without_registry##*:}"
+    image_without_digest="${image_without_registry%@*}"
+    digest="@${image_without_registry#*@}"
   else
-    repository="${image_without_registry}"
+    image_without_digest="${image_without_registry}"
+    digest=""
+  fi
+
+  if [[ "${image_without_digest}" == *:* ]]; then
+    repository="${image_without_digest%:*}"
+    reference=":${image_without_digest##*:}${digest}"
+  elif [ -n "${digest}" ]; then
+    repository="${image_without_digest}"
+    reference="${digest}"
+  else
+    repository="${image_without_digest}"
     reference=":latest"
   fi
 
@@ -191,6 +199,16 @@ normalize_ref() {
   }
 
   echo "${source_registry}/${repository}${reference}"
+}
+
+copy_destination_ref() {
+  local image="$1"
+
+  if [[ "${image}" == *@* ]]; then
+    echo "${image%@*}"
+  else
+    echo "${image}"
+  fi
 }
 
 vulnerability_gate_enabled() {
@@ -371,7 +389,7 @@ sync_image_ref() {
   fi
 
   source_ref="docker://${source_image}"
-  dest_ref="docker://${rendered_image}"
+  dest_ref="docker://$(copy_destination_ref "${rendered_image}")"
 
   if [ "${source_image}" = "${rendered_image}" ]; then
     if skopeo inspect --raw "${dest_ref}" >/dev/null 2>&1; then
@@ -432,6 +450,10 @@ write_pipeline_header() {
 include:
   - local: ${rendered_template}
 
+workflow:
+  rules:
+    - when: always
+
 stages:
   - scan
   - sync
@@ -444,6 +466,10 @@ EOF
 
 write_noop_pipeline() {
   cat >"${child_pipeline_file}" <<'EOF'
+workflow:
+  rules:
+    - when: always
+
 stages:
   - scan
 
@@ -490,7 +516,7 @@ EOF
 }
 
 generate_pipeline() {
-  local rendered_image source_image job_name index emitted_count skipped_count
+  local rendered_image source_image job_name index scan_count sync_count skipped_count
 
   build_registry_map
   prepare_image_refs
@@ -501,31 +527,41 @@ generate_pipeline() {
   fi
 
   index=0
-  emitted_count=0
+  scan_count=0
+  sync_count=0
   skipped_count=0
   while IFS=$'\t' read -r rendered_image source_image; do
     index=$((index + 1))
+    job_name="$(job_name_for_image "${index}" "${rendered_image}")"
 
     if [ "${sync_images}" = "true" ] && rendered_image_exists "${rendered_image}"; then
       echo "skipping ${rendered_image} - already exists in registry"
       skipped_count=$((skipped_count + 1))
+
+      if [ "${parent_pipeline_source}" != "merge_request_event" ]; then
+        continue
+      fi
+
+      append_scan_job "${job_name}" "${source_image}"
+      scan_count=$((scan_count + 1))
       continue
     fi
 
-    job_name="$(job_name_for_image "${index}" "${rendered_image}")"
     append_scan_job "${job_name}" "${source_image}"
-    emitted_count=$((emitted_count + 1))
+    scan_count=$((scan_count + 1))
 
     if [ "${sync_images}" = "true" ]; then
       append_sync_job "${job_name}" "${rendered_image}" "${source_image}"
+      sync_count=$((sync_count + 1))
     fi
   done <"${image_ref_map}"
 
-  if [ "${emitted_count}" -eq 0 ]; then
+  if [ "${scan_count}" -eq 0 ] && [ "${sync_count}" -eq 0 ]; then
     write_noop_pipeline
   fi
 
-  echo "rendered image jobs generated: ${emitted_count}"
+  echo "rendered image scan jobs generated: ${scan_count}"
+  echo "rendered image sync jobs generated: ${sync_count}"
   echo "rendered images skipped because they already exist: ${skipped_count}"
   echo "generated rendered image child pipeline:"
   cat "${child_pipeline_file}"
