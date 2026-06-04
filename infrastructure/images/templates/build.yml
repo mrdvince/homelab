@@ -69,7 +69,7 @@
         }
 
         echo "Building image..."
-        docker build -t "${dest}" -f "${dockerfile_path}" "${build_context}"
+        docker build --pull -t "${dest}" -f "${dockerfile_path}" "${build_context}"
 
         echo "Scanning image for vulnerabilities..."
         trivy image --severity HIGH,CRITICAL "${dest}"

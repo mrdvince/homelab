@@ -442,8 +442,10 @@ variables:
 EOF
 }
 
-append_noop_job() {
-  cat >>"${child_pipeline_file}" <<'EOF'
+write_noop_pipeline() {
+  cat >"${child_pipeline_file}" <<'EOF'
+stages:
+  - scan
 
 rendered-images-current:
   stage: scan
@@ -520,7 +522,7 @@ generate_pipeline() {
   done <"${image_ref_map}"
 
   if [ "${emitted_count}" -eq 0 ]; then
-    append_noop_job
+    write_noop_pipeline
   fi
 
   echo "rendered image jobs generated: ${emitted_count}"

@@ -76,9 +76,28 @@ renovate:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $RUN_RENOVATE == "true"
     - if: $CI_PIPELINE_SOURCE == "web" && $RUN_RENOVATE == "true"
 
+retag-local-builds:
+  stage: validate
+  image: $BUILDER_IMAGE
+  interruptible: true
+  variables:
+    GIT_DEPTH: "0"
+  script:
+    - ci/images.sh retag-local-builds
+  rules:
+    - if: $RUN_RENOVATE == "true"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^renovate\//
+      changes:
+        - infrastructure/images/builds/**/*.yaml
+        - infrastructure/images/dockerfiles/**/*
+        - ci/images.sh
+
 generate-images-pipeline:
   stage: generate
-  needs: []
+  needs:
+    - job: retag-local-builds
+      optional: true
   image: $BUILDER_IMAGE
   script:
     - ci/images.sh pipeline

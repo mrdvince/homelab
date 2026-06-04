@@ -42,6 +42,15 @@
       "groupName": "helm charts (minor/patch)"
     },
     {
+      "description": "keep image reference updates together",
+      "matchManagers": ["helm-values", "dockerfile"],
+      "matchFileNames": [
+        "charts/**/values.yaml",
+        "infrastructure/images/dockerfiles/**"
+      ],
+      "groupName": "container images"
+    },
+    {
       "groupName": "gitlab stack",
       "matchPackageNames": ["/^gitlab-org//", "gitlab"],
       "automerge": false,

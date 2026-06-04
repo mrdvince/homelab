@@ -51,6 +51,8 @@ trigger-rendered-image-sync:
   needs:
     - job: generate-rendered-image-pipeline
       artifacts: true
+    - job: trigger-images-sync
+      optional: true
   trigger:
     include:
       - artifact: rendered-pipeline.yml
