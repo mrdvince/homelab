@@ -12,7 +12,9 @@ map_dir="${IMAGE_MAP_DIR:-infrastructure/images/images}"
 build_dir="${IMAGE_BUILD_DIR:-infrastructure/images/builds}"
 severity_threshold="${SEVERITY_THRESHOLD:-CRITICAL,HIGH}"
 trivy_report="${TRIVY_REPORT:-trivy-report.json}"
+trivy_error_log="${TRIVY_ERROR_LOG:-trivy-error.log}"
 trivy_summary_limit="${TRIVY_SUMMARY_LIMIT:-25}"
+trivy_timeout="${TRIVY_TIMEOUT:-20m}"
 scan_images="${SCAN_IMAGES:-true}"
 sync_images="${SYNC_IMAGES:-true}"
 fail_on_vulnerabilities="${FAIL_ON_IMAGE_VULNERABILITIES:-false}"
@@ -38,7 +40,9 @@ environment overrides:
   IMAGE_BUILD_DIR                  yaml local build mapping directory
   SCAN_IMAGES                      true/false, run trivy before sync
   TRIVY_REPORT                     per-image json report path, default: trivy-report.json
+  TRIVY_ERROR_LOG                  per-image trivy stderr path, default: trivy-error.log
   TRIVY_SUMMARY_LIMIT              max findings printed in scan-one logs, default: 25
+  TRIVY_TIMEOUT                    per-image trivy timeout, default: 20m
   SYNC_IMAGES                      true/false, copy images to DEST_REGISTRY
   FAIL_ON_IMAGE_VULNERABILITIES    true/false, fail on high/critical findings
   ALLOW_UPSTREAM_RENDERED_IMAGES   true/false, permit rendered upstream images
@@ -227,7 +231,7 @@ scan_image_refs() {
     [ -n "${source_image}" ] || continue
 
     echo "scanning ${source_image}"
-    if ! trivy image --exit-code 1 --severity "${severity_threshold}" "${source_image}"; then
+    if ! trivy image --timeout "${trivy_timeout}" --exit-code 1 --severity "${severity_threshold}" "${source_image}"; then
       echo "warning: critical/high vulnerabilities or scan errors found in ${source_image}"
       printf '%s\n' "${source_image}" >>"${scan_failure_list}"
       scan_failed="true"
@@ -251,6 +255,7 @@ scan_image_refs() {
 
 scan_one_image() {
   local source_image critical_count high_count total_count fixed_count unfixed_count
+  local trivy_status trivy_auth_args=()
 
   source_image="${SOURCE_IMAGE:-}"
 
@@ -259,15 +264,52 @@ scan_one_image() {
     exit 1
   fi
 
+  if [[ "${source_image}" == "${dest_registry}/"* ]] && [ -n "${REGISTRY_USER:-}" ] && [ -n "${REGISTRY_PASSWORD:-}" ]; then
+    trivy_auth_args=(--username "${REGISTRY_USER}" --password-stdin)
+  fi
+
   echo "scanning ${source_image}"
-  trivy image \
-    --quiet \
-    --skip-version-check \
-    --scanners vuln \
-    --format json \
-    --severity "${severity_threshold}" \
-    --output "${trivy_report}" \
-    "${source_image}"
+  trivy_status=0
+  if [ "${#trivy_auth_args[@]}" -gt 0 ]; then
+    printf '%s' "${REGISTRY_PASSWORD}" | trivy image \
+      --quiet \
+      --skip-version-check \
+      --scanners vuln \
+      --format json \
+      --severity "${severity_threshold}" \
+      --timeout "${trivy_timeout}" \
+      --output "${trivy_report}" \
+      "${trivy_auth_args[@]}" \
+      "${source_image}" 2>"${trivy_error_log}" || trivy_status=$?
+  else
+    trivy image \
+      --quiet \
+      --skip-version-check \
+      --scanners vuln \
+      --format json \
+      --severity "${severity_threshold}" \
+      --timeout "${trivy_timeout}" \
+      --output "${trivy_report}" \
+      "${source_image}" 2>"${trivy_error_log}" || trivy_status=$?
+  fi
+
+  if [ "${trivy_status}" -ne 0 ] && [ ! -s "${trivy_report}" ]; then
+    echo "trivy scan failed before producing ${trivy_report}"
+    if [ -s "${trivy_error_log}" ]; then
+      echo "trivy error output:"
+      tail -n 40 "${trivy_error_log}"
+    fi
+
+    printf '{}\n' >"${trivy_report}"
+
+    if vulnerability_gate_enabled; then
+      echo "failing rendered image scan because vulnerability gating is enabled" >&2
+      exit "${trivy_status}"
+    fi
+
+    echo "continuing anyway - review recommended" >&2
+    return
+  fi
 
   critical_count="$(yq -r '[.Results[].Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' "${trivy_report}")"
   high_count="$(yq -r '[.Results[].Vulnerabilities[]? | select(.Severity == "HIGH")] | length' "${trivy_report}")"
