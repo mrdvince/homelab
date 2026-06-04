@@ -393,6 +393,21 @@ sync_image_ref() {
   skopeo copy --all "${source_ref}" "${dest_ref}"
 }
 
+login_destination_registry() {
+  if [ -z "${REGISTRY_USER:-}" ] || [ -z "${REGISTRY_PASSWORD:-}" ]; then
+    echo "REGISTRY_USER and REGISTRY_PASSWORD are required when syncing images" >&2
+    exit 1
+  fi
+
+  printf '%s' "${REGISTRY_PASSWORD}" | skopeo login -u "${REGISTRY_USER}" --password-stdin "${dest_registry}"
+}
+
+rendered_image_exists() {
+  local rendered_image="$1"
+
+  skopeo inspect --raw "docker://${rendered_image}" >/dev/null 2>&1
+}
+
 yaml_quote() {
   local value="$1"
 
@@ -424,6 +439,19 @@ stages:
 variables:
   PARENT_PIPELINE_SOURCE: $(yaml_quote "${parent_pipeline_source}")
   FAIL_ON_IMAGE_VULNERABILITIES: $(yaml_quote "${fail_on_vulnerabilities}")
+EOF
+}
+
+append_noop_job() {
+  cat >>"${child_pipeline_file}" <<'EOF'
+
+rendered-images-current:
+  stage: scan
+  image:
+    name: registry.home.mrdvince.me/homelab/builder:1.4.1
+    entrypoint: [""]
+  script:
+    - echo "all rendered images already exist in the destination registry"
 EOF
 }
 
@@ -460,23 +488,43 @@ EOF
 }
 
 generate_pipeline() {
-  local rendered_image source_image job_name index
+  local rendered_image source_image job_name index emitted_count skipped_count
 
   build_registry_map
   prepare_image_refs
   write_pipeline_header
 
+  if [ "${sync_images}" = "true" ]; then
+    login_destination_registry
+  fi
+
   index=0
+  emitted_count=0
+  skipped_count=0
   while IFS=$'\t' read -r rendered_image source_image; do
     index=$((index + 1))
+
+    if [ "${sync_images}" = "true" ] && rendered_image_exists "${rendered_image}"; then
+      echo "skipping ${rendered_image} - already exists in registry"
+      skipped_count=$((skipped_count + 1))
+      continue
+    fi
+
     job_name="$(job_name_for_image "${index}" "${rendered_image}")"
     append_scan_job "${job_name}" "${source_image}"
+    emitted_count=$((emitted_count + 1))
 
     if [ "${sync_images}" = "true" ]; then
       append_sync_job "${job_name}" "${rendered_image}" "${source_image}"
     fi
   done <"${image_ref_map}"
 
+  if [ "${emitted_count}" -eq 0 ]; then
+    append_noop_job
+  fi
+
+  echo "rendered image jobs generated: ${emitted_count}"
+  echo "rendered images skipped because they already exist: ${skipped_count}"
   echo "generated rendered image child pipeline:"
   cat "${child_pipeline_file}"
 }
@@ -489,7 +537,7 @@ mirror_images() {
   scan_image_refs
 
   if [ "${sync_images}" = "true" ]; then
-    printf '%s' "${REGISTRY_PASSWORD}" | skopeo login -u "${REGISTRY_USER}" --password-stdin "${dest_registry}"
+    login_destination_registry
   fi
 
   while IFS=$'\t' read -r rendered_image source_image; do
