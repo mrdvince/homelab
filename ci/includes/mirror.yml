@@ -27,6 +27,12 @@ generate-rendered-image-pipeline:
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "api" && $SYNC_ALL == "true"
+    - if: $CI_PIPELINE_SOURCE == "api" && $SYNC_RENDERED_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SYNC_ALL == "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SYNC_RENDERED_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "web" && $SYNC_ALL == "true"
+    - if: $CI_PIPELINE_SOURCE == "web" && $SYNC_RENDERED_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - apps/**/*
@@ -48,6 +54,12 @@ trigger-rendered-image-sync:
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "api" && $SYNC_ALL == "true"
+    - if: $CI_PIPELINE_SOURCE == "api" && $SYNC_RENDERED_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SYNC_ALL == "true"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SYNC_RENDERED_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "web" && $SYNC_ALL == "true"
+    - if: $CI_PIPELINE_SOURCE == "web" && $SYNC_RENDERED_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - apps/**/*
@@ -65,6 +77,7 @@ generate-rendered-image-scan-pipeline:
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "api" && $SCAN_RENDERED_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCAN_RENDERED_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "web" && $SCAN_RENDERED_IMAGES == "true"
 
@@ -81,5 +94,6 @@ trigger-rendered-image-scan:
   rules:
     - if: $RUN_RENOVATE == "true"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "api" && $SCAN_RENDERED_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCAN_RENDERED_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "web" && $SCAN_RENDERED_IMAGES == "true"
