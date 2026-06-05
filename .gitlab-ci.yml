@@ -109,14 +109,14 @@ generate-images-pipeline:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/images/local/**/*.yaml
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
         - ci/images.sh
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/images/local/**/*.yaml
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
@@ -141,14 +141,14 @@ trigger-images-sync:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/images/local/**/*.yaml
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml
         - ci/images.sh
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - infrastructure/images/images/**/*.yaml
+        - infrastructure/images/images/local/**/*.yaml
         - infrastructure/images/builds/**/*.yaml
         - infrastructure/images/dockerfiles/**/*
         - infrastructure/images/templates/**/*.yml

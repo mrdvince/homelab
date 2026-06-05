@@ -38,6 +38,17 @@ generate-rendered-image-pipeline:
         - apps/**/*
         - charts/**/*
         - secrets/secrets.enc.yaml
+        - infrastructure/images/images/upstream/**/*.yaml
+        - ci/includes/imagegate.yml
+        - ci/includes/mirror.yml
+        - ci/mirror.sh
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/**/*
+        - charts/**/*
+        - secrets/secrets.enc.yaml
+        - infrastructure/images/images/upstream/**/*.yaml
+        - ci/includes/imagegate.yml
         - ci/includes/mirror.yml
         - ci/mirror.sh
 
@@ -65,6 +76,17 @@ trigger-rendered-image-sync:
         - apps/**/*
         - charts/**/*
         - secrets/secrets.enc.yaml
+        - infrastructure/images/images/upstream/**/*.yaml
+        - ci/includes/imagegate.yml
+        - ci/includes/mirror.yml
+        - ci/mirror.sh
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/**/*
+        - charts/**/*
+        - secrets/secrets.enc.yaml
+        - infrastructure/images/images/upstream/**/*.yaml
+        - ci/includes/imagegate.yml
         - ci/includes/mirror.yml
         - ci/mirror.sh
 
