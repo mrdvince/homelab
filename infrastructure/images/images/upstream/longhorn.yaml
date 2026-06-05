@@ -23,7 +23,5 @@ longhorn:
     image: longhornio/livenessprobe
   - registry: docker.io
     image: longhornio/backing-image-manager
-    tag: v1.11.1
   - registry: docker.io
     image: longhornio/support-bundle-kit
-    tag: v0.0.81
