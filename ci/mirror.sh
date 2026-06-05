@@ -178,7 +178,11 @@ normalize_ref() {
 
   if [[ "${image_without_digest}" == *:* ]]; then
     repository="${image_without_digest%:*}"
-    reference=":${image_without_digest##*:}${digest}"
+    if [ -n "${digest}" ]; then
+      reference="${digest}"
+    else
+      reference=":${image_without_digest##*:}"
+    fi
   elif [ -n "${digest}" ]; then
     repository="${image_without_digest}"
     reference="${digest}"
@@ -208,6 +212,26 @@ copy_destination_ref() {
     echo "${image%@*}"
   else
     echo "${image}"
+  fi
+}
+
+copy_source_ref() {
+  local image="$1"
+  local image_without_digest digest image_tail
+
+  if [[ "${image}" != *@* ]]; then
+    echo "${image}"
+    return
+  fi
+
+  image_without_digest="${image%@*}"
+  digest="${image#*@}"
+  image_tail="${image_without_digest##*/}"
+
+  if [[ "${image_tail}" == *:* ]]; then
+    echo "${image_without_digest%:*}@${digest}"
+  else
+    echo "${image_without_digest}@${digest}"
   fi
 }
 
@@ -388,7 +412,7 @@ sync_image_ref() {
     return
   fi
 
-  source_ref="docker://${source_image}"
+  source_ref="docker://$(copy_source_ref "${source_image}")"
   dest_ref="docker://$(copy_destination_ref "${rendered_image}")"
 
   if [ "${source_image}" = "${rendered_image}" ]; then
@@ -423,7 +447,7 @@ login_destination_registry() {
 rendered_image_exists() {
   local rendered_image="$1"
 
-  skopeo inspect --raw "docker://${rendered_image}" >/dev/null 2>&1
+  skopeo inspect --raw "docker://$(copy_destination_ref "${rendered_image}")" >/dev/null 2>&1
 }
 
 yaml_quote() {
