@@ -110,6 +110,7 @@ redis:
   image:
     registry: {{ .Values.imageRegistry }}
     repository: {{ (index .Values.ghostImages 2).image }}
+    tag: {{ (index .Values.ghostImages 2).tag }}
   metrics:
     image:
       registry: {{ .Values.imageRegistry }}
