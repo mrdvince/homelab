@@ -235,6 +235,26 @@ copy_source_ref() {
   fi
 }
 
+image_digest() {
+  local image="$1"
+
+  if [[ "${image}" == *@* ]]; then
+    echo "${image#*@}"
+  fi
+}
+
+destination_image_digest() {
+  local image="$1"
+
+  skopeo inspect --format '{{.Digest}}' "docker://$(copy_destination_ref "${image}")" 2>/dev/null || true
+}
+
+destination_image_exists() {
+  local image="$1"
+
+  skopeo inspect --raw "docker://$(copy_destination_ref "${image}")" >/dev/null 2>&1
+}
+
 vulnerability_gate_enabled() {
   local pipeline_source
 
@@ -426,8 +446,12 @@ sync_image_ref() {
     exit 1
   fi
 
-  if skopeo inspect --raw "${dest_ref}" >/dev/null 2>&1; then
-    echo "skipping ${rendered_image} - already exists in registry"
+  if rendered_image_exists "${rendered_image}"; then
+    if [ -n "$(image_digest "${rendered_image}")" ]; then
+      echo "skipping ${rendered_image} - destination digest already matches"
+    else
+      echo "skipping ${rendered_image} - already exists in registry"
+    fi
     return
   fi
 
@@ -446,8 +470,17 @@ login_destination_registry() {
 
 rendered_image_exists() {
   local rendered_image="$1"
+  local desired_digest actual_digest
 
-  skopeo inspect --raw "docker://$(copy_destination_ref "${rendered_image}")" >/dev/null 2>&1
+  desired_digest="$(image_digest "${rendered_image}")"
+
+  if [ -z "${desired_digest}" ]; then
+    destination_image_exists "${rendered_image}"
+    return
+  fi
+
+  actual_digest="$(destination_image_digest "${rendered_image}")"
+  [ -n "${actual_digest}" ] && [ "${actual_digest}" = "${desired_digest}" ]
 }
 
 yaml_quote() {
@@ -540,7 +573,7 @@ EOF
 }
 
 generate_pipeline() {
-  local rendered_image source_image job_name index scan_count sync_count skipped_count
+  local rendered_image source_image job_name index scan_count sync_count skipped_count desired_digest actual_digest
 
   build_registry_map
   prepare_image_refs
@@ -559,7 +592,11 @@ generate_pipeline() {
     job_name="$(job_name_for_image "${index}" "${rendered_image}")"
 
     if [ "${sync_images}" = "true" ] && rendered_image_exists "${rendered_image}"; then
-      echo "skipping ${rendered_image} - already exists in registry"
+      if [ -n "$(image_digest "${rendered_image}")" ]; then
+        echo "skipping ${rendered_image} - destination digest already matches"
+      else
+        echo "skipping ${rendered_image} - already exists in registry"
+      fi
       skipped_count=$((skipped_count + 1))
 
       if [ "${parent_pipeline_source}" != "merge_request_event" ]; then
@@ -569,6 +606,14 @@ generate_pipeline() {
       append_scan_job "${job_name}" "${source_image}"
       scan_count=$((scan_count + 1))
       continue
+    fi
+
+    if [ "${sync_images}" = "true" ]; then
+      desired_digest="$(image_digest "${rendered_image}")"
+      if [ -n "${desired_digest}" ] && destination_image_exists "${rendered_image}"; then
+        actual_digest="$(destination_image_digest "${rendered_image}")"
+        echo "syncing ${rendered_image} - destination digest ${actual_digest:-missing} does not match rendered ${desired_digest}"
+      fi
     fi
 
     append_scan_job "${job_name}" "${source_image}"

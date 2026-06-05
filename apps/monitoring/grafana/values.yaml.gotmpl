@@ -7,6 +7,9 @@ adminPassword: {{ .Values.grafana.adminPassword }}
 
 assertNoLeakedSecrets: false
 
+deploymentStrategy:
+  type: Recreate
+
 grafana.ini:
   server:
     root_url: https://grafana.{{ .Values.domain }}
