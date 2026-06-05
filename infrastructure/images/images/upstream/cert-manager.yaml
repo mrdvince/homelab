@@ -1,9 +1,0 @@
-certManager:
-  - registry: quay.io
-    image: jetstack/cert-manager-controller
-  - registry: quay.io
-    image: jetstack/cert-manager-webhook
-  - registry: quay.io
-    image: jetstack/cert-manager-cainjector
-  - registry: quay.io
-    image: jetstack/cert-manager-startupapicheck

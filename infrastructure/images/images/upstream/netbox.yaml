@@ -1,3 +1,0 @@
-netbox:
-  - registry: ghcr.io
-    image: netbox-community/netbox

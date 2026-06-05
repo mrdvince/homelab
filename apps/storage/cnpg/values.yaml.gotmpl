@@ -1,6 +1,8 @@
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
-  repository: {{ .Values.imageRegistry }}/{{ (index .Values.cnpg 0).image }}
+  repository: {{ .Values.imageRegistry }}/cloudnative-pg/cloudnative-pg
 
+{{ end }}
 monitoring:
   grafanaDashboard:
     create: false

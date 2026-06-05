@@ -1,6 +1,8 @@
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
-  repository: {{ .Values.imageRegistry }}/{{ (index .Values.reflector 0).image }}
+  repository: {{ .Values.imageRegistry }}/emberstack/kubernetes-reflector
 
+{{ end }}
 configuration:
   logging:
     minimumLevel: Information

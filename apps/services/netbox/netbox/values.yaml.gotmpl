@@ -1,7 +1,8 @@
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.netbox 0).image }}
 
+{{ end }}
 superuser:
   name: {{ index .Values "netbox-oidc" "superuser_name" }}
   email: {{ index .Values "netbox-oidc" "superuser_email" }}

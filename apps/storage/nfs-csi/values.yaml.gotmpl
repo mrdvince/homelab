@@ -1,11 +1,13 @@
 externalSnapshotter:
   enabled: true
 
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
   baseRepo: {{ .Values.imageRegistry }}
   nfs:
     repository: {{ .Values.imageRegistry }}/sig-storage/nfsplugin
 
+{{ end }}
 controller:
   runOnControlPlane: true
   replicas: 2

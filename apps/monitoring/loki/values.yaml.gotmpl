@@ -1,9 +1,10 @@
 deploymentMode: SingleBinary
 
 loki:
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.loki 0).image }}
+{{ end }}
   auth_enabled: false
   commonConfig:
     replication_factor: 1
@@ -42,9 +43,10 @@ resultsCache:
 gateway:
   enabled: true
   replicas: 1
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.loki 1).image }}
+{{ end }}
   ingress:
     enabled: true
     ingressClassName: traefik
@@ -75,9 +77,12 @@ lokiCanary:
 test:
   enabled: false
 
+{{ if not (.Values | get "renderStockImages" false) }}
 sidecar:
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.grafanaImages 1).image }}
+    registry: {{ .Values.imageRegistry }}
+
+{{ end }}
 
 monitoring:
   dashboards:

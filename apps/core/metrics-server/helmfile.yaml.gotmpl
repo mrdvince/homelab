@@ -20,5 +20,7 @@ releases:
     values:
       - args:
           - --kubelet-insecure-tls
+{{ if not (.Values | get "renderStockImages" false) }}
         image:
-          repository: {{ .Values.imageRegistry }}/{{ (index .Values.metricsServer 0).image }}
+          repository: {{ .Values.imageRegistry }}/metrics-server/metrics-server
+{{ end }}

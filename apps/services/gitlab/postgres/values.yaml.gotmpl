@@ -7,7 +7,9 @@ version:
 mode: standalone
 
 cluster:
-  imageName: {{ .Values.imageRegistry }}/{{ (index .Values.cnpg 1).image }}:{{ (index .Values.cnpg 1).tag }}
+{{ if not (.Values | get "renderStockImages" false) }}
+  imageName: {{ .Values.imageRegistry }}/cloudnative-pg/postgresql:17
+{{ end }}
   instances: 2
   storage:
     size: 10Gi

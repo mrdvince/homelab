@@ -2,6 +2,10 @@ x-gitlabNodeSelector: &gitlabNodeSelector
   kubernetes.io/hostname: aion-24
 
 global:
+{{ if not (.Values | get "renderStockImages" false) }}
+  image:
+    registry: {{ .Values.imageRegistry }}
+{{ end }}
   hosts:
     domain: {{ .Values.domain }}
     gitlab:
@@ -39,18 +43,20 @@ global:
   registry:
     enabled: false
 
+{{ if not (.Values | get "renderStockImages" false) }}
   gitlabBase:
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 8).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-base
 
   certificates:
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 9).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/certificates
 
   kubectl:
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 11).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/kubectl
 
+{{ end }}
   appConfig:
     object_store:
       enabled: true
@@ -107,14 +113,13 @@ postgresql:
 
 redis:
   install: true
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.ghostImages 2).image }}
-    tag: {{ (index .Values.ghostImages 2).tag }}
   metrics:
     image:
       registry: {{ .Values.imageRegistry }}
-      repository: {{ (index .Values.ghostImages 3).image }}
+{{ end }}
   master:
     nodeSelector: *gitlabNodeSelector
     tolerations: &gitlabTolerations
@@ -144,9 +149,10 @@ registry:
 gitlab-runner:
   install: true
   concurrent: 5
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
     registry: {{ .Values.imageRegistry }}
-    image: {{ (index .Values.gitlab 10).image }}
+{{ end }}
   rbac:
     create: true
   nodeSelector: *gitlabNodeSelector
@@ -162,7 +168,9 @@ gitlab-runner:
         [runners.kubernetes]
         namespace = "gitlab"
         image = "{{ .Values.imageRegistry }}/library/alpine:3.23.2"
-        helper_image = "{{ .Values.imageRegistry }}/{{ (index .Values.gitlab 13).image }}:{{ (index .Values.gitlab 13).tag }}"
+{{ if not (.Values | get "renderStockImages" false) }}
+        helper_image = "{{ .Values.imageRegistry }}/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-v18.11.2"
+{{ end }}
         privileged = true
         logs_base_dir = "/tmp"
         scripts_base_dir = "/tmp"
@@ -188,19 +196,25 @@ upgradeCheck:
 
 shared-secrets:
   tolerations: *gitlabTolerations
+{{ if not (.Values | get "renderStockImages" false) }}
   selfsign:
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 12).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/cfssl-self-sign
+{{ end }}
 
 gitlab:
   migrations:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 2).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-toolbox-ee
+{{ end }}
     tolerations: *gitlabTolerations
 
   webservice:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 0).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-webservice-ee
+{{ end }}
     tolerations: *gitlabTolerations
     deployment:
       strategy:
@@ -228,7 +242,9 @@ gitlab:
         successThreshold: 1
         failureThreshold: 12
     workhorse:
-      image: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 3).image }}
+{{ if not (.Values | get "renderStockImages" false) }}
+      image: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-workhorse-ee
+{{ end }}
       startupProbe:
         exec:
           command:
@@ -276,8 +292,10 @@ gitlab:
                   operator: DoesNotExist
 
   sidekiq:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 1).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-sidekiq-ee
+{{ end }}
     tolerations: *gitlabTolerations
     extraEnv:
       SKIP_RAISE_ON_INITIALIZE_CONNECTIONS: "true"
@@ -316,8 +334,10 @@ gitlab:
                   operator: DoesNotExist
 
   gitaly:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 4).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitaly
+{{ end }}
     nodeSelector: *gitlabNodeSelector
     tolerations: *gitlabTolerations
     resources:
@@ -329,29 +349,37 @@ gitlab:
         memory: 3Gi
 
   gitlab-shell:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 5).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-shell
+{{ end }}
     tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
     maxReplicas: 1
 
   kas:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 6).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-kas
+{{ end }}
     tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
     maxReplicas: 1
 
   gitlab-exporter:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 7).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-exporter
+{{ end }}
     tolerations: *gitlabTolerations
 
   toolbox:
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlab 2).image }}
+      repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-toolbox-ee
+{{ end }}
     tolerations: *gitlabTolerations
     replicas: 1
     backups:

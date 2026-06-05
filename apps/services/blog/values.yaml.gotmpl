@@ -1,11 +1,14 @@
 global:
+{{ if not (.Values | get "renderStockImages" false) }}
+  imageRegistry: {{ .Values.imageRegistry }}
+{{ end }}
   security:
     allowInsecureImages: true
 
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.ghostImages 0).image }}
-  tag: {{ (index .Values.ghostImages 0).tag }}
+{{ end }}
 
 ghostUsername: zero
 ghostPassword: {{ .Values.ghost.ghostPassword }}
@@ -32,10 +35,10 @@ extraVolumeMounts:
 
 mysql:
   enabled: true
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.ghostImages 1).image }}
-    tag: {{ (index .Values.ghostImages 1).tag }}
+{{ end }}
   auth:
     database: ghost_production
     username: ghost

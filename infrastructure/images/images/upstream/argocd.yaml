@@ -1,6 +1,0 @@
-argocd:
-  - registry: quay.io
-    image: argoproj/argocd
-  - registry: ghcr.io
-    image: helmfile/helmfile
-    tag: v1.2.3

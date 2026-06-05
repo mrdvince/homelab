@@ -1,7 +1,8 @@
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.traefik 0).image }}
 
+{{ end }}
 ingressClass:
   enabled: true
   isDefaultClass: false

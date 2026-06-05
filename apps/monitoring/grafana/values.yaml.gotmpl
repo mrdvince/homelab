@@ -1,7 +1,8 @@
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.grafanaImages 0).image }}
 
+{{ end }}
 adminUser: {{ .Values.grafana.adminUser }}
 adminPassword: {{ .Values.grafana.adminPassword }}
 
@@ -105,9 +106,10 @@ datasources:
         access: proxy
 
 sidecar:
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.grafanaImages 1).image }}
+{{ end }}
   dashboards:
     enabled: true
     label: grafana_dashboard
@@ -148,12 +150,12 @@ extraObjects:
 serviceMonitor:
   enabled: true
 
+{{ if not (.Values | get "renderStockImages" false) }}
 testFramework:
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.grafanaImages 3).image }}
 
 initChownData:
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.grafanaImages 2).image }}
+{{ end }}

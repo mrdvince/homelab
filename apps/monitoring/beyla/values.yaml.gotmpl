@@ -1,7 +1,8 @@
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.beyla 0).image }}
 
+{{ end }}
 env:
   OTEL_RESOURCE_ATTRIBUTES: "env={{ .Environment.Name }}"
   BEYLA_OTEL_METRICS_EXPORTER: "none"

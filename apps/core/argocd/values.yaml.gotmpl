@@ -1,7 +1,9 @@
 global:
   domain: argocd.{{ .Values.domain }}
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.argocd 0).image }}
+    repository: {{ .Values.imageRegistry }}/argoproj/argocd
+{{ end }}
 
 server:
   extraArgs:
@@ -78,7 +80,7 @@ repoServer:
     - --otlp-attrs=env:{{ .Environment.Name }}
   extraContainers:
     - name: helmfile
-      image: {{ .Values.imageRegistry }}/{{ (index .Values.argocd 1).image }}:{{ (index .Values.argocd 1).tag }}
+      image: {{ .Values.imageRegistry }}/helmfile/helmfile:v1.2.3
       command: ["/var/run/argocd/argocd-cmp-server"]
       env:
         - name: SOPS_AGE_KEY_FILE
@@ -116,10 +118,12 @@ repoServer:
       secret:
         secretName: age
 
+{{ if not (.Values | get "renderStockImages" false) }}
 dex:
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.dex 0).image }}
+    repository: {{ .Values.imageRegistry }}/dexidp/dex
 
 redis:
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.argocdRedis 0).image }}
+    repository: {{ .Values.imageRegistry }}/docker/library/redis
+{{ end }}

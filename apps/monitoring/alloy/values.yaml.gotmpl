@@ -237,14 +237,14 @@ controller:
         hostPath:
           path: /sys/kernel/debug
 
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.alloy 0).image }}
 
 configReloader:
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: {{ (index .Values.prometheusOperator 2).image }}
 
+{{ end }}
 crds:
   create: false

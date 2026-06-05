@@ -1,7 +1,9 @@
 pyroscope:
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.pyroscope 0).image }}
+    registry: {{ .Values.imageRegistry }}
 
+{{ end }}
   persistence:
     enabled: true
     size: 20Gi

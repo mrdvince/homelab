@@ -1,6 +1,7 @@
 tempo:
+{{ if not (.Values | get "renderStockImages" false) }}
   registry: {{ .Values.imageRegistry }}
-  repository: {{ (index .Values.tempo 0).image }}
+{{ end }}
   retention: 1080h
   reportingEnabled: false
   metricsGenerator:

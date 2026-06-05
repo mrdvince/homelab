@@ -1,12 +1,14 @@
+{{ if not (.Values | get "renderStockImages" false) }}
 image:
-  repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 0).image }}
+  repository: {{ .Values.imageRegistry }}/cilium/cilium
   useDigest: false
 
 envoy:
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 1).image }}
+    repository: {{ .Values.imageRegistry }}/cilium/cilium-envoy
     useDigest: false
 
+{{ end }}
 kubeProxyReplacement: true
 socketLB:
   hostNamespaceOnly: true
@@ -56,23 +58,27 @@ ipv4NativeRoutingCIDR: {{ .Values.ipv_4_native_routing_cidr }}
 hubble:
   relay:
     enabled: true
+{{ if not (.Values | get "renderStockImages" false) }}
     image:
-      repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 3).image }}
+      repository: {{ .Values.imageRegistry }}/cilium/hubble-relay
       useDigest: false
+{{ end }}
     prometheus:
       enabled: true
       serviceMonitor:
         enabled: true
   ui:
     enabled: true
+{{ if not (.Values | get "renderStockImages" false) }}
     frontend:
       image:
-        repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 4).image }}
+        repository: {{ .Values.imageRegistry }}/cilium/hubble-ui
         useDigest: false
     backend:
       image:
-        repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 5).image }}
+        repository: {{ .Values.imageRegistry }}/cilium/hubble-ui-backend
         useDigest: false
+{{ end }}
 
   metrics:
     dashboards:
@@ -99,9 +105,11 @@ prometheus:
     trustCRDsExist: true
 
 operator:
+{{ if not (.Values | get "renderStockImages" false) }}
   image:
-    repository: {{ .Values.imageRegistry }}/{{ (index .Values.cilium 2).image | trimSuffix "-generic" }}
+    repository: {{ .Values.imageRegistry }}/cilium/operator
     useDigest: false
+{{ end }}
   dashboards:
     enabled: true
   prometheus:

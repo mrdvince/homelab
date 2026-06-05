@@ -1,3 +1,0 @@
-traefik:
-  - registry: docker.io
-    image: traefik

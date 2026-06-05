@@ -1,8 +1,10 @@
 fullnameOverride: kps
 
+{{ if not (.Values | get "renderStockImages" false) }}
 global:
   imageRegistry: {{ .Values.imageRegistry }}
 
+{{ end }}
 crds:
   enabled: true
 
