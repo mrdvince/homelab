@@ -34,6 +34,7 @@ variables:
 .build_image_rules:
   rules:
     - if: $BUILD_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /build-all/
     - if: $CI_PIPELINE_SOURCE == "push"
       changes:
         - infrastructure/images/builds/*.yaml

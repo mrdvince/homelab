@@ -13,12 +13,14 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^infrastructure/images/images/.*\\.yaml$/"],
+      "description": "update local image mirror inputs",
+      "managerFilePatterns": ["/^infrastructure/images/images/local/.*\\.ya?ml$/"],
       "matchStrings": [
-        "registry:\\s*(?<registry>[^\\n]+)\\n\\s*image:\\s*(?<depName>[^\\n]+)\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\n]+)[\"']?"
+        "registry:\\s*[\"']?(?<registry>[^\"'\\n]+)[\"']?\\n\\s*image:\\s*[\"']?(?<depName>[^\"'\\n]+)[\"']?\\n\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\n]+)[\"']?"
       ],
       "datasourceTemplate": "docker",
-      "packageNameTemplate": "{{registry}}/{{depName}}"
+      "registryUrlTemplate": "https://{{{registry}}}",
+      "versioningTemplate": "docker"
     }
   ],
   "ignoreDeps": [
