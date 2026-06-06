@@ -36,7 +36,7 @@ renovate:
 .chart_image_rules:
   rules:
     - if: $SYNC_UPSTREAM_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/**/helmfile.yaml.gotmpl
         - apps/**/values.yaml.gotmpl
@@ -46,7 +46,7 @@ renovate:
 .local_image_rules:
   rules:
     - if: $SYNC_LOCAL_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/*.yaml
         - ci/images.sh
@@ -54,8 +54,8 @@ renovate:
 .build_image_rules:
   rules:
     - if: $BUILD_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /build-all/
-    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/*.yaml
         - infrastructure/images/dockerfiles/**/*
