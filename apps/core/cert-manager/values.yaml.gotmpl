@@ -3,14 +3,6 @@ crds:
   keep: true
 
 {{ if not (.Values | get "renderStockImages" false) }}
-image:
-  registry: {{ .Values.imageRegistry }}
-
-webhook:
-  image:
-    registry: {{ .Values.imageRegistry }}
-
-cainjector:
-  image:
-    registry: {{ .Values.imageRegistry }}
+imageRegistry: {{ .Values.imageRegistry }}
+imageNamespace: jetstack
 {{ end }}

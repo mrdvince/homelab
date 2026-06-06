@@ -1,14 +1,12 @@
 global:
-{{ if not (.Values | get "renderStockImages" false) }}
   imageRegistry: {{ .Values.imageRegistry }}
-{{ end }}
   security:
     allowInsecureImages: true
 
-{{ if not (.Values | get "renderStockImages" false) }}
 image:
   registry: {{ .Values.imageRegistry }}
-{{ end }}
+  repository: bitnami/ghost
+  tag: 5.130.3-debian-12-r16
 
 ghostUsername: zero
 ghostPassword: {{ .Values.ghost.ghostPassword }}
@@ -35,10 +33,10 @@ extraVolumeMounts:
 
 mysql:
   enabled: true
-{{ if not (.Values | get "renderStockImages" false) }}
   image:
     registry: {{ .Values.imageRegistry }}
-{{ end }}
+    repository: bitnami/mysql
+    tag: 9.4.0-debian-12-r0
   auth:
     database: ghost_production
     username: ghost
