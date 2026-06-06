@@ -1,5 +1,6 @@
 stages:
   - test
+  - build
   - sync
 
 include:
@@ -15,11 +16,55 @@ variables:
 .chart_image_rules:
   rules:
     - if: $SYNC_UPSTREAM_IMAGES == "true"
-    - changes:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
         - apps/**/helmfile.yaml.gotmpl
         - apps/**/values.yaml.gotmpl
         - infrastructure/images/config.yaml
         - ci/images.sh
+
+.local_image_rules:
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - infrastructure/images/images/local/*.yaml
+        - ci/images.sh
+
+.build_image_rules:
+  rules:
+    - if: $BUILD_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - infrastructure/images/builds/*.yaml
+        - infrastructure/images/dockerfiles/**/*
+        - ci/images.sh
+
+image-builds:
+  extends: .build_image_rules
+  stage: build
+  image:
+    name: $BUILDER_IMAGE
+    entrypoint: [""]
+  script:
+    - sh ci/images.sh build-pipeline
+  artifacts:
+    when: always
+    paths:
+      - build-images.txt
+      - build-images.yml
+    expire_in: 1 week
+
+image-build:
+  extends: .build_image_rules
+  stage: build
+  trigger:
+    include:
+      - artifact: build-images.yml
+        job: image-builds
+    strategy: depend
+  needs:
+    - image-builds
 
 chart-images:
   extends: .chart_image_rules
@@ -46,3 +91,29 @@ chart-sync:
     strategy: depend
   needs:
     - chart-images
+
+local-images:
+  extends: .local_image_rules
+  stage: sync
+  image:
+    name: $BUILDER_IMAGE
+    entrypoint: [""]
+  script:
+    - sh ci/images.sh local-pipeline
+  artifacts:
+    when: always
+    paths:
+      - local-imagelist.txt
+      - local-images.yml
+    expire_in: 1 week
+
+local-sync:
+  extends: .local_image_rules
+  stage: sync
+  trigger:
+    include:
+      - artifact: local-images.yml
+        job: local-images
+    strategy: depend
+  needs:
+    - local-images
