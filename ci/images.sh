@@ -342,7 +342,7 @@ write_build_pipeline() {
       echo "build-${job_id}-${job_name}:"
       echo "  stage: build"
       echo "  image:"
-      echo "    name: ${BUILDER_IMAGE:-registry.home.mrdvince.me/homelab/builder:1.4.1}"
+      echo "    name: ${BUILDER_BOOTSTRAP_IMAGE:-registry.home.mrdvince.me/homelab/builder:1.4.1}"
       echo "    entrypoint: [\"\"]"
       echo "  services:"
       echo "    - name: docker:29-dind"

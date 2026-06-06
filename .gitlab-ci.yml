@@ -11,7 +11,8 @@ variables:
   SECRET_DETECTION_DISABLED: "false"
   SAST_DISABLED: "false"
   SCAN_KUBERNETES_MANIFESTS: "true"
-  BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.1"
+  BUILDER_BOOTSTRAP_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.1"
+  BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.2"
 
 .chart_image_rules:
   rules:
@@ -45,7 +46,7 @@ image-builds:
   extends: .build_image_rules
   stage: build
   image:
-    name: $BUILDER_IMAGE
+    name: $BUILDER_BOOTSTRAP_IMAGE
     entrypoint: [""]
   script:
     - sh ci/images.sh build-pipeline
