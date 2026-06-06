@@ -7,6 +7,6 @@ appVersion: "5.11.2"
 
 dependencies:
   - name: meilisearch
-    version: "0.25.1"
+    version: "0.32.0"
     repository: https://meilisearch.github.io/meilisearch-kubernetes
     condition: meilisearch.enabled
