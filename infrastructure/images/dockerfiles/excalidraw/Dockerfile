@@ -11,7 +11,7 @@ ARG NODE_ENV=production
 
 RUN yarn build:app:docker
 
-FROM nginx:1.29-alpine
+FROM nginx:1.31-alpine
 
 RUN apk upgrade --no-cache
 

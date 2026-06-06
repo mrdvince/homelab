@@ -1,21 +1,21 @@
 actualImages:
   - registry: docker.io
     image: actualbudget/actual-server
-    tag: "26.2.0"
+    tag: "26.5.2"
 
 barAssistant:
   - registry: docker.io
     image: barassistant/server
-    tag: "5.13.1"
+    tag: "5.15.0"
   - registry: docker.io
     image: barassistant/salt-rim
-    tag: "4.14.0"
+    tag: "4.15.0"
   - registry: docker.io
     image: valkey/valkey
-    tag: "9.0"
+    tag: "9.1"
   - registry: docker.io
     image: getmeili/meilisearch
-    tag: "v1.35"
+    tag: "v1.44"
 
 codeServer:
   - registry: ghcr.io
