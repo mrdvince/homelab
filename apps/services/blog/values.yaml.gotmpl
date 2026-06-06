@@ -5,8 +5,8 @@ global:
 
 image:
   registry: {{ .Values.imageRegistry }}
-  repository: bitnami/ghost
-  tag: 5.130.3-debian-12-r16
+  repository: bitnamilegacy/ghost
+  tag: 5.130.3-debian-12-r17
 
 ghostUsername: zero
 ghostPassword: {{ .Values.ghost.ghostPassword }}
@@ -35,8 +35,8 @@ mysql:
   enabled: true
   image:
     registry: {{ .Values.imageRegistry }}
-    repository: bitnami/mysql
-    tag: 9.4.0-debian-12-r0
+    repository: bitnamilegacy/mysql
+    tag: 9.4.0-debian-12-r1
   auth:
     database: ghost_production
     username: ghost
