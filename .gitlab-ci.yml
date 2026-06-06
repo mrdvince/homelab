@@ -1,5 +1,6 @@
 stages:
   - test
+  - renovate
   - build
   - sync
 
@@ -13,6 +14,24 @@ variables:
   SCAN_KUBERNETES_MANIFESTS: "true"
   BUILDER_BOOTSTRAP_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.1"
   BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.2"
+  RENOVATE_IMAGE: "registry.home.mrdvince.me/renovate/renovate:43.197.0"
+
+renovate:
+  stage: renovate
+  image:
+    name: $RENOVATE_IMAGE
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+    RENOVATE_PLATFORM: gitlab
+    RENOVATE_ENDPOINT: "$CI_API_V4_URL"
+    LOG_LEVEL: info
+  script:
+    - renovate "$CI_PROJECT_PATH"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $RENOVATE == "true"
+    - if: $RENOVATE == "true"
+      when: manual
 
 .chart_image_rules:
   rules:
