@@ -8,7 +8,7 @@ mode: standalone
 
 cluster:
 {{ if not (.Values | get "renderStockImages" false) }}
-  imageName: {{ .Values.imageRegistry }}/cloudnative-pg/postgresql:17
+  imageName: {{ .Values.imageRegistry }}/cloudnative-pg/postgresql:18
 {{ end }}
   instances: 2
   storage:
