@@ -126,9 +126,52 @@ build_rows() {
 helmfile_paths() {
   if [ -n "${HELMFILE_PATHS:-}" ]; then
     printf '%s\n' ${HELMFILE_PATHS}
-  else
-    find apps -name 'helmfile.yaml.gotmpl' -print | sort
+    return
   fi
+
+  if [ "${SYNC_UPSTREAM_IMAGES:-}" = "true" ]; then
+    all_helmfile_paths
+    return
+  fi
+
+  changed_file_list="${TMPDIR:-/tmp}/homelab-changed-files-chart.$$"
+  selected_helmfiles="${TMPDIR:-/tmp}/homelab-selected-helmfiles.$$"
+
+  if changed_files >"${changed_file_list}"; then
+    if grep -qx 'ci/images.sh' "${changed_file_list}" || grep -qx 'infrastructure/images/config.yaml' "${changed_file_list}"; then
+      all_helmfile_paths
+    else
+      : >"${selected_helmfiles}"
+      while IFS= read -r changed_file; do
+        case "${changed_file}" in
+          apps/*) select_helmfile_for_changed_file "${changed_file}" >>"${selected_helmfiles}" ;;
+        esac
+      done <"${changed_file_list}"
+      sort -u "${selected_helmfiles}"
+      rm -f "${selected_helmfiles}"
+    fi
+  else
+    all_helmfile_paths
+  fi
+
+  rm -f "${changed_file_list}"
+}
+
+all_helmfile_paths() {
+  find apps -name 'helmfile.yaml.gotmpl' -print | sort
+}
+
+select_helmfile_for_changed_file() {
+  path="${1}"
+  dir="${path%/*}"
+
+  while [ "${dir}" != "." ] && [ "${dir}" != "/" ] && [ -n "${dir}" ]; do
+    if [ -f "${dir}/helmfile.yaml.gotmpl" ]; then
+      printf '%s\n' "${dir}/helmfile.yaml.gotmpl"
+      return
+    fi
+    dir="${dir%/*}"
+  done
 }
 
 render_upstream_manifests() {
@@ -148,6 +191,12 @@ render_upstream_manifests() {
 }
 
 extract_rendered_images() {
+  if ! ls "${rendered_dir}"/*.yaml >/dev/null 2>&1; then
+    : >"${image_list}"
+    echo "rendered images extracted: 0"
+    return
+  fi
+
   yq -N -r '.. | select(tag == "!!str")' "${rendered_dir}"/*.yaml \
     | sed '/^$/d' \
     | grep -v '://' \
@@ -225,6 +274,12 @@ login_to_destination_registry() {
   printf '%s' "${REGISTRY_PASSWORD}" | skopeo login -u "${REGISTRY_USER}" --password-stdin "${dest_registry}"
 }
 
+login_to_destination_registry_if_available() {
+  if [ -n "${REGISTRY_USER:-}" ] && [ -n "${REGISTRY_PASSWORD:-}" ]; then
+    printf '%s' "${REGISTRY_PASSWORD}" | skopeo login -u "${REGISTRY_USER}" --password-stdin "${dest_registry}" >/dev/null
+  fi
+}
+
 sync_one_image() {
   image="${1}"
 
@@ -277,9 +332,27 @@ write_image_pipeline() {
     echo ""
   } >"${pipeline_file}"
 
+  login_to_destination_registry_if_available
+
   count=0
+  skipped=0
   while IFS= read -r image; do
     [ -n "${image}" ] || continue
+
+    case "${image}" in
+      "${dest_registry}"/*)
+        echo "skipping ${image} - already rendered with ${dest_registry}"
+        skipped=$((skipped + 1))
+        continue
+        ;;
+    esac
+
+    destination="$(destination_for "${image}")"
+    if skopeo inspect --raw "docker://${destination}" >/dev/null 2>&1; then
+      echo "skipping ${destination} - already exists"
+      skipped=$((skipped + 1))
+      continue
+    fi
 
     count=$((count + 1))
     job_name="$(safe_job_name "${image}")"
@@ -313,6 +386,7 @@ write_image_pipeline() {
   fi
 
   echo "${job_prefix} image jobs generated: ${count}"
+  echo "${job_prefix} images skipped: ${skipped}"
 }
 
 write_chart_pipeline() {
