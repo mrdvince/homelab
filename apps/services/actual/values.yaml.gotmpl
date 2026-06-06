@@ -2,6 +2,10 @@ image:
   repository: {{ .Values.imageRegistry }}/{{ (index .Values.actualImages 0).image }}
   tag: {{ (index .Values.actualImages 0).tag }}
 
+strategy:
+  type: Recreate
+  rollingUpdate: null
+
 ingress:
   enabled: true
   className: traefik

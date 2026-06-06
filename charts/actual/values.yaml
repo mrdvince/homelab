@@ -1,5 +1,8 @@
 replicaCount: 1
 
+strategy:
+  type: RollingUpdate
+
 image:
   repository: actualbudget/actual-server
   pullPolicy: IfNotPresent
