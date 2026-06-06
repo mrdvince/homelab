@@ -12,7 +12,17 @@ variables:
   SCAN_KUBERNETES_MANIFESTS: "true"
   BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.1"
 
+.chart_image_rules:
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - changes:
+        - apps/**/helmfile.yaml.gotmpl
+        - apps/**/values.yaml.gotmpl
+        - infrastructure/images/config.yaml
+        - ci/images.sh
+
 chart-images:
+  extends: .chart_image_rules
   stage: sync
   image:
     name: $BUILDER_IMAGE
@@ -25,10 +35,9 @@ chart-images:
       - imagelist.txt
       - chart-images.yml
     expire_in: 1 week
-  rules:
-    - if: $SYNC_UPSTREAM_IMAGES == "true"
 
 chart-sync:
+  extends: .chart_image_rules
   stage: sync
   trigger:
     include:
@@ -37,5 +46,3 @@ chart-sync:
     strategy: depend
   needs:
     - chart-images
-  rules:
-    - if: $SYNC_UPSTREAM_IMAGES == "true"
