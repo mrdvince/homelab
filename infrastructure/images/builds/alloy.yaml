@@ -1,0 +1,4 @@
+alloy:
+  dockerfile: infrastructure/images/dockerfiles/alloy/Dockerfile
+  image: olly/alloy
+  tag: "1.16.2"
