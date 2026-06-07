@@ -30,4 +30,6 @@ inputs = {
   prometheus_remote_write_url = "https://prometheus.home.mrdvince.me/api/v1/write"
   prometheus_username         = local.alloy_username
   prometheus_password         = dependency.outposts.outputs.service_account_tokens["alloy"]
+
+  snmp_username = local.alloy_username
 }
