@@ -1,0 +1,26 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
+      - truenas:
+          democratic_csi:
+            iscsi:
+              dataset_parent: swamp/moss/aion-iscsi
+              detached_snapshots_dataset_parent: swamp/moss/aion-iscsi-snaps
+              portal_group: 1
+              initiator_group: 2
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: democratic-csi
+    url: https://democratic-csi.github.io/charts/
+
+releases:
+  - name: democratic-csi-iscsi
+    namespace: kube-system
+    chart: democratic-csi/democratic-csi
+    version: 0.15.1
+    values:
+      - values.yaml.gotmpl
