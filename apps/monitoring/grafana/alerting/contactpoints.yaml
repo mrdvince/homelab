@@ -1,0 +1,11 @@
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: ntfy
+    receivers:
+      - uid: ntfy
+        type: webhook
+        settings:
+          url: https://ntfy.home.mrdvince.me/realm
+          httpMethod: POST
+        disableResolveMessage: false

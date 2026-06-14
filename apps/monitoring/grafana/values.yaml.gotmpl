@@ -70,6 +70,7 @@ datasources:
           httpMethod: POST
           manageAlerts: true
       - name: Loki
+        uid: P8E80F9AEF21F6940
         type: loki
         url: http://loki-gateway.monitoring.svc:80
         access: proxy
@@ -122,6 +123,15 @@ sidecar:
   datasources:
     enabled: false
 
+alerting:
+  contactpoints.yaml:
+{{ readFile "./alerting/contactpoints.yaml" | nindent 4 }}
+  policies.yaml:
+{{ readFile "./alerting/policies.yaml" | nindent 4 }}
+  rules.yaml:
+{{ readFile "./alerting/rules.yaml" | nindent 4 }}
+  metric-rules.yaml:
+{{ readFile "./alerting/metric-rules.yaml" | nindent 4 }}
 extraObjects:
 {{- $dashboardsRoot := "../../../dashboards" }}
 {{- range $folder := readDirEntries $dashboardsRoot }}
