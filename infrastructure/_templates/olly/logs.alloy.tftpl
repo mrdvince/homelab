@@ -134,6 +134,63 @@ loki.source.docker "containers" {
   forward_to = [loki.process.docker.receiver]
 }
 
+%{ if enable_opnsense_syslog ~}
+loki.relabel "opnsense_syslog" {
+  forward_to = []
+
+  rule {
+    source_labels = ["__syslog_message_severity"]
+    target_label  = "severity"
+  }
+
+  rule {
+    source_labels = ["__syslog_message_facility"]
+    target_label  = "facility"
+  }
+
+  rule {
+    source_labels = ["__syslog_message_hostname"]
+    target_label  = "syslog_host"
+  }
+
+  rule {
+    source_labels = ["__syslog_message_app_name"]
+    target_label  = "syslog_app"
+  }
+}
+
+loki.source.syslog "opnsense" {
+  listener {
+    address                         = "0.0.0.0:1514"
+    protocol                        = "tcp"
+    syslog_format                   = "rfc5424"
+    use_incoming_timestamp          = false
+    labels = {
+      platform = "opnsense",
+      instance = "vale",
+      source   = "syslog",
+      protocol = "tcp",
+    }
+  }
+
+  listener {
+    address                         = "0.0.0.0:1514"
+    protocol                        = "udp"
+    syslog_format                   = "rfc5424"
+    use_incoming_timestamp          = false
+    labels = {
+      platform = "opnsense",
+      instance = "vale",
+      source   = "syslog",
+      protocol = "udp",
+    }
+  }
+
+  relabel_rules = loki.relabel.opnsense_syslog.rules
+  forward_to    = [loki.process.opnsense_syslog.receiver]
+}
+
+%{ endif ~}
 loki.process "journal" {
   stage.json {
     expressions = {
@@ -396,6 +453,58 @@ loki.process "file" {
   forward_to = [loki.write.aion.receiver]
 }
 
+%{ if enable_opnsense_syslog ~}
+loki.process "opnsense_syslog" {
+  stage.static_labels {
+    values = {
+      log_type = "system",
+    }
+  }
+
+  stage.match {
+    selector = "{syslog_app=~\"filterlog|pf\"}"
+
+    stage.static_labels {
+      values = {
+        log_type = "firewall",
+      }
+    }
+  }
+
+  stage.match {
+    selector = "{syslog_app=~\"sshd|login|sudo\"}"
+
+    stage.static_labels {
+      values = {
+        log_type = "auth",
+      }
+    }
+  }
+
+  stage.match {
+    selector = "{syslog_app=~\"unbound|dnsmasq\"}"
+
+    stage.static_labels {
+      values = {
+        log_type = "dns",
+      }
+    }
+  }
+
+  stage.match {
+    selector = "{syslog_app=~\"dhcpd|kea-dhcp4|kea-dhcp6\"}"
+
+    stage.static_labels {
+      values = {
+        log_type = "dhcp",
+      }
+    }
+  }
+
+  forward_to = [loki.write.aion.receiver]
+}
+
+%{ endif ~}
 loki.process "docker" {
   stage.template {
     source   = "level"

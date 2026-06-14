@@ -19,7 +19,8 @@ inputs = {
   files = {
     "config.alloy" = {
       content = templatefile("${dirname(find_in_parent_folders("root.hcl"))}/_templates/olly/logs.alloy.tftpl", {
-        instance = "tirnanog"
+        instance               = "tirnanog"
+        enable_opnsense_syslog = false
       })
     }
   }

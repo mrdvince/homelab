@@ -19,7 +19,8 @@ inputs = {
   files = {
     "config.alloy" = {
       content = templatefile("${dirname(find_in_parent_folders("root.hcl"))}/_templates/olly/logs.alloy.tftpl", {
-        instance = "elysium"
+        instance               = "elysium"
+        enable_opnsense_syslog = true
       })
     }
   }
@@ -35,6 +36,11 @@ inputs = {
   }
 
   containers = {
-    alloy-logs = include.envcommon.locals.logs_container
+    alloy-logs = merge(include.envcommon.locals.logs_container, {
+      ports = concat(include.envcommon.locals.logs_container.ports, [
+        "1514:1514/tcp",
+        "1514:1514/udp",
+      ])
+    })
   }
 }
