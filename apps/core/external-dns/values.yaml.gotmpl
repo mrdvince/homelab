@@ -3,6 +3,8 @@ image:
   repository: {{ .Values.imageRegistry }}/external-dns/external-dns
 
 {{ end }}
+revisionHistoryLimit: 1
+
 sources:
   - ingress
   - traefik-proxy

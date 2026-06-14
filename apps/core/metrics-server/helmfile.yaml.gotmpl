@@ -20,6 +20,7 @@ releases:
     values:
       - args:
           - --kubelet-insecure-tls
+        revisionHistoryLimit: 1
 {{ if not (.Values | get "renderStockImages" false) }}
         image:
           repository: {{ .Values.imageRegistry }}/metrics-server/metrics-server

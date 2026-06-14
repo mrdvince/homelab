@@ -230,6 +230,7 @@ rbac:
 
 controller:
   type: daemonset
+  revisionHistoryLimit: 1
   hostPID: true
   volumes:
     extra:

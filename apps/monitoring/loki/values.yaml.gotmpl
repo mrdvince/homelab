@@ -5,6 +5,7 @@ loki:
   image:
     registry: {{ .Values.imageRegistry }}
 {{ end }}
+  revisionHistoryLimit: 1
   auth_enabled: false
   commonConfig:
     replication_factor: 1

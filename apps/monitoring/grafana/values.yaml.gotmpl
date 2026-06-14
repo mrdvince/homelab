@@ -8,6 +8,8 @@ adminPassword: {{ .Values.grafana.adminPassword }}
 
 assertNoLeakedSecrets: false
 
+revisionHistoryLimit: 1
+
 deploymentStrategy:
   type: Recreate
   rollingUpdate: null

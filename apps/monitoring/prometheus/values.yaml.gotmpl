@@ -46,6 +46,9 @@ defaultRules:
     prometheusOperator: true
     windows: false
 
+prometheusOperator:
+  revisionHistoryLimit: 1
+
 grafana:
   enabled: false
   forceDeployDashboards: true
@@ -179,6 +182,9 @@ kubeScheduler:
 kubeProxy:
   enabled: false
 
+kube-state-metrics:
+  revisionHistoryLimit: 1
+
 kubeEtcd:
   enabled: false
 
@@ -190,3 +196,6 @@ nodeExporter:
       enabled: false
     darwin:
       enabled: false
+
+prometheus-node-exporter:
+  revisionHistoryLimit: 1

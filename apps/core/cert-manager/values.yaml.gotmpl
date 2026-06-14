@@ -2,6 +2,9 @@ crds:
   enabled: true
   keep: true
 
+global:
+  revisionHistoryLimit: 1
+
 {{ if not (.Values | get "renderStockImages" false) }}
 imageRegistry: {{ .Values.imageRegistry }}
 imageNamespace: jetstack

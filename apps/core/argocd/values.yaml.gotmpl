@@ -1,5 +1,6 @@
 global:
   domain: argocd.{{ .Values.domain }}
+  revisionHistoryLimit: 1
 {{ if not (.Values | get "renderStockImages" false) }}
   image:
     repository: {{ .Values.imageRegistry }}/argoproj/argocd
@@ -68,6 +69,7 @@ configs:
         lockRepo: false
 
 controller:
+  revisionHistoryLimit: 1
   extraArgs:
     - --otlp-address={{ .Values.otlpEndpoint }}
     - --otlp-insecure=true

@@ -91,6 +91,7 @@ tolerations:
 priorityClassName: "system-cluster-critical"
 
 deployment:
+  revisionHistoryLimit: 1
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "9100"

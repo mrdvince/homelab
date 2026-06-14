@@ -3,6 +3,8 @@ image:
   registry: {{ .Values.imageRegistry }}
 
 {{ end }}
+revisionHistoryLimit: 1
+
 superuser:
   name: {{ index .Values "netbox-oidc" "superuser_name" }}
   email: {{ index .Values "netbox-oidc" "superuser_email" }}
