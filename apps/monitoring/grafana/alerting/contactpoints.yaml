@@ -6,6 +6,21 @@ contactPoints:
       - uid: ntfy
         type: webhook
         settings:
-          url: https://ntfy.home.mrdvince.me/realm
+          url: https://ntfy.home.mrdvince.me/
           httpMethod: POST
+          payload:
+            template: |
+              {{ "{{" }}- $first := index .Alerts 0 -{{ "}}" }}
+              {{ "{{" }}- $title := printf "[%s] %s" (toUpper .Status) .CommonLabels.alertname -{{ "}}" }}
+              {{ "{{" }}- $summary := or .CommonAnnotations.summary "grafana alert notification" -{{ "}}" }}
+              {{ "{{" }}- $action := or .CommonAnnotations.action "open grafana and inspect the alert." -{{ "}}" }}
+              {{ "{{" }}- $message := printf "%s\n\n%s\n\n%s" $summary $action $first.GeneratorURL -{{ "}}" }}
+              {
+                "topic": "realm",
+                "title": {{ "{{" }} printf "%q" $title {{ "}}" }},
+                "message": {{ "{{" }} printf "%q" $message {{ "}}" }},
+                "priority": {{ "{{" }} if eq .Status "firing" {{ "}}" }}5{{ "{{" }} else {{ "}}" }}3{{ "{{" }} end {{ "}}" }},
+                "tags": [{{ "{{" }} if eq .Status "firing" {{ "}}" }}"warning"{{ "{{" }} else {{ "}}" }}"white_check_mark"{{ "{{" }} end {{ "}}" }}],
+                "click": {{ "{{" }} printf "%q" $first.GeneratorURL {{ "}}" }}
+              }
         disableResolveMessage: false
