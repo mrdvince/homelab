@@ -1,0 +1,423 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+loki.source.journal "system" {
+  max_age        = "24h"
+  format_as_json = true
+
+  labels = {
+    job      = "proxmox-journal",
+    source   = "journal",
+    log_type = "systemd",
+  }
+  forward_to = [loki.process.journal.receiver]
+}
+
+local.file_match "proxmox_logs" {
+  path_targets = [
+    {
+      __path__ = "/var/log/pve/tasks/index*",
+      job      = "proxmox-file",
+      log_type = "proxmox",
+      log_file = "pve-task-index",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/pve/tasks/active",
+      job      = "proxmox-file",
+      log_type = "proxmox",
+      log_file = "pve-task-active",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/pve-firewall.log",
+      job      = "proxmox-file",
+      log_type = "proxmox",
+      log_file = "pve-firewall",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/pveproxy/access.log",
+      job      = "proxmox-file",
+      log_type = "proxmox",
+      log_file = "pveproxy-access",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/apt/history.log",
+      job      = "proxmox-file",
+      log_type = "package",
+      log_file = "apt-history",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/dpkg.log",
+      job      = "proxmox-file",
+      log_type = "package",
+      log_file = "dpkg",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/auth.log",
+      job      = "proxmox-file",
+      log_type = "ssh",
+      log_file = "auth",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/syslog",
+      job      = "proxmox-file",
+      log_type = "host",
+      log_file = "syslog",
+      source   = "file",
+    },
+    {
+      __path__ = "/var/log/kern.log",
+      job      = "proxmox-file",
+      log_type = "host",
+      log_file = "kernel",
+      source   = "file",
+    },
+  ]
+}
+
+loki.source.file "proxmox_logs" {
+  targets    = local.file_match.proxmox_logs.targets
+  forward_to = [loki.process.file.receiver]
+}
+
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "docker" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    target_label = "job"
+    replacement  = "docker"
+  }
+
+  rule {
+    target_label = "source"
+    replacement  = "docker"
+  }
+
+  rule {
+    target_label = "log_type"
+    replacement  = "docker"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/?(.*)"
+    target_label  = "container"
+  }
+
+  rule {
+    target_label = "instance"
+    replacement  = "${instance}"
+  }
+
+  rule {
+    target_label = "platform"
+    replacement  = "proxmox"
+  }
+}
+
+loki.source.docker "containers" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.docker.output
+  labels     = {}
+  forward_to = [loki.process.docker.receiver]
+}
+
+loki.process "journal" {
+  stage.json {
+    expressions = {
+      journal_ts_us     = "_SOURCE_REALTIME_TIMESTAMP",
+      message           = "MESSAGE",
+      priority_num      = "PRIORITY",
+      syslog_identifier = "SYSLOG_IDENTIFIER",
+      transport         = "_TRANSPORT",
+      unit              = "_SYSTEMD_UNIT",
+    }
+  }
+
+  stage.template {
+    source   = "priority_num"
+    template = "{{ .Value }}"
+  }
+
+  stage.template {
+    source   = "level"
+    template = "{{ if eq .priority_num \"0\" }}emerg{{ else if eq .priority_num \"1\" }}alert{{ else if eq .priority_num \"2\" }}crit{{ else if eq .priority_num \"3\" }}error{{ else if eq .priority_num \"4\" }}warning{{ else if eq .priority_num \"5\" }}notice{{ else if eq .priority_num \"6\" }}info{{ else if eq .priority_num \"7\" }}debug{{ else }}unknown{{ end }}"
+  }
+
+  stage.labels {
+    values = {
+      level             = "",
+      syslog_identifier = "",
+      transport         = "",
+      unit              = "",
+    }
+  }
+
+  stage.template {
+    source   = "output_msg"
+    template = "level={{ .level }} unit={{ .unit }} ident={{ .syslog_identifier }} msg=\"{{ .message }}\""
+  }
+
+  stage.output {
+    source = "output_msg"
+  }
+
+  stage.static_labels {
+    values = {
+      instance = "${instance}",
+      platform = "proxmox",
+    }
+  }
+
+  forward_to = [loki.write.aion.receiver]
+}
+
+loki.process "file" {
+  stage.match {
+    selector = "{log_file=\"pve-task-index\"}"
+
+    stage.regex {
+      expression = "^(?P<upid>UPID:[^:]+:[^:]+:[^:]+:[^:]+:(?P<task_action>[^:]*):(?P<vmid>[^:]*):(?P<task_user>[^:]*):) (?P<end_hex>[A-Fa-f0-9]+) (?P<task_result>.*)$"
+    }
+
+    stage.template {
+      source   = "level"
+      template = "{{ if eq .task_result \"OK\" }}info{{ else }}error{{ end }}"
+    }
+
+    stage.labels {
+      values = {
+        level       = "",
+        task_action = "",
+      }
+    }
+
+    stage.template {
+      source   = "output_msg"
+      template = "level={{ .level }} file={{ .log_file }} action={{ .task_action }} vmid={{ .vmid }} user={{ .task_user }} result=\"{{ .task_result }}\""
+    }
+
+    stage.output {
+      source = "output_msg"
+    }
+  }
+
+  stage.match {
+    selector = "{log_file=\"pve-task-active\"}"
+
+    stage.regex {
+      expression = "^(?P<upid>UPID:[^:]+:[^:]+:[^:]+:[^:]+:(?P<task_action>[^:]*):(?P<vmid>[^:]*):(?P<task_user>[^:]*):) (?P<active>\\d+) (?P<end_hex>[A-Fa-f0-9]+) (?P<task_result>.*)$"
+    }
+
+    stage.template {
+      source   = "level"
+      template = "{{ if eq .task_result \"OK\" }}info{{ else }}error{{ end }}"
+    }
+
+    stage.labels {
+      values = {
+        level       = "",
+        task_action = "",
+      }
+    }
+
+    stage.template {
+      source   = "output_msg"
+      template = "level={{ .level }} file={{ .log_file }} action={{ .task_action }} vmid={{ .vmid }} user={{ .task_user }} result=\"{{ .task_result }}\""
+    }
+
+    stage.output {
+      source = "output_msg"
+    }
+  }
+
+  stage.match {
+    selector = "{log_file=\"pveproxy-access\"}"
+
+    stage.regex {
+      expression = "^(?P<remote_addr>\\S+) - (?P<remote_user>\\S+) \\[(?P<access_time>[^\\]]+)\\] \"(?P<method>\\S+) (?P<path>\\S+) (?P<protocol>[^\"]+)\" (?P<status_class>\\d)(?P<status_rest>\\d\\d) (?P<bytes>\\d+)$"
+    }
+
+    stage.template {
+      source   = "level"
+      template = "{{ if eq .status_class \"5\" }}error{{ else if eq .status_class \"4\" }}warning{{ else }}info{{ end }}"
+    }
+
+    stage.labels {
+      values = {
+        level  = "",
+        method = "",
+      }
+    }
+
+    stage.template {
+      source   = "output_msg"
+      template = "level={{ .level }} file={{ .log_file }} remote={{ .remote_addr }} user={{ .remote_user }} method={{ .method }} status={{ .status_class }}{{ .status_rest }} path={{ .path }}"
+    }
+
+    stage.output {
+      source = "output_msg"
+    }
+  }
+
+  stage.match {
+    selector = "{log_file=~\"auth|syslog|kernel\"}"
+
+    stage.regex {
+      expression = "^(?P<syslog_ts>\\S+) (?P<syslog_host>\\S+) (?P<syslog_program>[^\\[:]+)(?:\\[(?P<pid>\\d+)\\])?: (?P<message>.*)$"
+    }
+
+    stage.template {
+      source   = "level"
+      template = "info"
+    }
+
+    stage.labels {
+      values = {
+        level           = "",
+        syslog_program  = "",
+      }
+    }
+
+    stage.template {
+      source   = "output_msg"
+      template = "level=info file={{ .log_file }} program={{ .syslog_program }} pid={{ .pid }} msg=\"{{ .message }}\""
+    }
+
+    stage.output {
+      source = "output_msg"
+    }
+  }
+
+  stage.match {
+    selector = "{log_file=\"dpkg\"}"
+
+    stage.regex {
+      expression = "^(?P<dpkg_date>\\S+) (?P<dpkg_time>\\S+) (?P<dpkg_action>\\S+) (?P<package>\\S+)(?: (?P<old_version>\\S+) (?P<new_version>\\S+))?.*$"
+    }
+
+    stage.template {
+      source   = "level"
+      template = "info"
+    }
+
+    stage.labels {
+      values = {
+        level       = "",
+        dpkg_action = "",
+      }
+    }
+
+    stage.template {
+      source   = "output_msg"
+      template = "level=info file={{ .log_file }} action={{ .dpkg_action }} package={{ .package }} old={{ .old_version }} new={{ .new_version }}"
+    }
+
+    stage.output {
+      source = "output_msg"
+    }
+  }
+
+  stage.match {
+    selector = "{log_file=\"apt-history\"}"
+
+    stage.regex {
+      expression = "^(?P<message>.*)$"
+    }
+
+    stage.template {
+      source   = "level"
+      template = "info"
+    }
+
+    stage.labels {
+      values = {
+        level = "",
+      }
+    }
+
+    stage.template {
+      source   = "output_msg"
+      template = "level=info file={{ .log_file }} msg=\"{{ .message }}\""
+    }
+
+    stage.output {
+      source = "output_msg"
+    }
+  }
+
+  stage.match {
+    selector = "{log_file=\"pve-firewall\"}"
+
+    stage.regex {
+      expression = "^(?P<message>.*)$"
+    }
+
+    stage.template {
+      source   = "level"
+      template = "info"
+    }
+
+    stage.labels {
+      values = {
+        level = "",
+      }
+    }
+
+    stage.template {
+      source   = "output_msg"
+      template = "level=info file={{ .log_file }} msg=\"{{ .message }}\""
+    }
+
+    stage.output {
+      source = "output_msg"
+    }
+  }
+
+  stage.static_labels {
+    values = {
+      instance = "${instance}",
+      platform = "proxmox",
+    }
+  }
+
+  forward_to = [loki.write.aion.receiver]
+}
+
+loki.process "docker" {
+  stage.template {
+    source   = "level"
+    template = "info"
+  }
+
+  stage.labels {
+    values = {
+      level = "",
+    }
+  }
+
+  forward_to = [loki.write.aion.receiver]
+}
+
+loki.write "aion" {
+  endpoint {
+    url = sys.env("LOKI_URL")
+
+    basic_auth {
+      username = sys.env("LOKI_USERNAME")
+      password = sys.env("AUTHENTIK_ALLOY_APP_PASSWORD")
+    }
+  }
+}

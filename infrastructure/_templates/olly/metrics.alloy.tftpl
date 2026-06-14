@@ -1,0 +1,164 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+prometheus.exporter.unix "node" {
+  include_exporter_metrics = true
+  disable_collectors       = ["mdadm"]
+  procfs_path              = "/host/proc"
+  rootfs_path              = "/host/rootfs"
+  sysfs_path               = "/host/sys"
+  udev_data_path           = "/host/run/udev/data"
+}
+
+prometheus.scrape "node" {
+  targets         = prometheus.exporter.unix.node.targets
+  scrape_interval = "30s"
+  forward_to      = [prometheus.relabel.node.receiver]
+}
+
+prometheus.relabel "node" {
+  forward_to = [prometheus.remote_write.prometheus.receiver]
+
+  rule {
+    target_label = "instance"
+    replacement  = "${instance}"
+  }
+
+  rule {
+    target_label = "platform"
+    replacement  = "proxmox"
+  }
+
+  rule {
+    target_label = "exporter"
+    replacement  = "node"
+  }
+}
+
+%{ if enable_pve ~}
+prometheus.scrape "pve" {
+  targets = [{
+    __address__ = "127.0.0.1:9221",
+  }]
+
+  metrics_path    = "/pve"
+  scrape_interval = "30s"
+  params = {
+    module = ["default"],
+    target = ["${pve_target}"],
+  }
+
+  forward_to = [prometheus.relabel.pve.receiver]
+}
+
+prometheus.relabel "pve" {
+  forward_to = [prometheus.remote_write.prometheus.receiver]
+
+  rule {
+    target_label = "instance"
+    replacement  = "${instance}"
+  }
+
+  rule {
+    target_label = "platform"
+    replacement  = "proxmox"
+  }
+
+  rule {
+    target_label = "exporter"
+    replacement  = "pve"
+  }
+}
+
+%{ endif ~}
+${enable_pve ? "" : "\n"}%{ if enable_opnsense ~}
+prometheus.scrape "opnsense" {
+  targets = [{
+    __address__ = "127.0.0.1:9222",
+  }]
+
+  scrape_interval = "30s"
+  forward_to      = [prometheus.relabel.opnsense.receiver]
+}
+
+prometheus.relabel "opnsense" {
+  forward_to = [prometheus.remote_write.prometheus.receiver]
+
+  rule {
+    target_label = "instance"
+    replacement  = "opnsense"
+  }
+
+  rule {
+    target_label = "platform"
+    replacement  = "opnsense"
+  }
+
+  rule {
+    target_label = "exporter"
+    replacement  = "opnsense"
+  }
+}
+
+%{ endif ~}
+${enable_opnsense ? "" : "\n"}%{ if enable_snmp ~}
+local.file "snmp_config" {
+  filename  = "/etc/alloy/snmp.yml"
+  is_secret = true
+}
+
+prometheus.exporter.snmp "opnsense" {
+  config                = local.file.snmp_config.content
+  config_merge_strategy = "merge"
+
+  target "opnsense" {
+    address = "${snmp_host}"
+    module  = "system,if_mib,hrSystem,hrStorage,hrDevice,ucd_la_table,ucd_memory,ucd_system_stats"
+    auth    = "opnsense_v3"
+
+    labels = {
+      instance = "opnsense",
+      platform = "opnsense",
+      exporter = "snmp",
+    }
+  }
+}
+
+prometheus.scrape "snmp" {
+  targets         = prometheus.exporter.snmp.opnsense.targets
+  scrape_interval = "30s"
+  forward_to      = [prometheus.relabel.snmp.receiver]
+}
+
+prometheus.relabel "snmp" {
+  forward_to = [prometheus.remote_write.prometheus.receiver]
+
+  rule {
+    target_label = "instance"
+    replacement  = "opnsense"
+  }
+
+  rule {
+    target_label = "platform"
+    replacement  = "opnsense"
+  }
+
+  rule {
+    target_label = "exporter"
+    replacement  = "snmp"
+  }
+}
+
+%{ endif ~}
+${enable_snmp ? "" : "\n"}prometheus.remote_write "prometheus" {
+  endpoint {
+    url = sys.env("PROMETHEUS_REMOTE_WRITE_URL")
+
+    basic_auth {
+      username = sys.env("PROMETHEUS_USERNAME")
+      password = sys.env("AUTHENTIK_ALLOY_APP_PASSWORD")
+    }
+  }
+}

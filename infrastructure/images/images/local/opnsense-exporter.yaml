@@ -1,0 +1,4 @@
+opnsenseExporter:
+  - registry: ghcr.io
+    image: athennamind/opnsense-exporter
+    tag: "0.0.16"
