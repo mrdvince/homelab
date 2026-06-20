@@ -84,7 +84,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: longhorn
+          storageClassName: truenas-iscsi
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
