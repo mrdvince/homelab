@@ -10,17 +10,12 @@ contactPoints:
           httpMethod: POST
           payload:
             template: |
-              {{ "{{" }}- $first := index .Alerts 0 -{{ "}}" }}
-              {{ "{{" }}- $title := printf "[%s] %s" (toUpper .Status) .CommonLabels.alertname -{{ "}}" }}
-              {{ "{{" }}- $summary := or .CommonAnnotations.summary "grafana alert notification" -{{ "}}" }}
-              {{ "{{" }}- $action := or .CommonAnnotations.action "open grafana and inspect the alert." -{{ "}}" }}
-              {{ "{{" }}- $message := printf "%s\n\n%s\n\n%s" $summary $action $first.GeneratorURL -{{ "}}" }}
               {
                 "topic": "realm",
-                "title": {{ "{{" }} printf "%q" $title {{ "}}" }},
-                "message": {{ "{{" }} printf "%q" $message {{ "}}" }},
+                "title": {{ "{{" }} printf "%q" (printf "[%s] %s" (toUpper .Status) .CommonLabels.alertname) {{ "}}" }},
+                "message": {{ "{{" }} printf "%q" (printf "%s\n\n%s\n\n%s" (or .CommonAnnotations.summary "grafana alert notification") (or .CommonAnnotations.action "open grafana and inspect the alert.") ((index .Alerts 0).GeneratorURL)) {{ "}}" }},
                 "priority": {{ "{{" }} if eq .Status "firing" {{ "}}" }}5{{ "{{" }} else {{ "}}" }}3{{ "{{" }} end {{ "}}" }},
                 "tags": [{{ "{{" }} if eq .Status "firing" {{ "}}" }}"warning"{{ "{{" }} else {{ "}}" }}"white_check_mark"{{ "{{" }} end {{ "}}" }}],
-                "click": {{ "{{" }} printf "%q" $first.GeneratorURL {{ "}}" }}
+                "click": {{ "{{" }} printf "%q" ((index .Alerts 0).GeneratorURL) {{ "}}" }}
               }
         disableResolveMessage: false
