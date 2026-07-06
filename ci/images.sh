@@ -209,6 +209,7 @@ extract_rendered_images() {
       }' \
     | grep -E '^[[:alnum:]_.-]+(:[0-9]+)?/[[:alnum:]_.@:/-]+$' \
     | grep -E '(:[[:alnum:]_][[:alnum:]_.-]*(@sha256:[[:xdigit:]]{64})?$|@sha256:[[:xdigit:]]{64}$)' \
+    | grep -Ev ':(true|false)$' \
     | sort -u >"${image_list}"
 
   image_count="$(wc -l <"${image_list}" | tr -d ' ')"
