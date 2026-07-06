@@ -50,11 +50,11 @@ ports:
     exposedPort: 22
     protocol: TCP
 
-logs:
-  general:
-    level: INFO
-  access:
-    enabled: true
+log:
+  level: INFO
+
+accessLog:
+  enabled: true
 
 tracing:
   otlp:
