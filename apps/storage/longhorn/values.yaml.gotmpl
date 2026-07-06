@@ -4,6 +4,8 @@ global:
 {{ end }}
   tolerations: &longhornTolerations
     - operator: Exists
+  nodeSelector: &longhornNodeSelector
+    node.home.mrdvince.me/longhorn: "true"
 
 persistence:
   defaultClass: true
@@ -12,9 +14,19 @@ persistence:
 defaultSettings:
   defaultReplicaCount: {{ .Values.defaultReplicaCount }}
   taintToleration: ":"
+  systemManagedComponentsNodeSelector: "node.home.mrdvince.me/longhorn:true"
   concurrentAutomaticEngineUpgradePerNodeLimit: 1
   replicaAutoBalance: best-effort
   storageOverProvisioningPercentage: 200
+
+longhornManager:
+  nodeSelector: *longhornNodeSelector
+
+longhornDriver:
+  nodeSelector: *longhornNodeSelector
+
+longhornUI:
+  nodeSelector: *longhornNodeSelector
 
 preUpgradeChecker:
   jobEnabled: false
