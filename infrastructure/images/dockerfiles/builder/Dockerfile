@@ -9,6 +9,7 @@ RUN apk add --no-cache \
     bash \
     curl \
     git \
+    nushell \
     tar \
     gzip \
     skopeo \
