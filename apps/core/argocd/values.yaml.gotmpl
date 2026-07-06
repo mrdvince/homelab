@@ -37,6 +37,8 @@ configs:
         name: authentik
         type: oidc
         id: authentik
+    # chart v10 defaults this to /status, which hides live status from app health here.
+    resource.customizations.ignoreResourceUpdates.all: ""
   rbac:
     policy.csv: |
       g, aion-argocd-admins, role:admin
