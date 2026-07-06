@@ -53,6 +53,13 @@
       "groupName": "container images"
     },
     {
+      "description": "keep alloy journal libraries aligned with the debian 12 distroless base",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": ["infrastructure/images/dockerfiles/alloy/Dockerfile"],
+      "matchPackageNames": ["debian"],
+      "enabled": false
+    },
+    {
       "groupName": "gitlab stack",
       "matchPackageNames": ["/^gitlab-org//", "gitlab"],
       "automerge": false,

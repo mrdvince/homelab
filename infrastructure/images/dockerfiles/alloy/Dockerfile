@@ -25,7 +25,7 @@ RUN apk add --no-cache ca-certificates unzip wget \
         /rootfs/var/log/journal \
     && cp /etc/ssl/certs/ca-certificates.crt /rootfs/etc/ssl/certs/ca-certificates.crt
 
-FROM debian:13-slim AS journal-libs
+FROM debian:12-slim AS journal-libs
 
 ARG DEBIAN_FRONTEND=noninteractive
 
