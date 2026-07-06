@@ -1,4 +1,4 @@
 drawio:
   - registry: docker.io
     image: jgraph/drawio
-    tag: "29.7.12"
+    tag: "30.2.6"
