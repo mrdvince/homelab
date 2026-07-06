@@ -200,6 +200,13 @@ extract_rendered_images() {
   yq -N -r '.. | select(tag == "!!str")' "${rendered_dir}"/*.yaml \
     | sed '/^$/d' \
     | grep -v '://' \
+    | awk '{
+        gsub(/[[:space:],;"(){}]+/, "\n")
+        gsub(/=/, "\n")
+        gsub(/\[/, "\n")
+        gsub(/\]/, "\n")
+        print
+      }' \
     | grep -E '^[[:alnum:]_.-]+(:[0-9]+)?/[[:alnum:]_.@:/-]+$' \
     | grep -E '(:[[:alnum:]_][[:alnum:]_.-]*(@sha256:[[:xdigit:]]{64})?$|@sha256:[[:xdigit:]]{64}$)' \
     | sort -u >"${image_list}"
