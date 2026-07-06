@@ -7,6 +7,8 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
   - name: cnpg
     url: https://cloudnative-pg.github.io/charts
   - name: gitlab
@@ -84,12 +86,20 @@ releases:
               secret: {{ .Values | get "gitlab-oidc.client_secret" }}
               redirect_uri: https://gitlab.{{ .Values.domain }}/users/auth/openid_connect/callback
 
+  - name: gitlab-redis
+    namespace: gitlab
+    chart: bjw-s/app-template
+    version: 4.6.2
+    values:
+      - redis/values.yaml.gotmpl
+
   - name: gitlab
     namespace: gitlab
     chart: gitlab/gitlab
-    version: 9.11.7
+    version: 10.1.1
     needs:
       - gitlab-postgres
+      - gitlab-redis
       - gitlab-s3-secrets
       - gitlab-s3-backup-secrets
       - gitlab-oidc-provider

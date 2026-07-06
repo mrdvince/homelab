@@ -1,0 +1,31 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlabRedis 0).image }}
+          tag: "{{ (index .Values.gitlabRedis 0).tag }}"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+defaultPodOptions:
+  nodeSelector:
+    kubernetes.io/hostname: aion-24
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: gitlab
+      effect: NoSchedule
+
+service:
+  main:
+    controller: main
+    ports:
+      redis:
+        port: 6379
