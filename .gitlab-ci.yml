@@ -2,7 +2,8 @@ stages:
   - test
   - renovate
   - build
-  - sync
+  - sync-local
+  - sync-chart
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
@@ -92,9 +93,16 @@ verify:ci-scripts:
     - nu ci/images.nu build "$BUILD_NAME"
 
 .sync-image:
-  stage: sync
   image:
     name: $BUILDER_IMAGE
     entrypoint: [""]
   script:
     - nu ci/images.nu sync-one "$IMAGE_TO_SYNC"
+
+.sync-local-image:
+  extends: .sync-image
+  stage: sync-local
+
+.sync-chart-image:
+  extends: .sync-image
+  stage: sync-chart

@@ -70,7 +70,7 @@ def sync-jobs [category: string, rows: list<record>] {
       {
         name: $job_name
         value: {
-          extends: .sync-image
+          extends: $".sync-($category)-image"
           variables: {IMAGE_TO_SYNC: $group.image}
           rules: (sync-rules $category $sources)
         }

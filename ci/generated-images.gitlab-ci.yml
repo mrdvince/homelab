@@ -48,7 +48,7 @@ build:renovate:
         - infrastructure/images/builds/renovate.yaml
         - infrastructure/images/dockerfiles/renovate/Dockerfile
 sync:chart:docker-io-emberstack-kubernetes-reflector-10-0-46:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/emberstack/kubernetes-reflector:10.0.46
   rules:
@@ -58,7 +58,7 @@ sync:chart:docker-io-emberstack-kubernetes-reflector-10-0-46:
         - apps/core/reflector/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-grafana-alloy-v1-17-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/grafana/alloy:v1.17.0
   rules:
@@ -68,7 +68,7 @@ sync:chart:docker-io-grafana-alloy-v1-17-0:
         - apps/monitoring/alloy/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-grafana-grafana-12-3-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/grafana/grafana:12.3.1
   rules:
@@ -78,7 +78,7 @@ sync:chart:docker-io-grafana-grafana-12-3-1:
         - apps/monitoring/grafana/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-grafana-loki-3-6-7:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/grafana/loki:3.6.7
   rules:
@@ -88,7 +88,7 @@ sync:chart:docker-io-grafana-loki-3-6-7:
         - apps/monitoring/loki/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-grafana-tempo-2-9-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/grafana/tempo:2.9.0
   rules:
@@ -98,7 +98,7 @@ sync:chart:docker-io-grafana-tempo-2-9-0:
         - apps/monitoring/tempo/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-kiwigrid-k8s-sidecar-2-5-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/kiwigrid/k8s-sidecar:2.5.0
   rules:
@@ -108,7 +108,7 @@ sync:chart:docker-io-kiwigrid-k8s-sidecar-2-5-0:
         - apps/monitoring/loki/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-library-busybox-1-31-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/library/busybox:1.31.1
   rules:
@@ -118,7 +118,7 @@ sync:chart:docker-io-library-busybox-1-31-1:
         - apps/monitoring/grafana/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-backing-image-manager-v1-12-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/backing-image-manager:v1.12.0
   rules:
@@ -128,7 +128,7 @@ sync:chart:docker-io-longhornio-backing-image-manager-v1-12-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-csi-attacher-v4-12-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/csi-attacher:v4.12.0
   rules:
@@ -138,7 +138,7 @@ sync:chart:docker-io-longhornio-csi-attacher-v4-12-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-csi-node-driver-registrar-v2-17-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/csi-node-driver-registrar:v2.17.0
   rules:
@@ -148,7 +148,7 @@ sync:chart:docker-io-longhornio-csi-node-driver-registrar-v2-17-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-csi-provisioner-v5-3-0-20260514:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/csi-provisioner:v5.3.0-20260514
   rules:
@@ -158,7 +158,7 @@ sync:chart:docker-io-longhornio-csi-provisioner-v5-3-0-20260514:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-csi-resizer-v2-1-0-20260514:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/csi-resizer:v2.1.0-20260514
   rules:
@@ -168,7 +168,7 @@ sync:chart:docker-io-longhornio-csi-resizer-v2-1-0-20260514:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-csi-snapshotter-v8-5-0-20260514:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/csi-snapshotter:v8.5.0-20260514
   rules:
@@ -178,7 +178,7 @@ sync:chart:docker-io-longhornio-csi-snapshotter-v8-5-0-20260514:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-livenessprobe-v2-19-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/livenessprobe:v2.19.0
   rules:
@@ -188,7 +188,7 @@ sync:chart:docker-io-longhornio-livenessprobe-v2-19-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-longhorn-engine-v1-12-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/longhorn-engine:v1.12.0
   rules:
@@ -198,7 +198,7 @@ sync:chart:docker-io-longhornio-longhorn-engine-v1-12-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-longhorn-instance-manager-v1-12-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/longhorn-instance-manager:v1.12.0
   rules:
@@ -208,7 +208,7 @@ sync:chart:docker-io-longhornio-longhorn-instance-manager-v1-12-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-longhorn-manager-v1-12-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/longhorn-manager:v1.12.0
   rules:
@@ -218,7 +218,7 @@ sync:chart:docker-io-longhornio-longhorn-manager-v1-12-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-longhorn-share-manager-v1-12-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/longhorn-share-manager:v1.12.0
   rules:
@@ -228,7 +228,7 @@ sync:chart:docker-io-longhornio-longhorn-share-manager-v1-12-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-longhorn-ui-v1-12-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/longhorn-ui:v1.12.0
   rules:
@@ -238,7 +238,7 @@ sync:chart:docker-io-longhornio-longhorn-ui-v1-12-0:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-longhornio-support-bundle-kit-v0-0-86:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/longhornio/support-bundle-kit:v0.0.86
   rules:
@@ -248,7 +248,7 @@ sync:chart:docker-io-longhornio-support-bundle-kit-v0-0-86:
         - apps/storage/longhorn/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-nginxinc-nginx-unprivileged-1-29-alpine:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
   rules:
@@ -258,7 +258,7 @@ sync:chart:docker-io-nginxinc-nginx-unprivileged-1-29-alpine:
         - apps/monitoring/loki/**/*
         - infrastructure/images/config.yaml
 sync:chart:docker-io-traefik-v3-7-5:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: docker.io/traefik:v3.7.5
   rules:
@@ -268,7 +268,7 @@ sync:chart:docker-io-traefik-v3-7-5:
         - apps/core/traefik/**/*
         - infrastructure/images/config.yaml
 sync:chart:ecr-public-aws-com-docker-library-redis-8-2-3-alpine:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: ecr-public.aws.com/docker/library/redis:8.2.3-alpine
   rules:
@@ -278,7 +278,7 @@ sync:chart:ecr-public-aws-com-docker-library-redis-8-2-3-alpine:
         - apps/core/argocd/**/*
         - infrastructure/images/config.yaml
 sync:chart:ghcr-io-cloudnative-pg-cloudnative-pg-1-30-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/cloudnative-pg/cloudnative-pg:1.30.0
   rules:
@@ -288,7 +288,7 @@ sync:chart:ghcr-io-cloudnative-pg-cloudnative-pg-1-30-0:
         - apps/storage/cnpg/**/*
         - infrastructure/images/config.yaml
 sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/cloudnative-pg/postgresql:17
   rules:
@@ -303,7 +303,7 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
         - apps/storage/cnpg/test-cluster/**/*
         - infrastructure/images/config.yaml
 sync:chart:ghcr-io-dexidp-dex-v2-45-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/dexidp/dex:v2.45.1
   rules:
@@ -313,7 +313,7 @@ sync:chart:ghcr-io-dexidp-dex-v2-45-1:
         - apps/core/argocd/**/*
         - infrastructure/images/config.yaml
 sync:chart:ghcr-io-jkroepke-kube-webhook-certgen-1-8-4:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/jkroepke/kube-webhook-certgen:1.8.4
   rules:
@@ -323,7 +323,7 @@ sync:chart:ghcr-io-jkroepke-kube-webhook-certgen-1-8-4:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:grafana-pyroscope-2-1-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: grafana/pyroscope:2.1.0
   rules:
@@ -333,7 +333,7 @@ sync:chart:grafana-pyroscope-2-1-0:
         - apps/monitoring/pyroscope/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-argoproj-argocd-v3-4-4:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/argoproj/argocd:v3.4.4
   rules:
@@ -343,7 +343,7 @@ sync:chart:quay-io-argoproj-argocd-v3-4-4:
         - apps/core/argocd/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-cilium-cilium-envoy-v1-36-8-1781157951-a7f42a3390781539911b5b9107881b35ecc4e752-sha256-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/cilium/cilium-envoy:v1.36.8-1781157951-a7f42a3390781539911b5b9107881b35ecc4e752@sha256:326f872e19ce8aa45170efbf583b3f301586ba3feead14b864676d4baf3b45ed
   rules:
@@ -353,7 +353,7 @@ sync:chart:quay-io-cilium-cilium-envoy-v1-36-8-1781157951-a7f42a3390781539911b5b
         - apps/core/cilium/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-cilium-cilium-v1-19-5-sha256-20fbbc14ac20b55a292c0dcda5571bf31cde30a7dbc68c29db3e709390a:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/cilium/cilium:v1.19.5@sha256:20fbbc14ac20b55a292c0dcda5571bf31cde30a7dbc68c29db3e709390ab0732
   rules:
@@ -363,7 +363,7 @@ sync:chart:quay-io-cilium-cilium-v1-19-5-sha256-20fbbc14ac20b55a292c0dcda5571bf3
         - apps/core/cilium/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-cilium-hubble-relay-v1-19-5-sha256-24409bfa1bca075c92acb26ba4b49cd573d99d68d5370f7cc8250:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/cilium/hubble-relay:v1.19.5@sha256:24409bfa1bca075c92acb26ba4b49cd573d99d68d5370f7cc825078185222a0c
   rules:
@@ -373,7 +373,7 @@ sync:chart:quay-io-cilium-hubble-relay-v1-19-5-sha256-24409bfa1bca075c92acb26ba4
         - apps/core/cilium/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-cilium-hubble-ui-backend-v0-13-5-sha256-fac0c300ae119274edca11fd89b1ad23c788792d8bc4ea2b:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/cilium/hubble-ui-backend:v0.13.5@sha256:fac0c300ae119274edca11fd89b1ad23c788792d8bc4ea2ba631c709e8d3c688
   rules:
@@ -383,7 +383,7 @@ sync:chart:quay-io-cilium-hubble-ui-backend-v0-13-5-sha256-fac0c300ae119274edca1
         - apps/core/cilium/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-cilium-hubble-ui-v0-13-5-sha256-f7d514fc54d784ed6df9d58cf0e97648b143f92b766dd1780ed3fc84:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/cilium/hubble-ui:v0.13.5@sha256:f7d514fc54d784ed6df9d58cf0e97648b143f92b766dd1780ed3fc845bd4c516
   rules:
@@ -393,7 +393,7 @@ sync:chart:quay-io-cilium-hubble-ui-v0-13-5-sha256-f7d514fc54d784ed6df9d58cf0e97
         - apps/core/cilium/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-cilium-operator-generic-v1-19-5-sha256-be848a365776e07d0c5a895eda7aec928ddc52a5a1fa2f432:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/cilium/operator-generic:v1.19.5@sha256:be848a365776e07d0c5a895eda7aec928ddc52a5a1fa2f432fd7a286609e1db4
   rules:
@@ -403,7 +403,7 @@ sync:chart:quay-io-cilium-operator-generic-v1-19-5-sha256-be848a365776e07d0c5a89
         - apps/core/cilium/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-jetstack-cert-manager-acmesolver-v1-20-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/jetstack/cert-manager-acmesolver:v1.20.3
   rules:
@@ -413,7 +413,7 @@ sync:chart:quay-io-jetstack-cert-manager-acmesolver-v1-20-3:
         - apps/core/cert-manager/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-jetstack-cert-manager-cainjector-v1-20-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/jetstack/cert-manager-cainjector:v1.20.3
   rules:
@@ -423,7 +423,7 @@ sync:chart:quay-io-jetstack-cert-manager-cainjector-v1-20-3:
         - apps/core/cert-manager/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-jetstack-cert-manager-controller-v1-20-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/jetstack/cert-manager-controller:v1.20.3
   rules:
@@ -433,7 +433,7 @@ sync:chart:quay-io-jetstack-cert-manager-controller-v1-20-3:
         - apps/core/cert-manager/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-jetstack-cert-manager-startupapicheck-v1-20-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/jetstack/cert-manager-startupapicheck:v1.20.3
   rules:
@@ -443,7 +443,7 @@ sync:chart:quay-io-jetstack-cert-manager-startupapicheck-v1-20-3:
         - apps/core/cert-manager/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-jetstack-cert-manager-webhook-v1-20-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/jetstack/cert-manager-webhook:v1.20.3
   rules:
@@ -453,7 +453,7 @@ sync:chart:quay-io-jetstack-cert-manager-webhook-v1-20-3:
         - apps/core/cert-manager/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-kiwigrid-k8s-sidecar-2-5-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/kiwigrid/k8s-sidecar:2.5.0
   rules:
@@ -463,7 +463,7 @@ sync:chart:quay-io-kiwigrid-k8s-sidecar-2-5-0:
         - apps/monitoring/grafana/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-prometheus-operator-prometheus-config-reloader-v0-91-0-sha256-7d9e4eea5f1139e602508871f4:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/prometheus-operator/prometheus-config-reloader:v0.91.0@sha256:7d9e4eea5f1139e602508871f422b0116c60e87c662f3dcd234d5ab60cd0d8c1
   rules:
@@ -473,7 +473,7 @@ sync:chart:quay-io-prometheus-operator-prometheus-config-reloader-v0-91-0-sha256
         - apps/monitoring/alloy/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-prometheus-operator-prometheus-config-reloader-v0-92-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/prometheus-operator/prometheus-config-reloader:v0.92.0
   rules:
@@ -483,7 +483,7 @@ sync:chart:quay-io-prometheus-operator-prometheus-config-reloader-v0-92-0:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-prometheus-operator-prometheus-operator-v0-92-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/prometheus-operator/prometheus-operator:v0.92.0
   rules:
@@ -493,7 +493,7 @@ sync:chart:quay-io-prometheus-operator-prometheus-operator-v0-92-0:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-prometheus-alertmanager-v0-33-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/prometheus/alertmanager:v0.33.0
   rules:
@@ -503,7 +503,7 @@ sync:chart:quay-io-prometheus-alertmanager-v0-33-0:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-prometheus-node-exporter-v1-11-1-distroless:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/prometheus/node-exporter:v1.11.1-distroless
   rules:
@@ -513,7 +513,7 @@ sync:chart:quay-io-prometheus-node-exporter-v1-11-1-distroless:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-prometheus-prometheus-v3-12-0-distroless:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/prometheus/prometheus:v3.12.0-distroless
   rules:
@@ -523,7 +523,7 @@ sync:chart:quay-io-prometheus-prometheus-v3-12-0-distroless:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-thanos-thanos-v0-41-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: quay.io/thanos/thanos:v0.41.0
   rules:
@@ -533,7 +533,7 @@ sync:chart:quay-io-thanos-thanos-v0-41-0:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-certificates-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/certificates:v19.1.1
   rules:
@@ -543,7 +543,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-certificates-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitaly-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitaly:v19.1.1
   rules:
@@ -553,7 +553,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitaly-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-base-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-base:v19.1.1
   rules:
@@ -563,7 +563,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-base-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-exporter-16-8-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-exporter:16.8.0
   rules:
@@ -573,7 +573,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-exporter-16-8-0:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-kas-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-kas:v19.1.1
   rules:
@@ -583,7 +583,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-kas-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-shell-v14-54-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-shell:v14.54.0
   rules:
@@ -593,7 +593,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-shell-v14-54-0:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-sidekiq-ee-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-sidekiq-ee:v19.1.1
   rules:
@@ -603,7 +603,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-sidekiq-ee-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-toolbox-ee-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ee:v19.1.1
   rules:
@@ -613,7 +613,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-toolbox-ee-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-webservice-ee-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-webservice-ee:v19.1.1
   rules:
@@ -623,7 +623,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-webservice-ee-v19-1-1
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-workhorse-ee-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/gitlab-workhorse-ee:v19.1.1
   rules:
@@ -633,7 +633,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-gitlab-workhorse-ee-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-build-cng-kubectl-v19-1-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/build/cng/kubectl:v19.1.1
   rules:
@@ -643,7 +643,7 @@ sync:chart:registry-gitlab-com-gitlab-org-build-cng-kubectl-v19-1-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-gitlab-com-gitlab-org-gitlab-runner-alpine-v19-0-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.gitlab.com/gitlab-org/gitlab-runner:alpine-v19.0.1
   rules:
@@ -653,7 +653,7 @@ sync:chart:registry-gitlab-com-gitlab-org-gitlab-runner-alpine-v19-0-1:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-actualbudget-actual-server-26-6-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/actualbudget/actual-server:26.6.0
   rules:
@@ -663,7 +663,7 @@ sync:chart:registry-home-mrdvince-me-actualbudget-actual-server-26-6-0:
         - apps/services/actual/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-barassistant-salt-rim-4-15-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/barassistant/salt-rim:4.15.0
   rules:
@@ -673,7 +673,7 @@ sync:chart:registry-home-mrdvince-me-barassistant-salt-rim-4-15-0:
         - apps/services/bar-assistant/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-barassistant-server-5-15-2:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/barassistant/server:5.15.2
   rules:
@@ -683,7 +683,7 @@ sync:chart:registry-home-mrdvince-me-barassistant-server-5-15-2:
         - apps/services/bar-assistant/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-bitnamilegacy-ghost-5-130-3-debian-12-r17:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/bitnamilegacy/ghost:5.130.3-debian-12-r17
   rules:
@@ -693,7 +693,7 @@ sync:chart:registry-home-mrdvince-me-bitnamilegacy-ghost-5-130-3-debian-12-r17:
         - apps/services/blog/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-bitnamilegacy-mysql-9-4-0-debian-12-r1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/bitnamilegacy/mysql:9.4.0-debian-12-r1
   rules:
@@ -703,7 +703,7 @@ sync:chart:registry-home-mrdvince-me-bitnamilegacy-mysql-9-4-0-debian-12-r1:
         - apps/services/blog/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-coder-code-server-4-108-2:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/coder/code-server:4.108.2
   rules:
@@ -713,7 +713,7 @@ sync:chart:registry-home-mrdvince-me-coder-code-server-4-108-2:
         - apps/services/code-server/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-corentinth-it-tools-2024-10-22-7ca5933:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/corentinth/it-tools:2024.10.22-7ca5933
   rules:
@@ -723,7 +723,7 @@ sync:chart:registry-home-mrdvince-me-corentinth-it-tools-2024-10-22-7ca5933:
         - apps/services/it-tools/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-democratic-csi-csi-grpc-proxy-v0-5-7:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/democratic-csi/csi-grpc-proxy:v0.5.7
   rules:
@@ -733,7 +733,7 @@ sync:chart:registry-home-mrdvince-me-democratic-csi-csi-grpc-proxy-v0-5-7:
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-democratic-csi-democratic-csi-v1-9-5:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/democratic-csi/democratic-csi:v1.9.5
   rules:
@@ -743,7 +743,7 @@ sync:chart:registry-home-mrdvince-me-democratic-csi-democratic-csi-v1-9-5:
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-excalidraw-excalidraw-2026-01-07-cc6c29c:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/excalidraw/excalidraw:2026.01.07-cc6c29c
   rules:
@@ -753,7 +753,7 @@ sync:chart:registry-home-mrdvince-me-excalidraw-excalidraw-2026-01-07-cc6c29c:
         - apps/services/excalidraw/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-freshrss-freshrss-1-29-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/freshrss/freshrss:1.29.1
   rules:
@@ -763,7 +763,7 @@ sync:chart:registry-home-mrdvince-me-freshrss-freshrss-1-29-1:
         - apps/services/freshrss/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-getmeili-meilisearch-v1-48:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/getmeili/meilisearch:v1.48
   rules:
@@ -774,7 +774,7 @@ sync:chart:registry-home-mrdvince-me-getmeili-meilisearch-v1-48:
         - apps/services/karakeep/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-helmfile-helmfile-v1-2-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/helmfile/helmfile:v1.2.3
   rules:
@@ -784,7 +784,7 @@ sync:chart:registry-home-mrdvince-me-helmfile-helmfile-v1-2-3:
         - apps/core/argocd/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-iib0011-omni-tools-0-6-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/iib0011/omni-tools:0.6.0
   rules:
@@ -794,7 +794,7 @@ sync:chart:registry-home-mrdvince-me-iib0011-omni-tools-0-6-0:
         - apps/services/omni-tools/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-jgraph-drawio-30-2-6:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/jgraph/drawio:30.2.6
   rules:
@@ -804,7 +804,7 @@ sync:chart:registry-home-mrdvince-me-jgraph-drawio-30-2-6:
         - apps/services/drawio/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-karakeep-app-karakeep-0-30-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/karakeep-app/karakeep:0.30.0
   rules:
@@ -814,7 +814,7 @@ sync:chart:registry-home-mrdvince-me-karakeep-app-karakeep-0-30-0:
         - apps/services/karakeep/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-library-alpine-3-23-2:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/library/alpine:3.23.2
   rules:
@@ -824,7 +824,7 @@ sync:chart:registry-home-mrdvince-me-library-alpine-3-23-2:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-library-busybox-1-37-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/library/busybox:1.37.0
   rules:
@@ -835,7 +835,7 @@ sync:chart:registry-home-mrdvince-me-library-busybox-1-37-0:
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-linuxserver-netbootxyz-2-0-53:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/linuxserver/netbootxyz:2.0.53
   rules:
@@ -845,7 +845,7 @@ sync:chart:registry-home-mrdvince-me-linuxserver-netbootxyz-2-0-53:
         - apps/services/netbootxyz/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-linuxserver-pairdrop-1-11-2:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/linuxserver/pairdrop:1.11.2
   rules:
@@ -855,7 +855,7 @@ sync:chart:registry-home-mrdvince-me-linuxserver-pairdrop-1-11-2:
         - apps/services/pairdrop/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-lukegus-termix-release-2-2-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/lukegus/termix:release-2.2.1
   rules:
@@ -865,7 +865,7 @@ sync:chart:registry-home-mrdvince-me-lukegus-termix-release-2-2-1:
         - apps/services/termix/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-mealie-recipes-mealie-v3-10-2:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/mealie-recipes/mealie:v3.10.2
   rules:
@@ -875,7 +875,7 @@ sync:chart:registry-home-mrdvince-me-mealie-recipes-mealie-v3-10-2:
         - apps/services/mealie/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-muhlba91-external-dns-provider-adguard-v11-0-2:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/muhlba91/external-dns-provider-adguard:v11.0.2
   rules:
@@ -885,7 +885,7 @@ sync:chart:registry-home-mrdvince-me-muhlba91-external-dns-provider-adguard-v11-
         - apps/core/external-dns/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-paperless-ngx-paperless-ngx-2-20-6:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/paperless-ngx/paperless-ngx:2.20.6
   rules:
@@ -895,7 +895,7 @@ sync:chart:registry-home-mrdvince-me-paperless-ngx-paperless-ngx-2-20-6:
         - apps/services/paperless/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-redis-7-2-alpine:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/redis:7.2-alpine
   rules:
@@ -905,7 +905,7 @@ sync:chart:registry-home-mrdvince-me-redis-7-2-alpine:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-redis-8-alpine:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/redis:8-alpine
   rules:
@@ -915,7 +915,7 @@ sync:chart:registry-home-mrdvince-me-redis-8-alpine:
         - apps/services/paperless/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-scanopy-scanopy-server-v0-14-3:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/scanopy/scanopy/server:v0.14.3
   rules:
@@ -925,7 +925,7 @@ sync:chart:registry-home-mrdvince-me-scanopy-scanopy-server-v0-14-3:
         - apps/services/scanopy/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-attacher-v4-4-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/sig-storage/csi-attacher:v4.4.0
   rules:
@@ -935,7 +935,7 @@ sync:chart:registry-home-mrdvince-me-sig-storage-csi-attacher-v4-4-0:
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-node-driver-registrar-v2-9-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/sig-storage/csi-node-driver-registrar:v2.9.0
   rules:
@@ -945,7 +945,7 @@ sync:chart:registry-home-mrdvince-me-sig-storage-csi-node-driver-registrar-v2-9-
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-provisioner-v3-6-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/sig-storage/csi-provisioner:v3.6.0
   rules:
@@ -955,7 +955,7 @@ sync:chart:registry-home-mrdvince-me-sig-storage-csi-provisioner-v3-6-0:
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-resizer-v1-9-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/sig-storage/csi-resizer:v1.9.0
   rules:
@@ -965,7 +965,7 @@ sync:chart:registry-home-mrdvince-me-sig-storage-csi-resizer-v1-9-0:
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-snapshotter-v8-2-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/sig-storage/csi-snapshotter:v8.2.1
   rules:
@@ -975,7 +975,7 @@ sync:chart:registry-home-mrdvince-me-sig-storage-csi-snapshotter-v8-2-1:
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-valkey-valkey-9-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/valkey/valkey:9.1
   rules:
@@ -985,7 +985,7 @@ sync:chart:registry-home-mrdvince-me-valkey-valkey-9-1:
         - apps/services/bar-assistant/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-zenika-alpine-chrome-124:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.home.mrdvince.me/zenika/alpine-chrome:124
   rules:
@@ -995,7 +995,7 @@ sync:chart:registry-home-mrdvince-me-zenika-alpine-chrome-124:
         - apps/services/karakeep/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-external-dns-external-dns-v0-21-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/external-dns/external-dns:v0.21.0
   rules:
@@ -1005,7 +1005,7 @@ sync:chart:registry-k8s-io-external-dns-external-dns-v0-21-0:
         - apps/core/external-dns/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-kube-state-metrics-kube-state-metrics-v2-19-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.19.1
   rules:
@@ -1015,7 +1015,7 @@ sync:chart:registry-k8s-io-kube-state-metrics-kube-state-metrics-v2-19-1:
         - apps/monitoring/prometheus/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-metrics-server-metrics-server-v0-8-1:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/metrics-server/metrics-server:v0.8.1
   rules:
@@ -1025,7 +1025,7 @@ sync:chart:registry-k8s-io-metrics-server-metrics-server-v0-8-1:
         - apps/core/metrics-server/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-sig-storage-csi-node-driver-registrar-v2-15-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.15.0
   rules:
@@ -1035,7 +1035,7 @@ sync:chart:registry-k8s-io-sig-storage-csi-node-driver-registrar-v2-15-0:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-sig-storage-csi-provisioner-v6-1-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-provisioner:v6.1.0
   rules:
@@ -1045,7 +1045,7 @@ sync:chart:registry-k8s-io-sig-storage-csi-provisioner-v6-1-0:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-sig-storage-csi-resizer-v2-0-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-resizer:v2.0.0
   rules:
@@ -1055,7 +1055,7 @@ sync:chart:registry-k8s-io-sig-storage-csi-resizer-v2-0-0:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-sig-storage-csi-snapshotter-v8-4-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-snapshotter:v8.4.0
   rules:
@@ -1065,7 +1065,7 @@ sync:chart:registry-k8s-io-sig-storage-csi-snapshotter-v8-4-0:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-sig-storage-livenessprobe-v2-17-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/livenessprobe:v2.17.0
   rules:
@@ -1075,7 +1075,7 @@ sync:chart:registry-k8s-io-sig-storage-livenessprobe-v2-17-0:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-sig-storage-nfsplugin-v4-13-2:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/nfsplugin:v4.13.2
   rules:
@@ -1085,7 +1085,7 @@ sync:chart:registry-k8s-io-sig-storage-nfsplugin-v4-13-2:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-k8s-io-sig-storage-snapshot-controller-v8-4-0:
-  extends: '.sync-image'
+  extends: '.sync-chart-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/snapshot-controller:v8.4.0
   rules:
@@ -1095,7 +1095,7 @@ sync:chart:registry-k8s-io-sig-storage-snapshot-controller-v8-4-0:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
 sync:local:docker-io-actualbudget-actual-server-26-6-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/actualbudget/actual-server:26.6.0
   rules:
@@ -1104,7 +1104,7 @@ sync:local:docker-io-actualbudget-actual-server-26-6-0:
       changes:
         - infrastructure/images/images/local/apps.yaml
 sync:local:docker-io-barassistant-salt-rim-4-15-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/barassistant/salt-rim:4.15.0
   rules:
@@ -1113,7 +1113,7 @@ sync:local:docker-io-barassistant-salt-rim-4-15-0:
       changes:
         - infrastructure/images/images/local/apps.yaml
 sync:local:docker-io-barassistant-server-5-15-2:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/barassistant/server:5.15.2
   rules:
@@ -1122,7 +1122,7 @@ sync:local:docker-io-barassistant-server-5-15-2:
       changes:
         - infrastructure/images/images/local/apps.yaml
 sync:local:docker-io-freshrss-freshrss-1-29-1:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/freshrss/freshrss:1.29.1
   rules:
@@ -1131,7 +1131,7 @@ sync:local:docker-io-freshrss-freshrss-1-29-1:
       changes:
         - infrastructure/images/images/local/freshrss.yaml
 sync:local:docker-io-getmeili-meilisearch-v1-48:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/getmeili/meilisearch:v1.48
   rules:
@@ -1140,7 +1140,7 @@ sync:local:docker-io-getmeili-meilisearch-v1-48:
       changes:
         - infrastructure/images/images/local/apps.yaml
 sync:local:docker-io-iib0011-omni-tools-0-6-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/iib0011/omni-tools:0.6.0
   rules:
@@ -1149,7 +1149,7 @@ sync:local:docker-io-iib0011-omni-tools-0-6-0:
       changes:
         - infrastructure/images/images/local/omni-tools.yaml
 sync:local:docker-io-jgraph-drawio-30-2-6:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/jgraph/drawio:30.2.6
   rules:
@@ -1158,7 +1158,7 @@ sync:local:docker-io-jgraph-drawio-30-2-6:
       changes:
         - infrastructure/images/images/local/drawio.yaml
 sync:local:docker-io-library-busybox-1-38-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/library/busybox:1.38.0
   rules:
@@ -1167,7 +1167,7 @@ sync:local:docker-io-library-busybox-1-38-0:
       changes:
         - infrastructure/images/images/local/sig-storage.yaml
 sync:local:docker-io-redis-7-2-alpine:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/redis:7.2-alpine
   rules:
@@ -1176,7 +1176,7 @@ sync:local:docker-io-redis-7-2-alpine:
       changes:
         - infrastructure/images/images/local/redis.yaml
 sync:local:docker-io-redis-8-alpine:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/redis:8-alpine
   rules:
@@ -1185,7 +1185,7 @@ sync:local:docker-io-redis-8-alpine:
       changes:
         - infrastructure/images/images/local/redis.yaml
 sync:local:docker-io-renovate-renovate-43-248-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/renovate/renovate:43.248.0
   rules:
@@ -1194,7 +1194,7 @@ sync:local:docker-io-renovate-renovate-43-248-0:
       changes:
         - infrastructure/images/images/local/renovate.yaml
 sync:local:docker-io-valkey-valkey-9-1:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/valkey/valkey:9.1
   rules:
@@ -1203,7 +1203,7 @@ sync:local:docker-io-valkey-valkey-9-1:
       changes:
         - infrastructure/images/images/local/apps.yaml
 sync:local:docker-io-zenika-alpine-chrome-124:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: docker.io/zenika/alpine-chrome:124
   rules:
@@ -1212,7 +1212,7 @@ sync:local:docker-io-zenika-alpine-chrome-124:
       changes:
         - infrastructure/images/images/local/karakeep.yaml
 sync:local:ghcr-io-athennamind-opnsense-exporter-0-0-16:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/athennamind/opnsense-exporter:0.0.16
   rules:
@@ -1221,7 +1221,7 @@ sync:local:ghcr-io-athennamind-opnsense-exporter-0-0-16:
       changes:
         - infrastructure/images/images/local/opnsense-exporter.yaml
 sync:local:ghcr-io-booklore-app-booklore-v1-18-5:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/booklore-app/booklore:v1.18.5
   rules:
@@ -1230,7 +1230,7 @@ sync:local:ghcr-io-booklore-app-booklore-v1-18-5:
       changes:
         - infrastructure/images/images/local/booklore.yaml
 sync:local:ghcr-io-coder-code-server-4-108-2:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/coder/code-server:4.108.2
   rules:
@@ -1239,7 +1239,7 @@ sync:local:ghcr-io-coder-code-server-4-108-2:
       changes:
         - infrastructure/images/images/local/apps.yaml
 sync:local:ghcr-io-corentinth-it-tools-2024-10-22-7ca5933:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/corentinth/it-tools:2024.10.22-7ca5933
   rules:
@@ -1248,7 +1248,7 @@ sync:local:ghcr-io-corentinth-it-tools-2024-10-22-7ca5933:
       changes:
         - infrastructure/images/images/local/it-tools.yaml
 sync:local:ghcr-io-democratic-csi-csi-grpc-proxy-v0-5-7:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/democratic-csi/csi-grpc-proxy:v0.5.7
   rules:
@@ -1257,7 +1257,7 @@ sync:local:ghcr-io-democratic-csi-csi-grpc-proxy-v0-5-7:
       changes:
         - infrastructure/images/images/local/democratic-csi.yaml
 sync:local:ghcr-io-democratic-csi-democratic-csi-v1-9-5:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/democratic-csi/democratic-csi:v1.9.5
   rules:
@@ -1266,7 +1266,7 @@ sync:local:ghcr-io-democratic-csi-democratic-csi-v1-9-5:
       changes:
         - infrastructure/images/images/local/democratic-csi.yaml
 sync:local:ghcr-io-karakeep-app-karakeep-0-30-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/karakeep-app/karakeep:0.30.0
   rules:
@@ -1275,7 +1275,7 @@ sync:local:ghcr-io-karakeep-app-karakeep-0-30-0:
       changes:
         - infrastructure/images/images/local/karakeep.yaml
 sync:local:ghcr-io-lukegus-termix-release-2-2-1:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/lukegus/termix:release-2.2.1
   rules:
@@ -1284,7 +1284,7 @@ sync:local:ghcr-io-lukegus-termix-release-2-2-1:
       changes:
         - infrastructure/images/images/local/termix.yaml
 sync:local:ghcr-io-mealie-recipes-mealie-v3-10-2:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/mealie-recipes/mealie:v3.10.2
   rules:
@@ -1293,7 +1293,7 @@ sync:local:ghcr-io-mealie-recipes-mealie-v3-10-2:
       changes:
         - infrastructure/images/images/local/mealie.yaml
 sync:local:ghcr-io-paperless-ngx-paperless-ngx-2-20-6:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/paperless-ngx/paperless-ngx:2.20.6
   rules:
@@ -1302,7 +1302,7 @@ sync:local:ghcr-io-paperless-ngx-paperless-ngx-2-20-6:
       changes:
         - infrastructure/images/images/local/paperless.yaml
 sync:local:ghcr-io-scanopy-scanopy-daemon-v0-14-3:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/scanopy/scanopy/daemon:v0.14.3
   rules:
@@ -1311,7 +1311,7 @@ sync:local:ghcr-io-scanopy-scanopy-daemon-v0-14-3:
       changes:
         - infrastructure/images/images/local/scanopy.yaml
 sync:local:ghcr-io-scanopy-scanopy-server-v0-14-3:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: ghcr.io/scanopy/scanopy/server:v0.14.3
   rules:
@@ -1320,7 +1320,7 @@ sync:local:ghcr-io-scanopy-scanopy-server-v0-14-3:
       changes:
         - infrastructure/images/images/local/scanopy.yaml
 sync:local:lscr-io-linuxserver-netbootxyz-2-0-53:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: lscr.io/linuxserver/netbootxyz:2.0.53
   rules:
@@ -1329,7 +1329,7 @@ sync:local:lscr-io-linuxserver-netbootxyz-2-0-53:
       changes:
         - infrastructure/images/images/local/netbootxyz.yaml
 sync:local:lscr-io-linuxserver-pairdrop-1-11-2:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: lscr.io/linuxserver/pairdrop:1.11.2
   rules:
@@ -1338,7 +1338,7 @@ sync:local:lscr-io-linuxserver-pairdrop-1-11-2:
       changes:
         - infrastructure/images/images/local/pairdrop.yaml
 sync:local:registry-k8s-io-sig-storage-csi-attacher-v4-4-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-attacher:v4.4.0
   rules:
@@ -1347,7 +1347,7 @@ sync:local:registry-k8s-io-sig-storage-csi-attacher-v4-4-0:
       changes:
         - infrastructure/images/images/local/sig-storage.yaml
 sync:local:registry-k8s-io-sig-storage-csi-node-driver-registrar-v2-9-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.9.0
   rules:
@@ -1356,7 +1356,7 @@ sync:local:registry-k8s-io-sig-storage-csi-node-driver-registrar-v2-9-0:
       changes:
         - infrastructure/images/images/local/sig-storage.yaml
 sync:local:registry-k8s-io-sig-storage-csi-provisioner-v3-6-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-provisioner:v3.6.0
   rules:
@@ -1365,7 +1365,7 @@ sync:local:registry-k8s-io-sig-storage-csi-provisioner-v3-6-0:
       changes:
         - infrastructure/images/images/local/sig-storage.yaml
 sync:local:registry-k8s-io-sig-storage-csi-resizer-v1-9-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-resizer:v1.9.0
   rules:
@@ -1374,7 +1374,7 @@ sync:local:registry-k8s-io-sig-storage-csi-resizer-v1-9-0:
       changes:
         - infrastructure/images/images/local/sig-storage.yaml
 sync:local:registry-k8s-io-sig-storage-csi-snapshotter-v8-2-1:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/csi-snapshotter:v8.2.1
   rules:
@@ -1383,7 +1383,7 @@ sync:local:registry-k8s-io-sig-storage-csi-snapshotter-v8-2-1:
       changes:
         - infrastructure/images/images/local/sig-storage.yaml
 sync:local:registry-k8s-io-sig-storage-livenessprobe-v2-12-0:
-  extends: '.sync-image'
+  extends: '.sync-local-image'
   variables:
     IMAGE_TO_SYNC: registry.k8s.io/sig-storage/livenessprobe:v2.12.0
   rules:
