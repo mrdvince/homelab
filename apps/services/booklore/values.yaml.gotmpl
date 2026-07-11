@@ -1,0 +1,184 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.bookloreImages 0).image }}
+          tag: "{{ (index .Values.bookloreImages 0).tag }}"
+        command:
+          - java
+        args:
+          - -jar
+          - /app/app.jar
+        env:
+          TZ: Europe/Amsterdam
+          DATABASE_URL: jdbc:mariadb://localhost:3306/booklore
+          DATABASE_USERNAME: booklore
+          DATABASE_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: booklore
+                key: database-password
+          SWAGGER_ENABLED: "false"
+          FORCE_DISABLE_OIDC: "false"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/v1/healthcheck
+                port: 6060
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/v1/healthcheck
+                port: 6060
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+      mariadb:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.bookloreImages 1).image }}
+          tag: "{{ (index .Values.bookloreImages 1).tag }}"
+        env:
+          MARIADB_DATABASE: booklore
+          MARIADB_USER: booklore
+          MARIADB_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: booklore
+                key: database-password
+          MARIADB_ROOT_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: booklore
+                key: database-root-password
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        probes:
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 3306
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+secrets:
+  bootstrap:
+    stringData:
+      database-password: {{ .Values.booklore.db_password }}
+      database-root-password: {{ .Values.booklore.db_root_password }}
+      admin-username: {{ .Values.booklore.admin_username }}
+      admin-email: {{ .Values.booklore.admin_email }}
+      admin-password: {{ .Values.booklore.admin_password }}
+      oidc-client-id: {{ .Values.booklore.oidc.client_id }}
+      oidc-client-secret: {{ .Values.booklore.oidc.client_secret }}
+
+persistence:
+  database:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: truenas-iscsi
+    advancedMounts:
+      main:
+        mariadb:
+          - path: /var/lib/mysql
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        main:
+          - path: /app/data
+  books:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 100Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        main:
+          - path: /books
+  bookdrop:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        main:
+          - path: /bookdrop
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 6060
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: booklore.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - booklore.{{ .Values.domain }}

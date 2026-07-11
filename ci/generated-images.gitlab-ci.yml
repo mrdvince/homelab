@@ -297,8 +297,10 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
       changes:
         - apps/services/freshrss/**/*
         - apps/services/gitlab/**/*
+        - apps/services/linkwarden/**/*
         - apps/services/mealie/**/*
         - apps/services/paperless/**/*
+        - apps/services/rxresume/**/*
         - apps/services/scanopy/**/*
         - apps/storage/cnpg/test-cluster/**/*
         - infrastructure/images/config.yaml
@@ -662,6 +664,16 @@ sync:chart:registry-home-mrdvince-me-actualbudget-actual-server-26-6-0:
       changes:
         - apps/services/actual/**/*
         - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-amruthpillai-reactive-resume-v5-1-9:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/amruthpillai/reactive-resume:v5.1.9
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/rxresume/**/*
+        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-barassistant-salt-rim-4-15-0:
   extends: '.sync-chart-image'
   variables:
@@ -701,6 +713,26 @@ sync:chart:registry-home-mrdvince-me-bitnamilegacy-mysql-9-4-0-debian-12-r1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/blog/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-booklore-app-booklore-v2-3-1:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/booklore-app/booklore:v2.3.1
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/booklore/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-browserless-chromium-v2-54-2:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/browserless/chromium:v2.54.2
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/linkwarden/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-coder-code-server-4-108-2:
   extends: '.sync-chart-image'
@@ -772,6 +804,7 @@ sync:chart:registry-home-mrdvince-me-getmeili-meilisearch-v1-48:
       changes:
         - apps/services/bar-assistant/**/*
         - apps/services/karakeep/**/*
+        - apps/services/linkwarden/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-helmfile-helmfile-v1-2-3:
   extends: '.sync-chart-image'
@@ -831,8 +864,29 @@ sync:chart:registry-home-mrdvince-me-library-busybox-1-37-0:
     - if: $SYNC_UPSTREAM_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
+        - apps/services/adventurelog/**/*
         - apps/services/freshrss/**/*
         - apps/storage/democratic-csi/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-library-mariadb-11-4-8-sha256-bc474f00629f0123c10f9e1bca193a45d18af15a:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/library/mariadb:11.4.8@sha256:bc474f00629f0123c10f9e1bca193a45d18af15a274cf0656acda64f1086c3b6
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/booklore/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-linkwarden-linkwarden-v2-14-1:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/linkwarden/linkwarden:v2.14.1
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/linkwarden/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-linuxserver-netbootxyz-2-0-53:
   extends: '.sync-chart-image'
@@ -894,6 +948,26 @@ sync:chart:registry-home-mrdvince-me-paperless-ngx-paperless-ngx-2-20-6:
       changes:
         - apps/services/paperless/**/*
         - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-postgis-postgis-16-3-5-sha256-1d95a92144c40198b46908fd92ac365e85d35eaf:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/postgis/postgis:16-3.5@sha256:1d95a92144c40198b46908fd92ac365e85d35eaf31bfc36f06c2c09a090c0538
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/adventurelog/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-project-zot-zot-linux-amd64-v2-1-18:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/project-zot/zot-linux-amd64:v2.1.18
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/zot/**/*
+        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-redis-7-2-alpine:
   extends: '.sync-chart-image'
   variables:
@@ -923,6 +997,26 @@ sync:chart:registry-home-mrdvince-me-scanopy-scanopy-server-v0-14-3:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/scanopy/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-seanmorley15-adventurelog-backend-v0-12-1:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/seanmorley15/adventurelog-backend:v0.12.1
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/adventurelog/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-seanmorley15-adventurelog-frontend-v0-12-1:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/seanmorley15/adventurelog-frontend:v0.12.1
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/adventurelog/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-attacher-v4-4-0:
   extends: '.sync-chart-image'
@@ -983,6 +1077,16 @@ sync:chart:registry-home-mrdvince-me-valkey-valkey-9-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/bar-assistant/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-yoryan-mailrise-1-4-0-sha256-66082168090b9a83f01cc71a9d7b1994840adbbbf:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/yoryan/mailrise:1.4.0@sha256:66082168090b9a83f01cc71a9d7b1994840adbbbffbe4d2cf644272fbbc23a1a
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/mailrise/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-zenika-alpine-chrome-124:
   extends: '.sync-chart-image'

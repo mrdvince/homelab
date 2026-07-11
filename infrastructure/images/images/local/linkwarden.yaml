@@ -1,4 +1,4 @@
-linkwarden:
+linkwardenImages:
   - registry: ghcr.io
     image: linkwarden/linkwarden
     tag: "v2.14.1"

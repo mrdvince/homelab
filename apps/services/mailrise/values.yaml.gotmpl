@@ -1,0 +1,71 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.mailriseImages 0).image }}
+          tag: "{{ (index .Values.mailriseImages 0).tag }}"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+
+secrets:
+  config:
+    stringData:
+      mailrise.conf: |
+        configs:
+          "*@*":
+            urls:
+              - ntfys://ntfy.{{ .Values.domain }}/realm
+            mailrise:
+              title_template: "$subject ($from)"
+              body_template: "$body"
+              body_format: text
+        listen:
+          host: 0.0.0.0
+          port: 8025
+        smtp:
+          hostname: mailrise.{{ .Values.domain }}
+          auth:
+            basic:
+              {{ .Values.mailrise.smtp_username }}: {{ .Values.mailrise.smtp_password }}
+
+persistence:
+  config:
+    type: secret
+    identifier: config
+    advancedMounts:
+      main:
+        main:
+          - path: /etc/mailrise.conf
+            subPath: mailrise.conf
+            readOnly: true
+
+service:
+  main:
+    controller: main
+    type: LoadBalancer
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: mailrise.{{ .Values.domain }}
+    ports:
+      smtp:
+        port: 8025
+        protocol: TCP

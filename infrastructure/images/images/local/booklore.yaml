@@ -1,4 +1,4 @@
-booklore:
+bookloreImages:
   - registry: ghcr.io
     image: booklore-app/booklore
     tag: "v2.3.1"

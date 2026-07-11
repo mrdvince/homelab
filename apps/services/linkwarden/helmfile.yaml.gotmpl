@@ -1,0 +1,30 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+
+releases:
+  - name: linkwarden-postgres
+    namespace: apps
+    chart: cnpg/cluster
+    version: 0.7.0
+    values:
+      - postgres/values.yaml.gotmpl
+
+  - name: linkwarden
+    namespace: apps
+    chart: bjw-s/app-template
+    version: 5.0.1
+    values:
+      - linkwarden/values.yaml.gotmpl
+    needs:
+      - linkwarden-postgres

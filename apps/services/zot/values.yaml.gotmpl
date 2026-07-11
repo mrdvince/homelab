@@ -1,0 +1,177 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.zotImages 0).image }}
+          tag: "{{ (index .Values.zotImages 0).tag }}"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 5000
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 5000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+secrets:
+  config:
+    stringData:
+      config.json: |
+        {
+          "distSpecVersion": "1.1.1",
+          "storage": {
+            "rootDirectory": "/var/lib/registry",
+            "dedupe": true
+          },
+          "http": {
+            "address": "0.0.0.0",
+            "port": "5000",
+            "externalUrl": "https://zot.{{ .Values.domain }}",
+            "realm": "zot",
+            "auth": {
+              "sessionKeysFile": "/etc/zot/sessionKeys.json",
+              "apikey": true,
+              "openid": {
+                "callbackAllowOrigins": ["https://zot.{{ .Values.domain }}"],
+                "providers": {
+                  "oidc": {
+                    "name": "Authentik",
+                    "issuer": "https://auth.{{ .Values.domain }}/application/o/zot/",
+                    "credentialsFile": "/etc/zot/credentials.json",
+                    "keypath": "",
+                    "scopes": ["openid", "profile", "email", "groups"],
+                    "claimMapping": {
+                      "username": "preferred_username",
+                      "groups": "groups"
+                    }
+                  }
+                }
+              },
+              "failDelay": 5
+            },
+            "accessControl": {
+              "repositories": {
+                "**": {
+                  "policies": [
+                    {
+                      "users": ["zero"],
+                      "actions": ["read", "create", "update", "delete"]
+                    }
+                  ],
+                  "defaultPolicy": []
+                }
+              }
+            }
+          },
+          "log": {
+            "level": "info"
+          },
+          "extensions": {
+            "search": {
+              "cve": {
+                "updateInterval": "24h"
+              }
+            },
+            "ui": {
+              "enable": true
+            }
+          }
+        }
+      credentials.json: |
+        {
+          "clientid": {{ .Values.zot.oidc.client_id | quote }},
+          "clientsecret": {{ .Values.zot.oidc.client_secret | quote }}
+        }
+      sessionKeys.json: |
+        {
+          "hashKey": {{ .Values.zot.session_hash_key | quote }},
+          "encryptKey": {{ .Values.zot.session_encrypt_key | quote }}
+        }
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 100Gi
+    storageClass: truenas-iscsi
+    globalMounts:
+      - path: /var/lib/registry
+  config:
+    type: secret
+    identifier: config
+    advancedMounts:
+      main:
+        main:
+          - path: /etc/zot/config.json
+            subPath: config.json
+            readOnly: true
+          - path: /etc/zot/credentials.json
+            subPath: credentials.json
+            readOnly: true
+          - path: /etc/zot/sessionKeys.json
+            subPath: sessionKeys.json
+            readOnly: true
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 5000
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: zot.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - zot.{{ .Values.domain }}

@@ -1,4 +1,4 @@
-adventurelog:
+adventurelogImages:
   - registry: ghcr.io
     image: seanmorley15/adventurelog-frontend
     tag: "v0.12.1"

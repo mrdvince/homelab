@@ -1,0 +1,434 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    initContainers:
+      prepare-runtime:
+        image:
+          repository: {{ .Values.imageRegistry }}/library/busybox
+          tag: "1.37.0"
+        command:
+          - sh
+          - -c
+          - touch /runtime/scheduler.log
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+    containers:
+      frontend:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.adventurelogImages 0).image }}
+          tag: "{{ (index .Values.adventurelogImages 0).tag }}"
+        env:
+          PUBLIC_SERVER_URL: http://localhost:8000
+          ORIGIN: https://adventurelog.{{ .Values.domain }}
+          BODY_SIZE_LIMIT: Infinity
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: 3000
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: 3000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
+        securityContext:
+          runAsUser: 65532
+          runAsGroup: 65532
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+      backend:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.adventurelogImages 1).image }}
+          tag: "{{ (index .Values.adventurelogImages 1).tag }}"
+        command:
+          - /code/entrypoint.sh
+        args:
+          - gunicorn
+          - main.wsgi:application
+          - --bind
+          - 0.0.0.0:8000
+          - --workers
+          - "2"
+          - --timeout
+          - "120"
+        env: &backendEnv
+          PGHOST: localhost
+          POSTGRES_DB: adventurelog
+          POSTGRES_USER: adventurelog
+          POSTGRES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: adventurelog
+                key: postgres-password
+          SECRET_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: adventurelog
+                key: django-secret-key
+          DJANGO_ADMIN_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: adventurelog
+                key: admin-username
+          DJANGO_ADMIN_EMAIL:
+            valueFrom:
+              secretKeyRef:
+                name: adventurelog
+                key: admin-email
+          DJANGO_ADMIN_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: adventurelog
+                key: admin-password
+          PUBLIC_URL: https://adventurelog.{{ .Values.domain }}
+          CSRF_TRUSTED_ORIGINS: https://adventurelog.{{ .Values.domain }}
+          FRONTEND_URL: https://adventurelog.{{ .Values.domain }}
+          DEBUG: "False"
+          DISABLE_REGISTRATION: "False"
+          SOCIALACCOUNT_ALLOW_SIGNUP: "True"
+          ACCOUNT_EMAIL_VERIFICATION: none
+          EMAIL_BACKEND: email
+          EMAIL_HOST: mailrise.apps.svc.cluster.local
+          EMAIL_PORT: "8025"
+          EMAIL_USE_TLS: "False"
+          EMAIL_USE_SSL: "False"
+          EMAIL_HOST_USER: {{ .Values.mailrise.smtp_username }}
+          EMAIL_HOST_PASSWORD: {{ .Values.mailrise.smtp_password }}
+          DEFAULT_FROM_EMAIL: AdventureLog <adventurelog@home.mrdvince.me>
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 8000
+              initialDelaySeconds: 90
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 8000
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 24
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+      nginx:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.adventurelogImages 1).image }}
+          tag: "{{ (index .Values.adventurelogImages 1).tag }}"
+        command:
+          - /usr/sbin/nginx
+        args:
+          - -g
+          - daemon off;
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+      memcached:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.adventurelogImages 1).image }}
+          tag: "{{ (index .Values.adventurelogImages 1).tag }}"
+        command:
+          - memcached
+        args:
+          - -m
+          - "64"
+          - -p
+          - "11211"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 96Mi
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+      sync:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.adventurelogImages 1).image }}
+          tag: "{{ (index .Values.adventurelogImages 1).tag }}"
+        command:
+          - python
+        args:
+          - /code/run_periodic_sync.py
+        env: *backendEnv
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+      postgis:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.adventurelogImages 2).image }}
+          tag: "{{ (index .Values.adventurelogImages 2).tag }}"
+        env:
+          PGDATA: /var/lib/postgresql/data/pgdata
+          POSTGRES_DB: adventurelog
+          POSTGRES_USER: adventurelog
+          POSTGRES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: adventurelog
+                key: postgres-password
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        probes:
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 5432
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+secrets:
+  config:
+    stringData:
+      postgres-password: {{ .Values.adventurelog.postgres_password }}
+      django-secret-key: {{ .Values.adventurelog.secret_key }}
+      admin-username: {{ .Values.adventurelog.admin_username }}
+      admin-email: {{ .Values.adventurelog.admin_email }}
+      admin-password: {{ .Values.adventurelog.admin_password }}
+      oidc-client-id: {{ .Values.adventurelog.oidc.client_id }}
+      oidc-client-secret: {{ .Values.adventurelog.oidc.client_secret }}
+
+configMaps:
+  nginx:
+    data:
+      nginx.conf: |
+        pid /tmp/nginx.pid;
+        error_log /dev/stderr warn;
+        events {
+          worker_connections 1024;
+        }
+        http {
+          include /etc/nginx/mime.types;
+          access_log /dev/stdout;
+          client_body_temp_path /tmp/client_temp;
+          proxy_temp_path /tmp/proxy_temp;
+          fastcgi_temp_path /tmp/fastcgi_temp;
+          uwsgi_temp_path /tmp/uwsgi_temp;
+          scgi_temp_path /tmp/scgi_temp;
+          client_max_body_size 100M;
+          server {
+            listen 8080;
+            location / {
+              proxy_pass http://127.0.0.1:8000;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            location /static/ {
+              alias /code/staticfiles/;
+            }
+            location /protectedMedia/ {
+              internal;
+              alias /code/media/;
+              try_files $uri =404;
+            }
+          }
+        }
+
+persistence:
+  database:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: truenas-iscsi
+    advancedMounts:
+      main:
+        postgis:
+          - path: /var/lib/postgresql/data
+  media:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 20Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        backend:
+          - path: /code/media
+        nginx:
+          - path: /code/media
+        sync:
+          - path: /code/media
+  nginx-config:
+    type: configMap
+    identifier: nginx
+    advancedMounts:
+      main:
+        nginx:
+          - path: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+  nginx-tmp:
+    type: emptyDir
+    advancedMounts:
+      main:
+        nginx:
+          - path: /tmp
+  runtime:
+    type: emptyDir
+    advancedMounts:
+      main:
+        prepare-runtime:
+          - path: /runtime
+        backend:
+          - path: /code/scheduler.log
+            subPath: scheduler.log
+        sync:
+          - path: /code/scheduler.log
+            subPath: scheduler.log
+
+service:
+  main:
+    controller: main
+    ports:
+      frontend:
+        port: 3000
+      backend:
+        port: 8080
+      database:
+        port: 5432
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: adventurelog.{{ .Values.domain }}
+        paths:
+          - path: /accounts
+            pathType: Prefix
+            service:
+              identifier: main
+              port: backend
+          - path: /api
+            pathType: Prefix
+            service:
+              identifier: main
+              port: backend
+          - path: /admin
+            pathType: Prefix
+            service:
+              identifier: main
+              port: backend
+          - path: /static
+            pathType: Prefix
+            service:
+              identifier: main
+              port: backend
+          - path: /protectedMedia
+            pathType: Prefix
+            service:
+              identifier: main
+              port: backend
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: frontend
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - adventurelog.{{ .Values.domain }}

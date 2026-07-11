@@ -1,0 +1,159 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.linkwardenImages 0).image }}
+          tag: "{{ (index .Values.linkwardenImages 0).tag }}"
+        env:
+          NEXTAUTH_URL: https://linkwarden.{{ .Values.domain }}/api/v1/auth
+          NEXTAUTH_SECRET: {{ .Values.linkwarden.nextauth_secret }}
+          DATABASE_URL:
+            valueFrom:
+              secretKeyRef:
+                name: linkwarden-postgres-app
+                key: uri
+          STORAGE_FOLDER: /data/data
+          MEILI_HOST: http://localhost:7700
+          MEILI_MASTER_KEY: {{ .Values.linkwarden.meilisearch_master_key }}
+          PLAYWRIGHT_WS_URL: http://localhost:3001
+          NEXT_PUBLIC_DISABLE_REGISTRATION: "true"
+          NEXT_PUBLIC_CREDENTIALS_ENABLED: "false"
+          NEXT_PUBLIC_AUTHENTIK_ENABLED: "true"
+          AUTHENTIK_CUSTOM_NAME: Authentik
+          AUTHENTIK_ISSUER: https://auth.{{ .Values.domain }}/application/o/linkwarden
+          AUTHENTIK_CLIENT_ID: {{ .Values.linkwarden.oidc.client_id }}
+          AUTHENTIK_CLIENT_SECRET: {{ .Values.linkwarden.oidc.client_secret }}
+          NEXT_PUBLIC_EMAIL_PROVIDER: "true"
+          EMAIL_FROM: Linkwarden <linkwarden@home.mrdvince.me>
+          EMAIL_SERVER: smtp://{{ .Values.mailrise.smtp_username }}:{{ .Values.mailrise.smtp_password }}@mailrise.apps.svc.cluster.local:8025
+          BASE_URL: https://linkwarden.{{ .Values.domain }}
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: 3000
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: 3000
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+      meilisearch:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 3).image }}
+          tag: "{{ (index .Values.barAssistant 3).tag }}"
+        env:
+          MEILI_NO_ANALYTICS: "true"
+          MEILI_MASTER_KEY: {{ .Values.linkwarden.meilisearch_master_key }}
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+      chromium:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.linkwardenImages 1).image }}
+          tag: "{{ (index .Values.linkwardenImages 1).tag }}"
+        env:
+          PORT: "3001"
+          CONCURRENT: "2"
+          TIMEOUT: "120000"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        main:
+          - path: /data/data
+  meili-data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        meilisearch:
+          - path: /meili_data
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 3000
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: linkwarden.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - linkwarden.{{ .Values.domain }}
