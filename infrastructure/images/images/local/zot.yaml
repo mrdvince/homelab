@@ -1,0 +1,4 @@
+zot:
+  - registry: ghcr.io
+    image: project-zot/zot-linux-amd64
+    tag: "v2.1.18"

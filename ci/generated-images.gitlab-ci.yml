@@ -1166,6 +1166,24 @@ sync:local:docker-io-library-busybox-1-38-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/sig-storage.yaml
+sync:local:docker-io-library-mariadb-11-4-8-sha256-bc474f00629f0123c10f9e1bca193a45d18af15a274cf0656acda64f:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/library/mariadb:11.4.8@sha256:bc474f00629f0123c10f9e1bca193a45d18af15a274cf0656acda64f1086c3b6
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/booklore.yaml
+sync:local:docker-io-postgis-postgis-16-3-5-sha256-1d95a92144c40198b46908fd92ac365e85d35eaf31bfc36f06c2c09a:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/postgis/postgis:16-3.5@sha256:1d95a92144c40198b46908fd92ac365e85d35eaf31bfc36f06c2c09a090c0538
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/adventurelog.yaml
 sync:local:docker-io-redis-7-2-alpine:
   extends: '.sync-local-image'
   variables:
@@ -1202,6 +1220,15 @@ sync:local:docker-io-valkey-valkey-9-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/apps.yaml
+sync:local:docker-io-yoryan-mailrise-1-4-0-sha256-66082168090b9a83f01cc71a9d7b1994840adbbbffbe4d2cf644272fb:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/yoryan/mailrise:1.4.0@sha256:66082168090b9a83f01cc71a9d7b1994840adbbbffbe4d2cf644272fbbc23a1a
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/mailrise.yaml
 sync:local:docker-io-zenika-alpine-chrome-124:
   extends: '.sync-local-image'
   variables:
@@ -1211,6 +1238,15 @@ sync:local:docker-io-zenika-alpine-chrome-124:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/karakeep.yaml
+sync:local:ghcr-io-amruthpillai-reactive-resume-v5-1-9:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/amruthpillai/reactive-resume:v5.1.9
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/rxresume.yaml
 sync:local:ghcr-io-athennamind-opnsense-exporter-0-0-16:
   extends: '.sync-local-image'
   variables:
@@ -1220,10 +1256,10 @@ sync:local:ghcr-io-athennamind-opnsense-exporter-0-0-16:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/opnsense-exporter.yaml
-sync:local:ghcr-io-booklore-app-booklore-v1-18-5:
+sync:local:ghcr-io-booklore-app-booklore-v2-3-1:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: ghcr.io/booklore-app/booklore:v1.18.5
+    IMAGE_TO_SYNC: ghcr.io/booklore-app/booklore:v2.3.1
   rules:
     - if: $SYNC_LOCAL_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -1274,6 +1310,15 @@ sync:local:ghcr-io-karakeep-app-karakeep-0-30-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/karakeep.yaml
+sync:local:ghcr-io-linkwarden-linkwarden-v2-14-1:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/linkwarden/linkwarden:v2.14.1
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/linkwarden.yaml
 sync:local:ghcr-io-lukegus-termix-release-2-2-1:
   extends: '.sync-local-image'
   variables:
@@ -1301,6 +1346,15 @@ sync:local:ghcr-io-paperless-ngx-paperless-ngx-2-20-6:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/paperless.yaml
+sync:local:ghcr-io-project-zot-zot-linux-amd64-v2-1-18:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/project-zot/zot-linux-amd64:v2.1.18
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/zot.yaml
 sync:local:ghcr-io-scanopy-scanopy-daemon-v0-14-3:
   extends: '.sync-local-image'
   variables:
@@ -1319,6 +1373,24 @@ sync:local:ghcr-io-scanopy-scanopy-server-v0-14-3:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/scanopy.yaml
+sync:local:ghcr-io-seanmorley15-adventurelog-backend-v0-12-1:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/seanmorley15/adventurelog-backend:v0.12.1
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/adventurelog.yaml
+sync:local:ghcr-io-seanmorley15-adventurelog-frontend-v0-12-1:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/seanmorley15/adventurelog-frontend:v0.12.1
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/adventurelog.yaml
 sync:local:lscr-io-linuxserver-netbootxyz-2-0-53:
   extends: '.sync-local-image'
   variables:

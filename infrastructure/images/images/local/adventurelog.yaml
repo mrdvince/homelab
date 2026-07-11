@@ -1,0 +1,10 @@
+adventurelog:
+  - registry: ghcr.io
+    image: seanmorley15/adventurelog-frontend
+    tag: "v0.12.1"
+  - registry: ghcr.io
+    image: seanmorley15/adventurelog-backend
+    tag: "v0.12.1"
+  - registry: docker.io
+    image: postgis/postgis
+    tag: "16-3.5@sha256:1d95a92144c40198b46908fd92ac365e85d35eaf31bfc36f06c2c09a090c0538"

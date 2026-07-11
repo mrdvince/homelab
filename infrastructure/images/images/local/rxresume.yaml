@@ -1,0 +1,4 @@
+rxresume:
+  - registry: ghcr.io
+    image: amruthpillai/reactive-resume
+    tag: "v5.1.9"
