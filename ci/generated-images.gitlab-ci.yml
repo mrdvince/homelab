@@ -1265,6 +1265,15 @@ sync:local:ghcr-io-booklore-app-booklore-v2-3-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/booklore.yaml
+sync:local:ghcr-io-browserless-chromium-v2-54-2:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/browserless/chromium:v2.54.2
+  rules:
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/linkwarden.yaml
 sync:local:ghcr-io-coder-code-server-4-108-2:
   extends: '.sync-local-image'
   variables:

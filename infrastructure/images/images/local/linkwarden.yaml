@@ -2,3 +2,6 @@ linkwarden:
   - registry: ghcr.io
     image: linkwarden/linkwarden
     tag: "v2.14.1"
+  - registry: ghcr.io
+    image: browserless/chromium
+    tag: "v2.54.2"
