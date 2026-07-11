@@ -12,8 +12,8 @@ variables:
   SECRET_DETECTION_DISABLED: "false"
   SAST_DISABLED: "false"
   SCAN_KUBERNETES_MANIFESTS: "true"
-  BUILDER_BOOTSTRAP_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.1"
-  BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.2"
+  BUILDER_BOOTSTRAP_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
+  BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
   RENOVATE_IMAGE: "registry.home.mrdvince.me/renovate/renovate:43.197.0"
 
 renovate:
@@ -41,7 +41,7 @@ renovate:
         - apps/**/helmfile.yaml.gotmpl
         - apps/**/values.yaml.gotmpl
         - infrastructure/images/config.yaml
-        - ci/images.sh
+        - ci/**/*
 
 .local_image_rules:
   rules:
@@ -49,7 +49,7 @@ renovate:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/*.yaml
-        - ci/images.sh
+        - ci/**/*
 
 .build_image_rules:
   rules:
@@ -59,7 +59,7 @@ renovate:
       changes:
         - infrastructure/images/builds/*.yaml
         - infrastructure/images/dockerfiles/**/*
-        - ci/images.sh
+        - ci/**/*
 
 image-builds:
   extends: .build_image_rules
@@ -68,7 +68,7 @@ image-builds:
     name: $BUILDER_BOOTSTRAP_IMAGE
     entrypoint: [""]
   script:
-    - sh ci/images.sh build-pipeline
+    - nu ci/images.nu build-pipeline
   artifacts:
     when: always
     paths:
@@ -94,7 +94,7 @@ chart-images:
     name: $BUILDER_IMAGE
     entrypoint: [""]
   script:
-    - sh ci/images.sh chart-pipeline
+    - nu ci/images.nu chart-pipeline
   artifacts:
     when: always
     paths:
@@ -120,7 +120,7 @@ local-images:
     name: $BUILDER_IMAGE
     entrypoint: [""]
   script:
-    - sh ci/images.sh local-pipeline
+    - nu ci/images.nu local-pipeline
   artifacts:
     when: always
     paths:
