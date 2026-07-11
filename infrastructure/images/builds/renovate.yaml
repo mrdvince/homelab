@@ -1,0 +1,5 @@
+renovate:
+  dockerfile: infrastructure/images/dockerfiles/renovate/Dockerfile
+  image: homelab/renovate
+  # renovate: datasource=npm depName=renovate
+  tag: "43.248.0"

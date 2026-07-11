@@ -1,102 +1,49 @@
 #!/usr/bin/env nu
 
+use lib/build.nu [build-image wait-for-docker]
 use lib/config.nu [settings]
-use lib/images.nu [
-  extract-local-images
-  extract-rendered-images
-  login-to-destination-registry
-  render-upstream-manifests
-  sync-one-image
-]
-use lib/pipeline.nu [
-  write-chart-pipeline
-  write-chart-plan
-  write-local-pipeline
-  write-local-plan
-]
-use lib/build.nu [
-  build-one-image
-  extract-build-images
-  write-build-pipeline
-  write-build-plan
-]
+use lib/generated.nu [verify-generated-ci write-generated-ci]
+use lib/images.nu [chart-image-rows local-image-rows sync-one-image]
+use lib/select.nu [all-build-rows]
+
+def inventory [cfg: record, skip_render: bool = false] {
+  let builds = (all-build-rows $cfg)
+  let charts = if $skip_render {
+    chart-image-rows $cfg --skip-render
+  } else {
+    chart-image-rows $cfg
+  }
+  let locals = (local-image-rows $cfg)
+
+  {builds: $builds, charts: $charts, locals: $locals}
+}
 
 def main [] {
   print "usage: nu ci/images.nu <command>"
-  print "common: chart-pipeline | local-pipeline | build-pipeline"
-  print "run `nu ci/images.nu --help` for all subcommands"
+  print "commands: generate-ci | verify-ci | build | wait-for-docker | sync-one"
 }
 
-def "main chart-list" [] {
+def "main generate-ci" [--skip-render] {
   let cfg = (settings)
-  render-upstream-manifests $cfg
-  extract-rendered-images $cfg
+  let images = (inventory $cfg $skip_render)
+  write-generated-ci $cfg $images.builds $images.charts $images.locals
+  print $"generated ($cfg.generated_ci): (($images.builds | length)) builds, (($images.charts | get image | uniq | length)) chart images, (($images.locals | get image | uniq | length)) local images"
 }
 
-def "main chart-pipeline" [] {
+def "main verify-ci" [--skip-render] {
   let cfg = (settings)
-  render-upstream-manifests $cfg
-  extract-rendered-images $cfg
-  write-chart-pipeline $cfg
+  let images = (inventory $cfg $skip_render)
+  verify-generated-ci $cfg $images.builds $images.charts $images.locals
 }
 
-def "main chart-plan" [] {
-  let cfg = (settings)
-  render-upstream-manifests $cfg
-  extract-rendered-images $cfg
-  write-chart-pipeline $cfg
-  write-chart-plan $cfg
+def "main build" [name: string] {
+  build-image (settings) $name
 }
 
-def "main chart-sync-one" [image: string] {
-  let cfg = (settings)
-  login-to-destination-registry $cfg
-  sync-one-image $cfg $image
+def "main wait-for-docker" [] {
+  wait-for-docker
 }
 
-def "main local-list" [] {
-  let cfg = (settings)
-  extract-local-images $cfg
-}
-
-def "main local-pipeline" [] {
-  let cfg = (settings)
-  extract-local-images $cfg
-  write-local-pipeline $cfg
-}
-
-def "main local-plan" [] {
-  let cfg = (settings)
-  extract-local-images $cfg
-  write-local-pipeline $cfg
-  write-local-plan $cfg
-}
-
-def "main local-sync-one" [image: string] {
-  let cfg = (settings)
-  login-to-destination-registry $cfg
-  sync-one-image $cfg $image
-}
-
-def "main build-list" [] {
-  let cfg = (settings)
-  extract-build-images $cfg
-}
-
-def "main build-pipeline" [] {
-  let cfg = (settings)
-  extract-build-images $cfg
-  write-build-pipeline $cfg
-}
-
-def "main build-plan" [] {
-  let cfg = (settings)
-  extract-build-images $cfg
-  write-build-pipeline $cfg
-  write-build-plan $cfg
-}
-
-def "main build-one" [] {
-  let cfg = (settings)
-  build-one-image $cfg
+def "main sync-one" [image: string] {
+  sync-one-image (settings) $image
 }

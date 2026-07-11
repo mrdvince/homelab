@@ -7,6 +7,7 @@ stages:
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
+  - local: ci/generated-images.gitlab-ci.yml
 
 variables:
   SECRET_DETECTION_DISABLED: "false"
@@ -14,7 +15,8 @@ variables:
   SCAN_KUBERNETES_MANIFESTS: "true"
   BUILDER_BOOTSTRAP_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
   BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
-  RENOVATE_IMAGE: "registry.home.mrdvince.me/renovate/renovate:43.197.0"
+  # renovate: datasource=npm depName=renovate
+  RENOVATE_IMAGE: "registry.home.mrdvince.me/homelab/renovate:43.248.0"
 
 renovate:
   stage: renovate
@@ -25,6 +27,7 @@ renovate:
     GIT_STRATEGY: none
     RENOVATE_PLATFORM: gitlab
     RENOVATE_ENDPOINT: "$CI_API_V4_URL"
+    RENOVATE_ALLOWED_COMMANDS: '["^nu ci/images\\.nu generate-ci$"]'
     LOG_LEVEL: info
   script:
     - renovate "$CI_PROJECT_PATH"
@@ -33,108 +36,65 @@ renovate:
     - if: $RENOVATE == "true"
       when: manual
 
-.chart_image_rules:
-  rules:
-    - if: $SYNC_UPSTREAM_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - apps/**/helmfile.yaml.gotmpl
-        - apps/**/values.yaml.gotmpl
-        - infrastructure/images/config.yaml
-        - ci/**/*
-
-.local_image_rules:
-  rules:
-    - if: $SYNC_LOCAL_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - infrastructure/images/images/local/*.yaml
-        - ci/**/*
-
-.build_image_rules:
-  rules:
-    - if: $BUILD_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - infrastructure/images/builds/*.yaml
-        - infrastructure/images/dockerfiles/**/*
-        - ci/**/*
-
-image-builds:
-  extends: .build_image_rules
-  stage: build
+verify:image-inventory:
+  stage: test
   image:
     name: $BUILDER_BOOTSTRAP_IMAGE
     entrypoint: [""]
   script:
-    - nu ci/images.nu build-pipeline
-  artifacts:
-    when: always
-    paths:
-      - build-images.txt
-      - build-images.yml
-    expire_in: 1 week
+    - nu ci/images.nu verify-ci
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: &image_inventory_changes
+        - apps/**/*
+        - infrastructure/images/builds/*.yaml
+        - infrastructure/images/dockerfiles/**/*
+        - infrastructure/images/images/local/*.yaml
+        - infrastructure/images/config.yaml
+        - ci/images.nu
+        - ci/lib/**/*
+        - ci/generated-images.gitlab-ci.yml
+        - renovate.json
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes: *image_inventory_changes
 
-image-build:
-  extends: .build_image_rules
+verify:ci-scripts:
+  stage: test
+  image:
+    name: $BUILDER_BOOTSTRAP_IMAGE
+    entrypoint: [""]
+  script:
+    - nu ci/tests/generated-ci.nu
+    - nu ci/tests/images.nu
+    - nu ci/tests/renovate.nu
+  rules:
+    - changes:
+        - .gitlab-ci.yml
+        - ci/**/*
+        - renovate.json
+
+.build-image:
   stage: build
-  trigger:
-    include:
-      - artifact: build-images.yml
-        job: image-builds
-    strategy: depend
-  needs:
-    - image-builds
+  image:
+    name: $BUILDER_BOOTSTRAP_IMAGE
+    entrypoint: [""]
+  services:
+    - name: docker:29-dind
+      alias: docker
+      command: ["--tls=false"]
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_BUILDKIT: "1"
+  before_script:
+    - nu ci/images.nu wait-for-docker
+  script:
+    - nu ci/images.nu build "$BUILD_NAME"
 
-chart-images:
-  extends: .chart_image_rules
+.sync-image:
   stage: sync
   image:
     name: $BUILDER_IMAGE
     entrypoint: [""]
   script:
-    - nu ci/images.nu chart-pipeline
-  artifacts:
-    when: always
-    paths:
-      - imagelist.txt
-      - chart-images.yml
-    expire_in: 1 week
-
-chart-sync:
-  extends: .chart_image_rules
-  stage: sync
-  trigger:
-    include:
-      - artifact: chart-images.yml
-        job: chart-images
-    strategy: depend
-  needs:
-    - chart-images
-
-local-images:
-  extends: .local_image_rules
-  stage: sync
-  image:
-    name: $BUILDER_IMAGE
-    entrypoint: [""]
-  script:
-    - nu ci/images.nu local-pipeline
-  artifacts:
-    when: always
-    paths:
-      - local-imagelist.txt
-      - local-images.yml
-    expire_in: 1 week
-
-local-sync:
-  extends: .local_image_rules
-  stage: sync
-  trigger:
-    include:
-      - artifact: local-images.yml
-        job: local-images
-    strategy: depend
-  needs:
-    - local-images
+    - nu ci/images.nu sync-one "$IMAGE_TO_SYNC"

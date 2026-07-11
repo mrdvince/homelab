@@ -3,8 +3,16 @@
   "extends": ["config:recommended"],
   "prBodyTemplate": "{{{table}}}{{{changelogs}}}{{{controls}}}",
   "dependencyDashboard": true,
+  "branchConcurrentLimit": 0,
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
+  "postUpgradeTasks": {
+    "commands": ["nu ci/images.nu generate-ci"],
+    "fileFilters": ["ci/generated-images.gitlab-ci.yml"],
+    "executionMode": "branch"
+  },
   "vulnerabilityAlerts": {
     "minimumReleaseAge": null,
     "dependencyDashboardApproval": false,
@@ -21,6 +29,20 @@
       "datasourceTemplate": "docker",
       "registryUrlTemplate": "https://{{{registry}}}",
       "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "update the renovate CI runtime",
+      "managerFilePatterns": [
+        "/^\\.gitlab-ci\\.yml$/",
+        "/^infrastructure/images/builds/renovate\\.yaml$/",
+        "/^infrastructure/images/dockerfiles/renovate/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=npm depName=(?<depName>renovate)\\n(?:ARG RENOVATE_VERSION=|\\s*RENOVATE_IMAGE:\\s*[\\\"']?[^:\\n]+:|\\s*tag:\\s*[\\\"']?)(?<currentValue>[^\\\"'\\n]+)"
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "semver"
     }
   ],
   "ignoreDeps": [

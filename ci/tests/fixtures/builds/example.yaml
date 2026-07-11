@@ -1,0 +1,4 @@
+example:
+  dockerfile: infrastructure/images/dockerfiles/example/Dockerfile
+  image: homelab/example
+  tag: "1.2.3"

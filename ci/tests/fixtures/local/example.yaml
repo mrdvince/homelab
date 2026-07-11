@@ -1,0 +1,4 @@
+example:
+  - registry: ghcr.io
+    image: example/service
+    tag: "v4.5.6"
