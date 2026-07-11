@@ -1,5 +1,9 @@
 export def env-str [name: string, fallback: string = ""] {
-  $env | get -o $name | default $fallback
+  if ($name in ($env | columns)) {
+    $env | get $name
+  } else {
+    $fallback
+  }
 }
 
 export def env-true [name: string] {
