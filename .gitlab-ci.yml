@@ -10,6 +10,14 @@ include:
   - template: Jobs/SAST.gitlab-ci.yml
   - local: ci/generated-images.gitlab-ci.yml
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $RENOVATE == "true"
+      variables:
+        SECRET_DETECTION_DISABLED: "true"
+        SAST_DISABLED: "true"
+    - when: always
+
 variables:
   SECRET_DETECTION_DISABLED: "false"
   SAST_DISABLED: "false"
@@ -45,6 +53,8 @@ verify:image-inventory:
   script:
     - nu ci/images.nu verify-ci
   rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: &image_inventory_changes
         - apps/**/*
@@ -69,6 +79,8 @@ verify:ci-scripts:
     - nu ci/tests/images.nu
     - nu ci/tests/renovate.nu
   rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
     - changes:
         - .gitlab-ci.yml
         - ci/**/*
