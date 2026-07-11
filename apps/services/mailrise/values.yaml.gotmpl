@@ -62,9 +62,7 @@ persistence:
 service:
   main:
     controller: main
-    type: LoadBalancer
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: mailrise.{{ .Values.domain }}
+    type: ClusterIP
     ports:
       smtp:
         port: 8025
