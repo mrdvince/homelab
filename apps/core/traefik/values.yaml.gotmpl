@@ -49,6 +49,12 @@ ports:
       default: true
     exposedPort: 22
     protocol: TCP
+  smtps:
+    port: 465
+    expose:
+      default: true
+    exposedPort: 465
+    protocol: TCP
 
 log:
   level: INFO
@@ -173,3 +179,23 @@ extraObjects:
             - name: gitlab-gitlab-shell
               namespace: gitlab
               port: 22
+
+  - apiVersion: traefik.io/v1alpha1
+    kind: IngressRouteTCP
+    metadata:
+      name: mailrise-smtps
+      namespace: traefik
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: mailrise.{{ .Values.domain }}
+        external-dns.alpha.kubernetes.io/target: {{ .Values.loadBalancerIP }}
+    spec:
+      entryPoints:
+        - smtps
+      routes:
+        - match: HostSNI(`mailrise.{{ .Values.domain }}`)
+          services:
+            - name: mailrise
+              namespace: apps
+              port: 8025
+      tls:
+        secretName: wildcard-home-mrdvince-me-tls
