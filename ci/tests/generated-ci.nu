@@ -41,6 +41,7 @@ def main [] {
     sync:local:ghcr-io-example-service-v4-5-6
   ]
   assert equal ($pipeline | get build:builder | get variables.BUILD_NAME) builder
+  assert equal ($pipeline | get build:builder | get rules | first | get if) '$BUILD_IMAGE == "builder"'
   assert equal ($pipeline | get sync:chart:docker-io-example-controller-v1-2-3 | get variables.IMAGE_TO_SYNC) "docker.io/example/controller:v1.2.3"
   assert equal (
     $pipeline

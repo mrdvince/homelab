@@ -76,26 +76,35 @@ export def render-upstream-manifests [cfg: record] {
 
   rm -rf $cfg.rendered_dir
   mkdir $cfg.rendered_dir
+  let helm_plugins = (^helm env HELM_PLUGINS | str trim)
 
-  mut rendered = []
+  all-helmfile-paths
+  | par-each --threads $cfg.render_threads {|helmfile_path|
+      let output_name = (
+        $helmfile_path
+        | str replace -a "/" "__"
+        | str replace -a " " "__"
+        | $"($in).yaml"
+      )
+      let output_path = ([$cfg.rendered_dir $output_name] | path join)
+      let helm_home = ([$cfg.rendered_dir ".helm" $output_name] | path join)
+      let helm_env = {
+        HELM_CACHE_HOME: ([$helm_home "cache"] | path join)
+        HELM_CONFIG_HOME: ([$helm_home "config"] | path join)
+        HELM_DATA_HOME: ([$helm_home "data"] | path join)
+        HELM_PLUGINS: $helm_plugins
+      }
 
-  for helmfile_path in (all-helmfile-paths) {
-    let output_name = (
-      $helmfile_path
-      | str replace -a "/" "__"
-      | str replace -a " " "__"
-      | $"($in).yaml"
-    )
-    let output_path = ([$cfg.rendered_dir $output_name] | path join)
+      mkdir $helm_home
+      print $"rendering ($helmfile_path)"
+      with-env $helm_env {
+        ^helmfile -f $helmfile_path -e $cfg.env_name repos | ignore
+        ^helmfile -f $helmfile_path -e $cfg.env_name template --include-crds --skip-tests -q --state-values-set renderStockImages=true | save -f $output_path
+      }
 
-    print $"rendering ($helmfile_path)"
-    ^helmfile -f $helmfile_path -e $cfg.env_name repos | ignore
-    ^helmfile -f $helmfile_path -e $cfg.env_name template --include-crds --skip-tests -q --state-values-set renderStockImages=true | save -f $output_path
-
-    $rendered = ($rendered | append {source_file: $helmfile_path, rendered_file: $output_path})
-  }
-
-  $rendered
+      {source_file: $helmfile_path, rendered_file: $output_path}
+    }
+  | sort-by source_file
 }
 
 export def extract-images [rendered_file: string] {

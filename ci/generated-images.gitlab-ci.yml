@@ -4,6 +4,7 @@ build:alloy:
   variables:
     BUILD_NAME: alloy
   rules:
+    - if: $BUILD_IMAGE == "alloy"
     - if: $BUILD_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -15,6 +16,7 @@ build:builder:
   variables:
     BUILD_NAME: builder
   rules:
+    - if: $BUILD_IMAGE == "builder"
     - if: $BUILD_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -26,6 +28,7 @@ build:excalidraw:
   variables:
     BUILD_NAME: excalidraw
   rules:
+    - if: $BUILD_IMAGE == "excalidraw"
     - if: $BUILD_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -37,6 +40,7 @@ build:renovate:
   variables:
     BUILD_NAME: renovate
   rules:
+    - if: $BUILD_IMAGE == "renovate"
     - if: $BUILD_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

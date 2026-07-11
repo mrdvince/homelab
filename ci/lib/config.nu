@@ -11,6 +11,7 @@ export def settings [] {
 
   {
     env_name: (env-str ENV_NAME "aion")
+    render_threads: (env-str RENDER_THREADS "8" | into int)
     dest_registry: (env-str DEST_REGISTRY "registry.home.mrdvince.me")
     rendered_dir: (env-str RENDERED_MANIFEST_DIR ([$tmp_dir "homelab-rendered-manifests"] | path join))
     generated_ci: (env-str GENERATED_IMAGE_CI "ci/generated-images.gitlab-ci.yml")

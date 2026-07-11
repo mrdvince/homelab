@@ -1,0 +1,6 @@
+apiVersion: example.test/v1
+kind: Example
+spec:
+  directImage: ghcr.io/example/direct:v5
+  args: "--operator-image=quay.io/example/operator:v1.2.3,--sidecar-image=docker.io/example/sidecar:v4"
+  labelReference: example.invalid/value:false

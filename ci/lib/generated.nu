@@ -9,6 +9,7 @@ def safe-image-name [image: string] {
 
 def build-rules [row: record] {
   [
+    {if: $'$BUILD_IMAGE == "($row.name)"'}
     {if: '$BUILD_IMAGES == "true"'}
     {if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/'}
     {
@@ -137,8 +138,8 @@ export def verify-generated-ci [
     error make {msg: $"generated CI file is missing: ($cfg.generated_ci)"}
   }
 
-  let expected = (generated-ci-content $cfg $builds $charts $locals)
-  let actual = (open --raw $cfg.generated_ci)
+  let expected = (pipeline-record $builds $charts $locals)
+  let actual = (open $cfg.generated_ci)
 
   if $actual != $expected {
     error make {msg: $"generated CI is stale; run `nu ci/images.nu generate-ci`"}

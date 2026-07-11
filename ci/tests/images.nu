@@ -13,7 +13,7 @@ def main [] {
   }
 
   assert equal (
-    extract-images ci/tests/fixtures/rendered.yaml
+    extract-images ci/tests/fixtures/manifest.yaml
   ) [
     docker.io/example/sidecar:v4
     ghcr.io/example/direct:v5
