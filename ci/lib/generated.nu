@@ -22,11 +22,27 @@ def build-rules [row: record] {
   ]
 }
 
-def sync-rules [category: string, source_files: list<string>] {
-  let force_variable = if $category == chart {
-    '$SYNC_UPSTREAM_IMAGES == "true"'
+def source-block [category: string, source_file: string] {
+  if $category == chart {
+    $source_file | path dirname | path basename
   } else {
-    '$SYNC_LOCAL_IMAGES == "true"'
+    $source_file | path parse | get stem
+  }
+}
+
+def sync-rules [category: string, image: string, image_key: string, source_files: list<string>] {
+  let selector = if $category == chart {
+    {
+      image_variable: $'$SYNC_UPSTREAM_IMAGE == "($image)"'
+      commit_message: $'$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:($image_key)/'
+      all_variable: '$SYNC_UPSTREAM_IMAGES == "true"'
+    }
+  } else {
+    {
+      image_variable: $'$SYNC_LOCAL_IMAGE == "($image)"'
+      commit_message: $'$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:($image_key)/'
+      all_variable: '$SYNC_LOCAL_IMAGES == "true"'
+    }
   }
   let category_paths = if $category == chart {
     let chart_paths = (
@@ -37,14 +53,31 @@ def sync-rules [category: string, source_files: list<string>] {
   } else {
     $source_files | uniq | sort
   }
+  let blocks = ($source_files | each {|path| source-block $category $path } | uniq | sort)
+  let block_rules = ($blocks | each {|block|
+    let block_variable = if $category == chart {
+      $'$SYNC_UPSTREAM_BLOCK == "($block)"'
+    } else {
+      $'$SYNC_LOCAL_BLOCK == "($block)"'
+    }
+    let commit_prefix = if $category == chart { "sync-upstream" } else { "sync-local" }
 
-  [
-    {if: $force_variable}
+    [
+      {if: $block_variable}
+      {if: $'$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /($commit_prefix):($block)/'}
+    ]
+  } | flatten)
+
+  [[
+    {if: $selector.image_variable}
+    {if: $selector.commit_message}
+  ] $block_rules [
+    {if: $selector.all_variable}
     {
       if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       changes: $category_paths
     }
-  ]
+  ]] | flatten
 }
 
 def build-job [row: record] {
@@ -64,7 +97,8 @@ def sync-jobs [category: string, rows: list<record>] {
   | transpose image rows
   | sort-by image
   | each {|group|
-      let job_name = $"sync:($category):(safe-image-name $group.image)"
+      let image_key = (safe-image-name $group.image)
+      let job_name = $"sync:($category):($image_key)"
       let sources = ($group.rows | get source_file | uniq | sort)
 
       {
@@ -72,7 +106,7 @@ def sync-jobs [category: string, rows: list<record>] {
         value: {
           extends: $".sync-($category)-image"
           variables: {IMAGE_TO_SYNC: $group.image}
-          rules: (sync-rules $category $sources)
+          rules: (sync-rules $category $group.image $image_key $sources)
         }
       }
     }

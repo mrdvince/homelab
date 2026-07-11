@@ -49,6 +49,55 @@ def main [] {
     $pipeline
     | get sync:chart:docker-io-example-controller-v1-2-3
     | get rules
+    | first
+    | get if
+  ) '$SYNC_UPSTREAM_IMAGE == "docker.io/example/controller:v1.2.3"'
+  assert equal (
+    $pipeline
+    | get sync:chart:docker-io-example-controller-v1-2-3
+    | get rules
+    | get if
+    | get 1
+  ) '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:docker-io-example-controller-v1-2-3/'
+  assert equal (
+    $pipeline
+    | get sync:local:ghcr-io-example-service-v4-5-6
+    | get rules
+    | first
+    | get if
+  ) '$SYNC_LOCAL_IMAGE == "ghcr.io/example/service:v4.5.6"'
+  assert equal (
+    $pipeline
+    | get sync:local:ghcr-io-example-service-v4-5-6
+    | get rules
+    | get if
+    | get 1
+  ) '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:ghcr-io-example-service-v4-5-6/'
+  assert equal (
+    $pipeline
+    | get sync:chart:docker-io-example-controller-v1-2-3
+    | get rules
+    | get if
+    | any {|rule| $rule == '$SYNC_UPSTREAM_BLOCK == "example"' }
+  ) true
+  assert equal (
+    $pipeline
+    | get sync:local:ghcr-io-example-service-v4-5-6
+    | get rules
+    | get if
+    | any {|rule| $rule == '$SYNC_LOCAL_BLOCK == "example"' }
+  ) true
+  assert equal (
+    $pipeline
+    | get sync:chart:docker-io-example-controller-v1-2-3
+    | get rules
+    | get if
+    | any {|rule| $rule =~ 'sync-upstream:example/' }
+  ) true
+  assert equal (
+    $pipeline
+    | get sync:chart:docker-io-example-controller-v1-2-3
+    | get rules
     | last
     | get changes
     | first 2
