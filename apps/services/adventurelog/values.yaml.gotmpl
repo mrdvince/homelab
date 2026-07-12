@@ -403,17 +403,17 @@ ingress:
             service:
               identifier: main
               port: backend
-          - path: /api
-            pathType: Prefix
-            service:
-              identifier: main
-              port: backend
           - path: /admin
             pathType: Prefix
             service:
               identifier: main
               port: backend
           - path: /static
+            pathType: Prefix
+            service:
+              identifier: main
+              port: backend
+          - path: /media
             pathType: Prefix
             service:
               identifier: main

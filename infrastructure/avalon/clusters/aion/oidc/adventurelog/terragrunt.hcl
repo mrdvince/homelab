@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     adventurelog = {
-      name = "AdventureLog"
+      name            = "AdventureLog"
+      meta_launch_url = "https://adventurelog.home.mrdvince.me"
       allowed_redirect_uris = [
         {
           matching_mode = "regex"
