@@ -175,7 +175,7 @@ alloy:
         }
         rule {
           action        = "keep"
-          regex         = "gitlab|blog|cert-manager|cnpg-system|external-dns|longhorn-system"
+          regex         = "gitlab|blog|cert-manager|cnpg-system|external-dns|longhorn-system|ml-experiments"
           source_labels = ["__meta_kubernetes_namespace"]
         }
         rule {
@@ -232,6 +232,11 @@ controller:
   type: daemonset
   revisionHistoryLimit: 1
   hostPID: true
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
   volumes:
     extra:
       - name: sys-kernel-debug
