@@ -16,14 +16,15 @@ dependency "workers" {
 }
 
 locals {
-  network_interface = "eth0"
+  external_kubelet_ssh = include.root.locals.secret_vars.aion.external_kubelet_ssh
+  network_interface    = "eth0"
 }
 
 inputs = {
-  cluster_name      = "aion"
-  cluster_endpoint  = "https://10.30.30.145:6443"
-  talos_version     = "v1.12.8"
-  config_apply_mode = "auto"
+  cluster_name       = "aion"
+  cluster_endpoint   = "https://10.30.30.145:6443"
+  talos_version      = "v1.13.4"
+  kubernetes_version = "1.35.6"
 
   controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
   worker_node_endpoints = {
@@ -52,6 +53,12 @@ inputs = {
 
   extensions   = ["iscsi-tools", "util-linux-tools", "qemu-guest-agent"]
   auto_upgrade = true
+
+  external_kubelet_upgrade_commands = {
+    flux = <<-EOT
+      ${local.external_kubelet_ssh} "set -e; sudo sed -E -i 's#core:/stable:/v[0-9]+\\.[0-9]+/rpm/#core:/stable:/v$${KUBERNETES_MINOR}/rpm/#' /etc/yum.repos.d/kubernetes.repo; sudo dnf clean metadata --disablerepo='*' --enablerepo=kubernetes; sudo dnf install -y --setopt=kubernetes.exclude= 'kubelet-$${KUBERNETES_VERSION}-*'; sudo systemctl restart kubelet"
+    EOT
+  }
 
   kubernetes = {
     pod_subnet     = "10.244.0.0/17"
