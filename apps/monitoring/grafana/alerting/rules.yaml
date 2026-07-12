@@ -157,7 +157,7 @@ groups:
                 type: loki
                 uid: P8E80F9AEF21F6940
               editorMode: code
-              expr: 'sum by (namespace, app, container) (count_over_time({namespace!="", namespace!="monitoring"} |~ "(?i)(panic|fatal|segfault|oomkilled|out of memory|database is locked)" [10m]))'
+              expr: 'sum by (namespace, app, container) (count_over_time({namespace!="", namespace!="monitoring", namespace!="traefik"} |~ "(?i)(panic|fatal|segfault|oomkilled|out of memory|database is locked)" [10m]))'
               intervalMs: 1000
               maxDataPoints: 43200
               queryType: range
@@ -205,7 +205,7 @@ groups:
         for: 5m
         annotations:
           summary: Repeated crash, panic, or OOM-like log lines were seen in a Kubernetes workload.
-          query: '{namespace!="", namespace!="monitoring"} |~ "(?i)(panic|fatal|segfault|oomkilled|out of memory|database is locked)"'
+          query: '{namespace!="", namespace!="monitoring", namespace!="traefik"} |~ "(?i)(panic|fatal|segfault|oomkilled|out of memory|database is locked)"'
           action: Check the affected namespace/app/container logs and pod restart state.
         labels:
           severity: critical
