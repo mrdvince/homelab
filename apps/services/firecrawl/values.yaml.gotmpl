@@ -40,7 +40,7 @@ controllers:
           PLAYWRIGHT_MICROSERVICE_URL: http://firecrawl-playwright:3000/scrape
           POSTGRES_HOST: firecrawl-nuq-postgres
           POSTGRES_PORT: "5432"
-          POSTGRES_DB: firecrawl
+          POSTGRES_DB: postgres
           POSTGRES_USER:
             valueFrom:
               secretKeyRef:
@@ -279,7 +279,7 @@ controllers:
           tag: "{{ (index .Values.firecrawlImages 2).tag }}"
         env:
           PGDATA: /var/lib/postgresql/data/pgdata
-          POSTGRES_DB: firecrawl
+          POSTGRES_DB: postgres
           POSTGRES_USER:
             valueFrom:
               secretKeyRef:
@@ -338,7 +338,7 @@ secrets:
     stringData:
       postgres-username: {{ .Values.firecrawl.postgres_username }}
       postgres-password: {{ .Values.firecrawl.postgres_password }}
-      postgres-url: "postgresql://{{ .Values.firecrawl.postgres_username }}:{{ .Values.firecrawl.postgres_password }}@firecrawl-nuq-postgres:5432/firecrawl"
+      postgres-url: "postgresql://{{ .Values.firecrawl.postgres_username }}:{{ .Values.firecrawl.postgres_password }}@firecrawl-nuq-postgres:5432/postgres"
       rabbitmq-username: {{ .Values.firecrawl.rabbitmq_username }}
       rabbitmq-password: {{ .Values.firecrawl.rabbitmq_password }}
       rabbitmq-url: "amqp://{{ .Values.firecrawl.rabbitmq_username }}:{{ .Values.firecrawl.rabbitmq_password }}@firecrawl-rabbitmq:5672"
