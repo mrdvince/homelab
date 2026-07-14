@@ -1,0 +1,137 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.hermesImages 0).image }}
+          tag: "{{ (index .Values.hermesImages 0).tag }}"
+        args:
+          - gateway
+          - run
+        env:
+          TZ: Europe/Amsterdam
+          HERMES_DASHBOARD: "1"
+          HERMES_DASHBOARD_HOST: 0.0.0.0
+          HERMES_DASHBOARD_PORT: "9119"
+          HERMES_DASHBOARD_PUBLIC_URL: https://hermes.{{ .Values.domain }}
+          HERMES_DASHBOARD_BASIC_AUTH_USERNAME: iris
+          HERMES_DASHBOARD_BASIC_AUTH_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: hermes
+                key: dashboard-password
+          HERMES_DASHBOARD_BASIC_AUTH_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: hermes
+                key: dashboard-secret
+          HERMES_GATEWAY_BOOTSTRAP_STATE: running
+          API_SERVER_ENABLED: "true"
+          API_SERVER_HOST: 0.0.0.0
+          API_SERVER_PORT: "8642"
+          API_SERVER_MODEL_NAME: hermes-agent
+          API_SERVER_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: hermes
+                key: api-key
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
+          limits:
+            memory: 4Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 9119
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 9119
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - CHOWN
+              - DAC_OVERRIDE
+              - FOWNER
+              - SETGID
+              - SETUID
+
+defaultPodOptions:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 10000
+    fsGroupChangePolicy: OnRootMismatch
+
+secrets:
+  environment:
+    stringData:
+      dashboard-password: {{ .Values.hermes.dashboard_password }}
+      dashboard-secret: {{ .Values.hermes.dashboard_secret }}
+      api-key: {{ .Values.hermes.api_key }}
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 50Gi
+    storageClass: truenas-iscsi-retain
+    globalMounts:
+      - path: /opt/data
+  shared-memory:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 1Gi
+    globalMounts:
+      - path: /dev/shm
+
+service:
+  main:
+    controller: main
+    ports:
+      dashboard:
+        port: 9119
+      api:
+        port: 8642
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
+    hosts:
+      - host: hermes.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: dashboard
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - hermes.{{ .Values.domain }}

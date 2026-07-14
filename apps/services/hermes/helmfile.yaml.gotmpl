@@ -1,0 +1,19 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
+
+releases:
+  - name: hermes
+    namespace: apps
+    chart: bjw-s/app-template
+    version: 5.0.1
+    values:
+      - values.yaml.gotmpl

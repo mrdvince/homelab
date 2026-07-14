@@ -72,6 +72,16 @@ inputs = {
       external_host = "https://code.home.mrdvince.me"
       mode          = "forward_single"
     }
+    hermes = {
+      name          = "Hermes"
+      external_host = "https://hermes.home.mrdvince.me"
+      mode          = "forward_single"
+    }
+    open-webui = {
+      name          = "Open WebUI"
+      external_host = "https://open-webui.home.mrdvince.me"
+      mode          = "forward_single"
+    }
   }
 
   outpost_name = "aion-forward-auth-outpost"

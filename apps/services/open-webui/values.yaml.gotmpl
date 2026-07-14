@@ -1,0 +1,114 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.openWebuiImages 0).image }}
+          tag: "{{ (index .Values.openWebuiImages 0).tag }}"
+        env:
+          TZ: Europe/Amsterdam
+          WEBUI_URL: https://open-webui.{{ .Values.domain }}
+          WEBUI_AUTH: "true"
+          WEBUI_AUTH_COOKIE_SECURE: "true"
+          WEBUI_SESSION_COOKIE_SECURE: "true"
+          ENABLE_SIGNUP: "false"
+          ENABLE_OLLAMA_API: "false"
+          ENABLE_OPENAI_API: "true"
+          OPENAI_API_BASE_URL: http://hermes:8642/v1
+          OPENAI_API_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: open-webui
+                key: hermes-api-key
+          WEBUI_SECRET_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: open-webui
+                key: webui-secret-key
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 8080
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 8080
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 18
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 0
+    fsGroupChangePolicy: OnRootMismatch
+
+secrets:
+  environment:
+    stringData:
+      hermes-api-key: {{ .Values.hermes.api_key }}
+      webui-secret-key: {{ .Values.openwebui.secret_key }}
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: truenas-iscsi-retain
+    globalMounts:
+      - path: /app/backend/data
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 8080
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
+    hosts:
+      - host: open-webui.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - open-webui.{{ .Values.domain }}
