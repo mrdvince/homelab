@@ -2,6 +2,35 @@ controllers:
   main:
     revisionHistoryLimit: 1
     strategy: Recreate
+    initContainers:
+      configure-web:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.hermesImages 0).image }}
+          tag: "{{ (index .Values.hermesImages 0).tag }}"
+        command:
+          - /opt/hermes/.venv/bin/python
+        args:
+          - -c
+          - |
+            import os
+            from pathlib import Path
+
+            import yaml
+
+            path = Path("/opt/data/config.yaml")
+            config = yaml.safe_load(path.read_text()) if path.exists() else {}
+            web = config.setdefault("web", {})
+            web["search_backend"] = "searxng"
+            web["extract_backend"] = "firecrawl"
+            temporary = path.with_suffix(".yaml.tmp")
+            temporary.write_text(yaml.safe_dump(config, sort_keys=False))
+            os.replace(temporary, path)
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
     containers:
       main:
         image:
@@ -30,6 +59,7 @@ controllers:
           HERMES_DASHBOARD_OIDC_SCOPES: openid profile email
           HERMES_GATEWAY_BOOTSTRAP_STATE: running
           SEARXNG_URL: http://searxng:8080
+          FIRECRAWL_API_URL: http://firecrawl-main:3002
           AGENT_BROWSER_ARGS: --no-sandbox
           AGENT_BROWSER_EXECUTABLE_PATH: /opt/hermes/.playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell
           API_SERVER_ENABLED: "true"

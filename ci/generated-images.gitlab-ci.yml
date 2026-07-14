@@ -1090,6 +1090,48 @@ sync:chart:registry-home-mrdvince-me-excalidraw-excalidraw-2026-01-07-cc6c29c:
       changes:
         - apps/services/excalidraw/**/*
         - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-firecrawl-firecrawl-sha-ef12eb36b2f3-linux-amd64-sha256-4749476b5def36:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/firecrawl/firecrawl:sha-ef12eb36b2f3-linux-amd64@sha256:4749476b5def369906546e4dbe2c8e767559173635cac5d4a6b26e1ea42dbc46
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/firecrawl/firecrawl:sha-ef12eb36b2f3-linux-amd64@sha256:4749476b5def369906546e4dbe2c8e767559173635cac5d4a6b26e1ea42dbc46"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-firecrawl-firecrawl-sha-ef12eb36b2f3-linux-amd64-sha256-4749476b5def36/
+    - if: $SYNC_UPSTREAM_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:firecrawl/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/firecrawl/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-firecrawl-nuq-postgres-linux-amd64-sha256-4ca6718b2cef40404b046db5cd37:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/firecrawl/nuq-postgres:linux-amd64@sha256:4ca6718b2cef40404b046db5cd37ae45db3e44d1a5750c80522f3587a5b193d5
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/firecrawl/nuq-postgres:linux-amd64@sha256:4ca6718b2cef40404b046db5cd37ae45db3e44d1a5750c80522f3587a5b193d5"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-firecrawl-nuq-postgres-linux-amd64-sha256-4ca6718b2cef40404b046db5cd37/
+    - if: $SYNC_UPSTREAM_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:firecrawl/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/firecrawl/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-firecrawl-playwright-service-linux-amd64-sha256-c13a0e147e8b6a503093d6:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/firecrawl/playwright-service:linux-amd64@sha256:c13a0e147e8b6a503093d68edfb223ac65c989058f7e0ef606ee2958b38ff604
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/firecrawl/playwright-service:linux-amd64@sha256:c13a0e147e8b6a503093d68edfb223ac65c989058f7e0ef606ee2958b38ff604"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-firecrawl-playwright-service-linux-amd64-sha256-c13a0e147e8b6a503093d6/
+    - if: $SYNC_UPSTREAM_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:firecrawl/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/firecrawl/**/*
+        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-freshrss-freshrss-1-29-1:
   extends: '.sync-chart-image'
   variables:
@@ -1205,12 +1247,15 @@ sync:chart:registry-home-mrdvince-me-library-busybox-1-37-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:adventurelog/
     - if: $SYNC_UPSTREAM_BLOCK == "democratic-csi"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:democratic-csi/
+    - if: $SYNC_UPSTREAM_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:firecrawl/
     - if: $SYNC_UPSTREAM_BLOCK == "freshrss"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:freshrss/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/adventurelog/**/*
+        - apps/services/firecrawl/**/*
         - apps/services/freshrss/**/*
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
@@ -1227,6 +1272,20 @@ sync:chart:registry-home-mrdvince-me-library-mariadb-11-4-8-sha256-bc474f00629f0
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/booklore/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-library-rabbitmq-3-management-sha256-e582c0bc7766f3342496d8485efb5a1df:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/library/rabbitmq:3-management@sha256:e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017e2eaae442311f69
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/library/rabbitmq:3-management@sha256:e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017e2eaae442311f69"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-library-rabbitmq-3-management-sha256-e582c0bc7766f3342496d8485efb5a1df/
+    - if: $SYNC_UPSTREAM_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:firecrawl/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/firecrawl/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-linkwarden-linkwarden-v2-14-1:
   extends: '.sync-chart-image'
@@ -1403,11 +1462,14 @@ sync:chart:registry-home-mrdvince-me-redis-8-alpine:
   rules:
     - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/redis:8-alpine"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-redis-8-alpine/
+    - if: $SYNC_UPSTREAM_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:firecrawl/
     - if: $SYNC_UPSTREAM_BLOCK == "paperless"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:paperless/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
+        - apps/services/firecrawl/**/*
         - apps/services/paperless/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-scanopy-scanopy-server-v0-14-3:

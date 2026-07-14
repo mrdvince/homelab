@@ -1,0 +1,405 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    initContainers:
+      wait-for-dependencies:
+        image:
+          repository: {{ .Values.imageRegistry }}/library/busybox
+          tag: "1.37.0"
+        command:
+          - sh
+          - -c
+          - |
+            until nc -z firecrawl-redis 6379 && \
+              nc -z firecrawl-rabbitmq 5672 && \
+              nc -z firecrawl-nuq-postgres 5432 && \
+              nc -z firecrawl-playwright 3000; do
+              sleep 2
+            done
+        securityContext:
+          runAsUser: 65534
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.firecrawlImages 0).image }}
+          tag: "{{ (index .Values.firecrawlImages 0).tag }}"
+        env:
+          HOST: 0.0.0.0
+          PORT: "3002"
+          EXTRACT_WORKER_PORT: "3004"
+          WORKER_PORT: "3005"
+          REDIS_URL: redis://firecrawl-redis:6379
+          REDIS_RATE_LIMIT_URL: redis://firecrawl-redis:6379
+          SEARXNG_ENDPOINT: http://searxng:8080
+          PLAYWRIGHT_MICROSERVICE_URL: http://firecrawl-playwright:3000/scrape
+          POSTGRES_HOST: firecrawl-nuq-postgres
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: firecrawl
+          POSTGRES_USER:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: postgres-username
+          POSTGRES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: postgres-password
+          NUQ_DATABASE_URL:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: postgres-url
+          NUQ_DATABASE_URL_LISTEN:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: postgres-url
+          NUQ_RABBITMQ_URL:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: rabbitmq-url
+          BULL_AUTH_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: bull-auth-key
+          USE_DB_AUTHENTICATION: "false"
+          NUM_WORKERS_PER_QUEUE: "1"
+          NUQ_WORKER_COUNT: "1"
+          CRAWL_CONCURRENT_REQUESTS: "2"
+          MAX_CONCURRENT_JOBS: "2"
+          BROWSER_POOL_SIZE: "1"
+          HARNESS_STARTUP_TIMEOUT_MS: "120000"
+          ENV: local
+          LOGGING_LEVEL: INFO
+        resources:
+          requests:
+            cpu: 250m
+            memory: 768Mi
+          limits:
+            cpu: "2"
+            memory: 3Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /v0/health/liveness
+                port: 3002
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /v0/health/readiness
+                port: 3002
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+  playwright:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.firecrawlImages 1).image }}
+          tag: "{{ (index .Values.firecrawlImages 1).tag }}"
+        env:
+          PORT: "3000"
+          BLOCK_MEDIA: "true"
+          MAX_CONCURRENT_PAGES: "2"
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 3000
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 3000
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+  redis:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.redis 0).image }}
+          tag: "{{ (index .Values.redis 0).tag }}"
+        command:
+          - redis-server
+          - --bind
+          - 0.0.0.0
+          - --save
+          - ""
+          - --appendonly
+          - "no"
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 6379
+              initialDelaySeconds: 10
+              periodSeconds: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 6379
+              initialDelaySeconds: 5
+              periodSeconds: 10
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+
+  rabbitmq:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.firecrawlImages 3).image }}
+          tag: "{{ (index .Values.firecrawlImages 3).tag }}"
+        env:
+          RABBITMQ_DEFAULT_USER:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: rabbitmq-username
+          RABBITMQ_DEFAULT_PASS:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: rabbitmq-password
+          RABBITMQ_DEFAULT_VHOST: /
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 5672
+              initialDelaySeconds: 30
+              periodSeconds: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 5672
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+  nuq-postgres:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.firecrawlImages 2).image }}
+          tag: "{{ (index .Values.firecrawlImages 2).tag }}"
+        env:
+          PGDATA: /var/lib/postgresql/data/pgdata
+          POSTGRES_DB: firecrawl
+          POSTGRES_USER:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: postgres-username
+          POSTGRES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: postgres-password
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 5432
+              initialDelaySeconds: 20
+              periodSeconds: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 5432
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    fsGroup: 999
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+
+secrets:
+  environment:
+    stringData:
+      postgres-username: {{ .Values.firecrawl.postgres_username }}
+      postgres-password: {{ .Values.firecrawl.postgres_password }}
+      postgres-url: "postgresql://{{ .Values.firecrawl.postgres_username }}:{{ .Values.firecrawl.postgres_password }}@firecrawl-nuq-postgres:5432/firecrawl"
+      rabbitmq-username: {{ .Values.firecrawl.rabbitmq_username }}
+      rabbitmq-password: {{ .Values.firecrawl.rabbitmq_password }}
+      rabbitmq-url: "amqp://{{ .Values.firecrawl.rabbitmq_username }}:{{ .Values.firecrawl.rabbitmq_password }}@firecrawl-rabbitmq:5672"
+      bull-auth-key: {{ .Values.firecrawl.bull_auth_key }}
+
+persistence:
+  api-tmp:
+    type: emptyDir
+    advancedMounts:
+      main:
+        main:
+          - path: /tmp
+  playwright-tmp:
+    type: emptyDir
+    sizeLimit: 1Gi
+    advancedMounts:
+      playwright:
+        main:
+          - path: /tmp
+  redis-data:
+    type: emptyDir
+    advancedMounts:
+      redis:
+        main:
+          - path: /data
+  rabbitmq-data:
+    type: emptyDir
+    advancedMounts:
+      rabbitmq:
+        main:
+          - path: /var/lib/rabbitmq
+  postgres-data:
+    type: emptyDir
+    advancedMounts:
+      nuq-postgres:
+        main:
+          - path: /var/lib/postgresql/data
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 3002
+  playwright:
+    controller: playwright
+    ports:
+      http:
+        port: 3000
+  redis:
+    controller: redis
+    ports:
+      redis:
+        port: 6379
+  rabbitmq:
+    controller: rabbitmq
+    ports:
+      amqp:
+        port: 5672
+  nuq-postgres:
+    controller: nuq-postgres
+    ports:
+      postgres:
+        port: 5432

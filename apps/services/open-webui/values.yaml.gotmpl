@@ -35,7 +35,7 @@ controllers:
           OAUTH_CODE_CHALLENGE_METHOD: S256
           ENABLE_OLLAMA_API: "false"
           ENABLE_OPENAI_API: "true"
-          OPENAI_API_BASE_URL: http://hermes:8642/v1
+          OPENAI_API_BASE_URL: http://hermes.hermes.svc.cluster.local:8642/v1
           OPENAI_API_KEY:
             valueFrom:
               secretKeyRef:
