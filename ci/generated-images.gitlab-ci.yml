@@ -1452,20 +1452,6 @@ sync:chart:registry-home-mrdvince-me-seanmorley15-adventurelog-frontend-v0-12-1:
       changes:
         - apps/services/adventurelog/**/*
         - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-searxng-searxng-2026-7-3-747cec4c2:
-  extends: '.sync-chart-image'
-  variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/searxng/searxng:2026.7.3-747cec4c2
-  rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/searxng/searxng:2026.7.3-747cec4c2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-searxng-searxng-2026-7-3-747cec4c2/
-    - if: $SYNC_UPSTREAM_BLOCK == "searxng"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:searxng/
-    - if: $SYNC_UPSTREAM_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - apps/services/searxng/**/*
-        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-attacher-v4-4-0:
   extends: '.sync-chart-image'
   variables:
