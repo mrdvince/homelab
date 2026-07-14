@@ -16,21 +16,18 @@ controllers:
           HERMES_DASHBOARD_HOST: 0.0.0.0
           HERMES_DASHBOARD_PORT: "9119"
           HERMES_DASHBOARD_PUBLIC_URL: https://hermes.{{ .Values.domain }}
-          HERMES_DASHBOARD_BASIC_AUTH_USERNAME:
+          HERMES_DASHBOARD_OIDC_ISSUER: https://auth.{{ .Values.domain }}/application/o/hermes/
+          HERMES_DASHBOARD_OIDC_CLIENT_ID:
             valueFrom:
               secretKeyRef:
                 name: hermes
-                key: dashboard-username
-          HERMES_DASHBOARD_BASIC_AUTH_PASSWORD:
+                key: oidc-client-id
+          HERMES_DASHBOARD_OIDC_CLIENT_SECRET:
             valueFrom:
               secretKeyRef:
                 name: hermes
-                key: dashboard-password
-          HERMES_DASHBOARD_BASIC_AUTH_SECRET:
-            valueFrom:
-              secretKeyRef:
-                name: hermes
-                key: dashboard-secret
+                key: oidc-client-secret
+          HERMES_DASHBOARD_OIDC_SCOPES: openid profile email
           HERMES_GATEWAY_BOOTSTRAP_STATE: running
           API_SERVER_ENABLED: "true"
           API_SERVER_HOST: 0.0.0.0
@@ -93,9 +90,8 @@ defaultPodOptions:
 secrets:
   environment:
     stringData:
-      dashboard-username: {{ .Values.hermes.dashboard_username }}
-      dashboard-password: {{ .Values.hermes.dashboard_password }}
-      dashboard-secret: {{ .Values.hermes.dashboard_secret }}
+      oidc-client-id: {{ .Values.hermes.oidc.client_id }}
+      oidc-client-secret: {{ .Values.hermes.oidc.client_secret }}
       api-key: {{ .Values.hermes.api_key }}
 
 persistence:
@@ -126,8 +122,6 @@ ingress:
   main:
     enabled: true
     className: traefik
-    annotations:
-      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - host: hermes.{{ .Values.domain }}
         paths:
