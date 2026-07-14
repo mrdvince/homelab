@@ -1312,6 +1312,34 @@ sync:chart:registry-home-mrdvince-me-muhlba91-external-dns-provider-adguard-v11-
       changes:
         - apps/core/external-dns/**/*
         - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-nousresearch-hermes-agent-v2026-7-1:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/nousresearch/hermes-agent:v2026.7.1
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/nousresearch/hermes-agent:v2026.7.1"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-nousresearch-hermes-agent-v2026-7-1/
+    - if: $SYNC_UPSTREAM_BLOCK == "hermes"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:hermes/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/hermes/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-open-webui-open-webui-v0-10-2:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/open-webui/open-webui:v0.10.2
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/open-webui/open-webui:v0.10.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-open-webui-open-webui-v0-10-2/
+    - if: $SYNC_UPSTREAM_BLOCK == "open-webui"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:open-webui/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/open-webui/**/*
+        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-paperless-ngx-paperless-ngx-2-20-6:
   extends: '.sync-chart-image'
   variables:
@@ -1423,6 +1451,20 @@ sync:chart:registry-home-mrdvince-me-seanmorley15-adventurelog-frontend-v0-12-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/adventurelog/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-searxng-searxng-2026-7-3-747cec4c2:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/searxng/searxng:2026.7.3-747cec4c2
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/searxng/searxng:2026.7.3-747cec4c2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-searxng-searxng-2026-7-3-747cec4c2/
+    - if: $SYNC_UPSTREAM_BLOCK == "searxng"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:searxng/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/searxng/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-sig-storage-csi-attacher-v4-4-0:
   extends: '.sync-chart-image'
