@@ -14,6 +14,25 @@ controllers:
           WEBUI_AUTH_COOKIE_SECURE: "true"
           WEBUI_SESSION_COOKIE_SECURE: "true"
           ENABLE_SIGNUP: "false"
+          ENABLE_LOGIN_FORM: "false"
+          ENABLE_PASSWORD_AUTH: "false"
+          ENABLE_OAUTH_SIGNUP: "true"
+          OAUTH_AUTO_REDIRECT: "true"
+          OAUTH_PROVIDER_NAME: Authentik
+          OAUTH_CLIENT_ID:
+            valueFrom:
+              secretKeyRef:
+                name: open-webui
+                key: oidc-client-id
+          OAUTH_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: open-webui
+                key: oidc-client-secret
+          OPENID_PROVIDER_URL: https://auth.{{ .Values.domain }}/application/o/open-webui/.well-known/openid-configuration
+          OPENID_REDIRECT_URI: https://open-webui.{{ .Values.domain }}/oauth/oidc/callback
+          OAUTH_SCOPES: openid email profile
+          OAUTH_CODE_CHALLENGE_METHOD: S256
           ENABLE_OLLAMA_API: "false"
           ENABLE_OPENAI_API: "true"
           OPENAI_API_BASE_URL: http://hermes:8642/v1
@@ -77,6 +96,8 @@ secrets:
     stringData:
       hermes-api-key: {{ .Values.hermes.api_key }}
       webui-secret-key: {{ .Values.openwebui.secret_key }}
+      oidc-client-id: {{ .Values.openwebui.oidc.client_id }}
+      oidc-client-secret: {{ .Values.openwebui.oidc.client_secret }}
 
 persistence:
   data:
@@ -98,8 +119,6 @@ ingress:
   main:
     enabled: true
     className: traefik
-    annotations:
-      traefik.ingress.kubernetes.io/router.middlewares: traefik-authentik-forward-auth@kubernetescrd
     hosts:
       - host: open-webui.{{ .Values.domain }}
         paths:

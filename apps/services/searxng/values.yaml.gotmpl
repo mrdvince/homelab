@@ -1,0 +1,112 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.searxngImages 0).image }}
+          tag: "{{ (index .Values.searxngImages 0).tag }}"
+        env:
+          FORCE_OWNERSHIP: "false"
+          SEARXNG_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: searxng
+                key: secret-key
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8080
+              initialDelaySeconds: 20
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8080
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 977
+    runAsGroup: 977
+    fsGroup: 977
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+
+configMaps:
+  settings:
+    data:
+      settings.yml: |
+        use_default_settings: true
+
+        general:
+          instance_name: hermes search
+          enable_metrics: false
+
+        search:
+          safe_search: 0
+          autocomplete: ""
+          formats:
+            - html
+            - json
+
+        server:
+          limiter: false
+          public_instance: false
+          image_proxy: false
+
+secrets:
+  environment:
+    stringData:
+      secret-key: {{ .Values.searxng.secret_key }}
+
+persistence:
+  config:
+    type: configMap
+    identifier: settings
+    globalMounts:
+      - path: /etc/searxng
+        readOnly: true
+  data:
+    type: emptyDir
+    globalMounts:
+      - path: /var/cache/searxng
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
+
+service:
+  main:
+    controller: main
+    type: ClusterIP
+    ports:
+      http:
+        port: 8080
