@@ -16,7 +16,11 @@ controllers:
           HERMES_DASHBOARD_HOST: 0.0.0.0
           HERMES_DASHBOARD_PORT: "9119"
           HERMES_DASHBOARD_PUBLIC_URL: https://hermes.{{ .Values.domain }}
-          HERMES_DASHBOARD_BASIC_AUTH_USERNAME: iris
+          HERMES_DASHBOARD_BASIC_AUTH_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: hermes
+                key: dashboard-username
           HERMES_DASHBOARD_BASIC_AUTH_PASSWORD:
             valueFrom:
               secretKeyRef:
@@ -89,6 +93,7 @@ defaultPodOptions:
 secrets:
   environment:
     stringData:
+      dashboard-username: {{ .Values.hermes.dashboard_username }}
       dashboard-password: {{ .Values.hermes.dashboard_password }}
       dashboard-secret: {{ .Values.hermes.dashboard_secret }}
       api-key: {{ .Values.hermes.api_key }}
