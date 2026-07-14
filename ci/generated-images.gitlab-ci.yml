@@ -1835,6 +1835,19 @@ sync:local:docker-io-library-mariadb-11-4-8-sha256-bc474f00629f0123c10f9e1bca193
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/booklore.yaml
+sync:local:docker-io-library-rabbitmq-3-management-sha256-e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/library/rabbitmq:3-management@sha256:e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017e2eaae442311f69
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/library/rabbitmq:3-management@sha256:e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017e2eaae442311f69"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-library-rabbitmq-3-management-sha256-e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017/
+    - if: $SYNC_LOCAL_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:firecrawl/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/firecrawl.yaml
 sync:local:docker-io-nousresearch-hermes-agent-v2026-7-1:
   extends: '.sync-local-image'
   variables:
@@ -2056,6 +2069,45 @@ sync:local:ghcr-io-democratic-csi-democratic-csi-v1-9-5:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/democratic-csi.yaml
+sync:local:ghcr-io-firecrawl-firecrawl-sha-ef12eb36b2f3-linux-amd64-sha256-4749476b5def369906546e4dbe2c8e76:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/firecrawl/firecrawl:sha-ef12eb36b2f3-linux-amd64@sha256:4749476b5def369906546e4dbe2c8e767559173635cac5d4a6b26e1ea42dbc46
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "ghcr.io/firecrawl/firecrawl:sha-ef12eb36b2f3-linux-amd64@sha256:4749476b5def369906546e4dbe2c8e767559173635cac5d4a6b26e1ea42dbc46"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:ghcr-io-firecrawl-firecrawl-sha-ef12eb36b2f3-linux-amd64-sha256-4749476b5def369906546e4dbe2c8e76/
+    - if: $SYNC_LOCAL_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:firecrawl/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/firecrawl.yaml
+sync:local:ghcr-io-firecrawl-nuq-postgres-linux-amd64-sha256-4ca6718b2cef40404b046db5cd37ae45db3e44d1a5750c:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/firecrawl/nuq-postgres:linux-amd64@sha256:4ca6718b2cef40404b046db5cd37ae45db3e44d1a5750c80522f3587a5b193d5
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "ghcr.io/firecrawl/nuq-postgres:linux-amd64@sha256:4ca6718b2cef40404b046db5cd37ae45db3e44d1a5750c80522f3587a5b193d5"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:ghcr-io-firecrawl-nuq-postgres-linux-amd64-sha256-4ca6718b2cef40404b046db5cd37ae45db3e44d1a5750c/
+    - if: $SYNC_LOCAL_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:firecrawl/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/firecrawl.yaml
+sync:local:ghcr-io-firecrawl-playwright-service-linux-amd64-sha256-c13a0e147e8b6a503093d68edfb223ac65c98905:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/firecrawl/playwright-service:linux-amd64@sha256:c13a0e147e8b6a503093d68edfb223ac65c989058f7e0ef606ee2958b38ff604
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "ghcr.io/firecrawl/playwright-service:linux-amd64@sha256:c13a0e147e8b6a503093d68edfb223ac65c989058f7e0ef606ee2958b38ff604"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:ghcr-io-firecrawl-playwright-service-linux-amd64-sha256-c13a0e147e8b6a503093d68edfb223ac65c98905/
+    - if: $SYNC_LOCAL_BLOCK == "firecrawl"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:firecrawl/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/firecrawl.yaml
 sync:local:ghcr-io-karakeep-app-karakeep-0-30-0:
   extends: '.sync-local-image'
   variables:
