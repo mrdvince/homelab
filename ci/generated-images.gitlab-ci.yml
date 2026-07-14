@@ -1858,6 +1858,19 @@ sync:local:docker-io-renovate-renovate-43-248-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/renovate.yaml
+sync:local:docker-io-searxng-searxng-2026-7-3-747cec4c2:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/searxng/searxng:2026.7.3-747cec4c2
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/searxng/searxng:2026.7.3-747cec4c2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-searxng-searxng-2026-7-3-747cec4c2/
+    - if: $SYNC_LOCAL_BLOCK == "searxng"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:searxng/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/searxng.yaml
 sync:local:docker-io-valkey-valkey-9-1:
   extends: '.sync-local-image'
   variables:
