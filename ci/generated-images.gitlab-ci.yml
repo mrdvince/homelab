@@ -1793,6 +1793,19 @@ sync:local:docker-io-library-mariadb-11-4-8-sha256-bc474f00629f0123c10f9e1bca193
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/booklore.yaml
+sync:local:docker-io-nousresearch-hermes-agent-v2026-7-1:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/nousresearch/hermes-agent:v2026.7.1
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/nousresearch/hermes-agent:v2026.7.1"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-nousresearch-hermes-agent-v2026-7-1/
+    - if: $SYNC_LOCAL_BLOCK == "hermes"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:hermes/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/hermes.yaml
 sync:local:docker-io-postgis-postgis-16-3-5-sha256-1d95a92144c40198b46908fd92ac365e85d35eaf31bfc36f06c2c09a:
   extends: '.sync-local-image'
   variables:
@@ -2040,6 +2053,19 @@ sync:local:ghcr-io-mealie-recipes-mealie-v3-10-2:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/mealie.yaml
+sync:local:ghcr-io-open-webui-open-webui-v0-10-2:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/open-webui/open-webui:v0.10.2
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "ghcr.io/open-webui/open-webui:v0.10.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:ghcr-io-open-webui-open-webui-v0-10-2/
+    - if: $SYNC_LOCAL_BLOCK == "open-webui"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:open-webui/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/open-webui.yaml
 sync:local:ghcr-io-paperless-ngx-paperless-ngx-2-20-6:
   extends: '.sync-local-image'
   variables:
