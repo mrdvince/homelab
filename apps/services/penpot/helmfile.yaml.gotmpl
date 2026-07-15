@@ -1,0 +1,58 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+repositories:
+  - name: bjw-s
+    url: https://bjw-s-labs.github.io/helm-charts
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+  - name: penpot
+    url: https://helm.penpot.app
+  - name: homelab
+    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
+    username: {{ .Values.gitlab_deploy_token.username }}
+    password: {{ .Values.gitlab_deploy_token.token }}
+
+releases:
+  - name: penpot-postgres
+    namespace: apps
+    chart: cnpg/cluster
+    version: 0.7.0
+    values:
+      - postgres/values.yaml.gotmpl
+
+  - name: penpot-valkey
+    namespace: apps
+    chart: bjw-s/app-template
+    version: 5.0.1
+    values:
+      - valkey/values.yaml.gotmpl
+
+  - name: penpot-secrets
+    namespace: apps
+    chart: homelab/secret
+    version: 0.1.0
+    values:
+      - fullnameOverride: penpot
+        data:
+          api-secret-key: {{ .Values.penpot.api_secret | trim | quote }}
+          oidc-client-id: {{ .Values.penpot.oidc.client_id | trim | quote }}
+          oidc-client-secret: {{ .Values.penpot.oidc.client_secret | trim | quote }}
+          smtp-username: {{ .Values.mailrise.smtp_username | trim | quote }}
+          smtp-password: {{ .Values.mailrise.smtp_password | trim | quote }}
+
+  - name: penpot
+    namespace: apps
+    chart: penpot/penpot
+    version: 1.6.1
+    values:
+      - values.yaml.gotmpl
+    needs:
+      - penpot-postgres
+      - penpot-valkey
+      - penpot-secrets

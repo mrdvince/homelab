@@ -1,0 +1,16 @@
+penpotImages:
+  - registry: docker.io
+    image: penpotapp/backend
+    tag: "2.16.2"
+  - registry: docker.io
+    image: penpotapp/frontend
+    tag: "2.16.2"
+  - registry: docker.io
+    image: penpotapp/exporter
+    tag: "2.16.2"
+  - registry: docker.io
+    image: penpotapp/mcp
+    tag: "2.16.2"
+  - registry: docker.io
+    image: valkey/valkey
+    tag: "9.1"

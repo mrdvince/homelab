@@ -412,6 +412,8 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:mealie/
     - if: $SYNC_UPSTREAM_BLOCK == "paperless"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:paperless/
+    - if: $SYNC_UPSTREAM_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpot/
     - if: $SYNC_UPSTREAM_BLOCK == "rxresume"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:rxresume/
     - if: $SYNC_UPSTREAM_BLOCK == "scanopy"
@@ -426,6 +428,7 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
         - apps/services/linkwarden/**/*
         - apps/services/mealie/**/*
         - apps/services/paperless/**/*
+        - apps/services/penpot/**/*
         - apps/services/rxresume/**/*
         - apps/services/scanopy/**/*
         - apps/storage/cnpg/test-cluster/**/*
@@ -471,6 +474,62 @@ sync:chart:grafana-pyroscope-2-1-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/monitoring/pyroscope/**/*
+        - infrastructure/images/config.yaml
+sync:chart:penpotapp-backend-2-16-2:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: penpotapp/backend:2.16.2
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "penpotapp/backend:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpotapp-backend-2-16-2/
+    - if: $SYNC_UPSTREAM_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpot/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/penpot/**/*
+        - infrastructure/images/config.yaml
+sync:chart:penpotapp-exporter-2-16-2:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: penpotapp/exporter:2.16.2
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "penpotapp/exporter:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpotapp-exporter-2-16-2/
+    - if: $SYNC_UPSTREAM_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpot/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/penpot/**/*
+        - infrastructure/images/config.yaml
+sync:chart:penpotapp-frontend-2-16-2:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: penpotapp/frontend:2.16.2
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "penpotapp/frontend:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpotapp-frontend-2-16-2/
+    - if: $SYNC_UPSTREAM_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpot/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/penpot/**/*
+        - infrastructure/images/config.yaml
+sync:chart:penpotapp-mcp-2-16-2:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: penpotapp/mcp:2.16.2
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "penpotapp/mcp:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpotapp-mcp-2-16-2/
+    - if: $SYNC_UPSTREAM_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpot/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/penpot/**/*
         - infrastructure/images/config.yaml
 sync:chart:quay-io-argoproj-argocd-v3-4-4:
   extends: '.sync-chart-image'
@@ -1633,10 +1692,13 @@ sync:chart:registry-home-mrdvince-me-valkey-valkey-9-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-valkey-valkey-9-1/
     - if: $SYNC_UPSTREAM_BLOCK == "bar-assistant"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:bar-assistant/
+    - if: $SYNC_UPSTREAM_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:penpot/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/bar-assistant/**/*
+        - apps/services/penpot/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-yoryan-mailrise-1-4-0-sha256-66082168090b9a83f01cc71a9d7b1994840adbbbf:
   extends: '.sync-chart-image'
@@ -1962,6 +2024,58 @@ sync:local:docker-io-nousresearch-hermes-agent-v2026-7-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/hermes.yaml
+sync:local:docker-io-penpotapp-backend-2-16-2:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/penpotapp/backend:2.16.2
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/backend:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-backend-2-16-2/
+    - if: $SYNC_LOCAL_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/penpot.yaml
+sync:local:docker-io-penpotapp-exporter-2-16-2:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/penpotapp/exporter:2.16.2
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/exporter:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-exporter-2-16-2/
+    - if: $SYNC_LOCAL_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/penpot.yaml
+sync:local:docker-io-penpotapp-frontend-2-16-2:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/penpotapp/frontend:2.16.2
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/frontend:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-frontend-2-16-2/
+    - if: $SYNC_LOCAL_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/penpot.yaml
+sync:local:docker-io-penpotapp-mcp-2-16-2:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/penpotapp/mcp:2.16.2
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/mcp:2.16.2"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-mcp-2-16-2/
+    - if: $SYNC_LOCAL_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/penpot.yaml
 sync:local:docker-io-postgis-postgis-16-3-5-sha256-1d95a92144c40198b46908fd92ac365e85d35eaf31bfc36f06c2c09a:
   extends: '.sync-local-image'
   variables:
@@ -2036,10 +2150,13 @@ sync:local:docker-io-valkey-valkey-9-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-valkey-valkey-9-1/
     - if: $SYNC_LOCAL_BLOCK == "apps"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:apps/
+    - if: $SYNC_LOCAL_BLOCK == "penpot"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
     - if: $SYNC_LOCAL_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/apps.yaml
+        - infrastructure/images/images/local/penpot.yaml
 sync:local:docker-io-yoryan-mailrise-1-4-0-sha256-66082168090b9a83f01cc71a9d7b1994840adbbbffbe4d2cf644272fb:
   extends: '.sync-local-image'
   variables:
