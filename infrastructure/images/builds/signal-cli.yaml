@@ -1,0 +1,4 @@
+signal-cli:
+  dockerfile: infrastructure/images/dockerfiles/signal-cli/Dockerfile
+  image: homelab/signal-cli
+  tag: "0.14.5-1"
