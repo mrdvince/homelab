@@ -71,6 +71,12 @@ controllers:
               secretKeyRef:
                 name: hermes
                 key: api-key
+          SIGNAL_HTTP_URL: http://127.0.0.1:8080
+          SIGNAL_ACCOUNT:
+            valueFrom:
+              secretKeyRef:
+                name: hermes
+                key: signal-account
         resources:
           requests:
             cpu: 250m
@@ -117,16 +123,48 @@ controllers:
         command:
           - /bin/sh
         args:
-          - -c
-          - exec sleep infinity
+          - -ec
+          - exec signal-cli --config=/var/lib/signal-cli --account "$SIGNAL_ACCOUNT" daemon --http 127.0.0.1:8080
         env:
           HOME: /var/lib/signal-cli
+          SIGNAL_ACCOUNT:
+            valueFrom:
+              secretKeyRef:
+                name: hermes
+                key: signal-account
         resources:
           requests:
             cpu: 50m
             memory: 128Mi
           limits:
             memory: 1Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - /bin/bash
+                  - -ec
+                  - exec 3<>/dev/tcp/127.0.0.1/8080
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - /bin/bash
+                  - -ec
+                  - exec 3<>/dev/tcp/127.0.0.1/8080
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -152,6 +190,7 @@ secrets:
       oidc-client-id: {{ .Values.hermes.oidc.client_id }}
       oidc-client-secret: {{ .Values.hermes.oidc.client_secret }}
       api-key: {{ .Values.hermes.api_key }}
+      signal-account: {{ .Values.hermes.signal.account | quote }}
 
 persistence:
   data:
