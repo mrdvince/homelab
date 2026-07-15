@@ -1793,6 +1793,19 @@ sync:local:docker-io-actualbudget-actual-server-26-6-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/apps.yaml
+sync:local:docker-io-azul-zulu-openjdk-25-jre-headless-sha256-d7674a8d76c574b94f87628bcf379f08a10c14dd8bee8:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/azul/zulu-openjdk:25-jre-headless@sha256:d7674a8d76c574b94f87628bcf379f08a10c14dd8bee88507b9144c0e46d5324
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/azul/zulu-openjdk:25-jre-headless@sha256:d7674a8d76c574b94f87628bcf379f08a10c14dd8bee88507b9144c0e46d5324"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-azul-zulu-openjdk-25-jre-headless-sha256-d7674a8d76c574b94f87628bcf379f08a10c14dd8bee8/
+    - if: $SYNC_LOCAL_BLOCK == "signal-cli"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:signal-cli/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/signal-cli.yaml
 sync:local:docker-io-barassistant-salt-rim-4-15-0:
   extends: '.sync-local-image'
   variables:

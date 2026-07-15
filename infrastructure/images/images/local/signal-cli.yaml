@@ -1,0 +1,4 @@
+signalCliBaseImages:
+  - registry: docker.io
+    image: azul/zulu-openjdk
+    tag: "25-jre-headless@sha256:d7674a8d76c574b94f87628bcf379f08a10c14dd8bee88507b9144c0e46d5324"
