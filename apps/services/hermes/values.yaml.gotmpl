@@ -167,3 +167,74 @@ ingress:
       - secretName: wildcard-home-mrdvince-me-tls
         hosts:
           - hermes.{{ .Values.domain }}
+
+rawResources:
+  network-policy:
+    forceRename: hermes
+    manifest:
+      apiVersion: cilium.io/v2
+      kind: CiliumNetworkPolicy
+      metadata:
+        name: hermes
+      specs:
+        - description: isolate the namespace while preserving its internal service graph and internet access
+          endpointSelector: {}
+          ingress:
+            - fromEndpoints:
+                - matchLabels: {}
+            - fromEntities:
+                - host
+              toPorts:
+                - ports:
+                    - port: "3000"
+                      protocol: TCP
+                    - port: "3002"
+                      protocol: TCP
+                    - port: "5432"
+                      protocol: TCP
+                    - port: "5672"
+                      protocol: TCP
+                    - port: "6379"
+                      protocol: TCP
+                    - port: "8080"
+                      protocol: TCP
+                    - port: "9119"
+                      protocol: TCP
+          egress:
+            - toEndpoints:
+                - matchLabels: {}
+            - toEndpoints:
+                - matchLabels:
+                    "k8s:io.kubernetes.pod.namespace": kube-system
+                    "k8s:k8s-app": kube-dns
+              toPorts:
+                - ports:
+                    - port: "53"
+                      protocol: UDP
+                    - port: "53"
+                      protocol: TCP
+            - toEntities:
+                - world
+
+        - description: allow the dashboard through traefik and the agent API from open webui
+          endpointSelector:
+            matchLabels:
+              app.kubernetes.io/instance: hermes
+          ingress:
+            - fromEndpoints:
+                - matchLabels:
+                    "k8s:io.kubernetes.pod.namespace": traefik
+                    app.kubernetes.io/name: traefik
+                    app.kubernetes.io/instance: traefik-traefik
+              toPorts:
+                - ports:
+                    - port: "9119"
+                      protocol: TCP
+            - fromEndpoints:
+                - matchLabels:
+                    "k8s:io.kubernetes.pod.namespace": apps
+                    app.kubernetes.io/instance: open-webui
+              toPorts:
+                - ports:
+                    - port: "8642"
+                      protocol: TCP
