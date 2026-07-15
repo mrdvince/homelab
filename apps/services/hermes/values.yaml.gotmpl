@@ -195,6 +195,8 @@ secrets:
 persistence:
   data:
     type: persistentVolumeClaim
+    forceRename: hermes
+    retain: true
     accessMode: ReadWriteOnce
     size: 50Gi
     storageClass: truenas-iscsi-retain
@@ -214,6 +216,8 @@ persistence:
           - path: /dev/shm
   signal-data:
     type: persistentVolumeClaim
+    forceRename: hermes-signal-data
+    retain: true
     accessMode: ReadWriteOnce
     size: 1Gi
     storageClass: truenas-iscsi-retain
