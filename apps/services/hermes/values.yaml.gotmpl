@@ -110,6 +110,32 @@ controllers:
               - FOWNER
               - SETGID
               - SETUID
+      signal-cli:
+        image:
+          repository: {{ .Values.imageRegistry }}/homelab/signal-cli
+          tag: "0.14.5-1"
+        command:
+          - /bin/sh
+        args:
+          - -c
+          - exec sleep infinity
+        env:
+          HOME: /var/lib/signal-cli
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities:
+            drop:
+              - ALL
 
 defaultPodOptions:
   automountServiceAccountToken: false
@@ -133,14 +159,36 @@ persistence:
     accessMode: ReadWriteOnce
     size: 50Gi
     storageClass: truenas-iscsi-retain
-    globalMounts:
-      - path: /opt/data
+    advancedMounts:
+      main:
+        main:
+          - path: /opt/data
+        configure-web:
+          - path: /opt/data
   shared-memory:
     type: emptyDir
     medium: Memory
     sizeLimit: 1Gi
-    globalMounts:
-      - path: /dev/shm
+    advancedMounts:
+      main:
+        main:
+          - path: /dev/shm
+  signal-data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClass: truenas-iscsi-retain
+    advancedMounts:
+      main:
+        signal-cli:
+          - path: /var/lib/signal-cli
+  signal-tmp:
+    type: emptyDir
+    sizeLimit: 256Mi
+    advancedMounts:
+      main:
+        signal-cli:
+          - path: /tmp
 
 service:
   main:

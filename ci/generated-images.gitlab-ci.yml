@@ -1192,6 +1192,20 @@ sync:chart:registry-home-mrdvince-me-helmfile-helmfile-v1-2-3:
       changes:
         - apps/core/argocd/**/*
         - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-homelab-signal-cli-0-14-5-1:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/homelab/signal-cli:0.14.5-1
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/homelab/signal-cli:0.14.5-1"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-homelab-signal-cli-0-14-5-1/
+    - if: $SYNC_UPSTREAM_BLOCK == "hermes"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:hermes/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/hermes/**/*
+        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-iib0011-omni-tools-0-6-0:
   extends: '.sync-chart-image'
   variables:
