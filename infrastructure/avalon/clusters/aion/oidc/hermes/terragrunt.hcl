@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     hermes = {
-      name = "Hermes"
+      name           = "Hermes"
+      offline_access = true
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

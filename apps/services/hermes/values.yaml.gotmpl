@@ -56,7 +56,7 @@ controllers:
               secretKeyRef:
                 name: hermes
                 key: oidc-client-secret
-          HERMES_DASHBOARD_OIDC_SCOPES: openid profile email
+          HERMES_DASHBOARD_OIDC_SCOPES: openid profile email offline_access
           HERMES_GATEWAY_BOOTSTRAP_STATE: running
           SEARXNG_URL: http://searxng:8080
           FIRECRAWL_API_URL: http://firecrawl-main:3002
