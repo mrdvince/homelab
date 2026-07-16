@@ -11,6 +11,7 @@ inputs = {
   authentik_application = {
     hermes = {
       name                    = "Hermes"
+      meta_icon               = "application-icons/hermes.svg"
       offline_access          = true
       refresh_token_validity  = "days=7"
       refresh_token_threshold = "days=1"

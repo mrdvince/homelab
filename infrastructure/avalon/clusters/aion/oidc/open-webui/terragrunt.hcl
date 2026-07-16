@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     open-webui = {
-      name = "Open WebUI"
+      name      = "Open WebUI"
+      meta_icon = "application-icons/open-webui.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

@@ -10,7 +10,9 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     netbox = {
-      name = "NetBox"
+      name                         = "NetBox"
+      meta_icon                    = "application-icons/netbox.svg"
+      extra_property_mapping_names = ["NetBox roles"]
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

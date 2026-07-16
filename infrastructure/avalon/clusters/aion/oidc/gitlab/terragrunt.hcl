@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     gitlab = {
-      name = "GitLab"
+      name      = "GitLab"
+      meta_icon = "application-icons/gitlab.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

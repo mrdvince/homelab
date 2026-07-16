@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     scanopy = {
-      name = "Scanopy"
+      name      = "Scanopy"
+      meta_icon = "application-icons/scanopy.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

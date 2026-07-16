@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     freshrss = {
-      name = "FreshRSS"
+      name      = "FreshRSS"
+      meta_icon = "application-icons/freshrss.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

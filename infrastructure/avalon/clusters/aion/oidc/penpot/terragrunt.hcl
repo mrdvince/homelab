@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     penpot = {
-      name = "Penpot"
+      name      = "Penpot"
+      meta_icon = "application-icons/penpot.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

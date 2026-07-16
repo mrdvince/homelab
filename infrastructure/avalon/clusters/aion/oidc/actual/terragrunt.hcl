@@ -10,7 +10,9 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     actual = {
-      name = "Actual"
+      name               = "Actual"
+      meta_icon          = "application-icons/actual-budget.svg"
+      policy_engine_mode = "all"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

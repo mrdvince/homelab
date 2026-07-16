@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     rxresume = {
-      name = "Reactive Resume"
+      name      = "Reactive Resume"
+      meta_icon = "application-icons/rx-resume.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

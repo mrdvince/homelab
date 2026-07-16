@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     argocd = {
-      name = "ArgoCD"
+      name      = "ArgoCD"
+      meta_icon = "application-icons/argo-cd.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

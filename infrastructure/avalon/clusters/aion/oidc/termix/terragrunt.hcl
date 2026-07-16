@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     termix = {
-      name = "Termix"
+      name      = "Termix"
+      meta_icon = "application-icons/termix.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

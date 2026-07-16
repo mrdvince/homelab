@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     booklore = {
-      name = "BookLore"
+      name      = "BookLore"
+      meta_icon = "application-icons/booklore.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     zot = {
-      name = "Zot Registry"
+      name      = "Zot Registry"
+      meta_icon = "application-icons/zot-registry.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

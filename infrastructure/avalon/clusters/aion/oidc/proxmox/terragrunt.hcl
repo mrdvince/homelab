@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     proxmox = {
-      name = "Proxmox"
+      name      = "Proxmox"
+      meta_icon = "application-icons/proxmox-light.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

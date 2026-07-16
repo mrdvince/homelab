@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     linkwarden = {
-      name = "Linkwarden"
+      name      = "Linkwarden"
+      meta_icon = "application-icons/linkwarden.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

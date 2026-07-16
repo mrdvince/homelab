@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     karakeep = {
-      name = "Karakeep"
+      name      = "Karakeep"
+      meta_icon = "application-icons/karakeep-dark.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

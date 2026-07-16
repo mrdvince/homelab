@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     grafana = {
-      name = "Grafana"
+      name      = "Grafana"
+      meta_icon = "application-icons/grafana.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

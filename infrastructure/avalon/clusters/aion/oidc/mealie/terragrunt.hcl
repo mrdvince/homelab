@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     mealie = {
-      name = "Mealie"
+      name      = "Mealie"
+      meta_icon = "application-icons/mealie.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     paperless = {
-      name = "Paperless-ngx"
+      name      = "Paperless-ngx"
+      meta_icon = "application-icons/paperless-ngx.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"

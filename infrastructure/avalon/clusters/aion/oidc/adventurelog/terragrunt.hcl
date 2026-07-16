@@ -11,6 +11,7 @@ inputs = {
   authentik_application = {
     adventurelog = {
       name            = "AdventureLog"
+      meta_icon       = "application-icons/adventurelog.svg"
       meta_launch_url = "https://adventurelog.home.mrdvince.me"
       allowed_redirect_uris = [
         {

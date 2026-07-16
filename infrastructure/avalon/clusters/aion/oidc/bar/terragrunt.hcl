@@ -10,7 +10,8 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     bar = {
-      name = "Bar Assistant"
+      name      = "Bar Assistant"
+      meta_icon = "application-icons/bar-assistant.svg"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"
