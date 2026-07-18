@@ -1,0 +1,4 @@
+infisicalImages:
+  - registry: docker.io
+    image: infisical/infisical
+    tag: "v0.160.7"

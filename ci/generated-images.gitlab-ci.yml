@@ -1959,6 +1959,19 @@ sync:local:docker-io-iib0011-omni-tools-0-6-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/omni-tools.yaml
+sync:local:docker-io-infisical-infisical-v0-160-7:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/infisical/infisical:v0.160.7
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/infisical/infisical:v0.160.7"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-infisical-infisical-v0-160-7/
+    - if: $SYNC_LOCAL_BLOCK == "infisical"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:infisical/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/infisical.yaml
 sync:local:docker-io-jgraph-drawio-30-2-6:
   extends: '.sync-local-image'
   variables:

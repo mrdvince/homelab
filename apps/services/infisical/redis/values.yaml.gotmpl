@@ -1,0 +1,86 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.gitlabRedis 0).image }}
+          tag: {{ (index .Values.gitlabRedis 0).tag | quote }}
+        command:
+          - /bin/sh
+          - -ec
+          - exec redis-server --appendonly yes --maxmemory-policy noeviction --requirepass "$REDIS_PASSWORD"
+        env:
+          REDIS_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: infisical
+                key: REDIS_PASSWORD
+          REDISCLI_AUTH:
+            valueFrom:
+              secretKeyRef:
+                name: infisical
+                key: REDIS_PASSWORD
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - redis-cli
+                  - ping
+              initialDelaySeconds: 20
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - redis-cli
+                  - ping
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 6
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+    fsGroupChangePolicy: OnRootMismatch
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    storageClass: nfs-csi-retain
+    globalMounts:
+      - path: /data
+
+service:
+  main:
+    controller: main
+    ports:
+      redis:
+        port: 6379
