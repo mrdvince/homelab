@@ -406,6 +406,8 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:freshrss/
     - if: $SYNC_UPSTREAM_BLOCK == "gitlab"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:gitlab/
+    - if: $SYNC_UPSTREAM_BLOCK == "infisical"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:infisical/
     - if: $SYNC_UPSTREAM_BLOCK == "linkwarden"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:linkwarden/
     - if: $SYNC_UPSTREAM_BLOCK == "mealie"
@@ -425,6 +427,7 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
       changes:
         - apps/services/freshrss/**/*
         - apps/services/gitlab/**/*
+        - apps/services/infisical/**/*
         - apps/services/linkwarden/**/*
         - apps/services/mealie/**/*
         - apps/services/paperless/**/*
@@ -1279,6 +1282,20 @@ sync:chart:registry-home-mrdvince-me-iib0011-omni-tools-0-6-0:
       changes:
         - apps/services/omni-tools/**/*
         - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-infisical-infisical-v0-160-7:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/infisical/infisical:v0.160.7
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/infisical/infisical:v0.160.7"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-infisical-infisical-v0-160-7/
+    - if: $SYNC_UPSTREAM_BLOCK == "infisical"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:infisical/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/infisical/**/*
+        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-jgraph-drawio-30-2-6:
   extends: '.sync-chart-image'
   variables:
@@ -1535,10 +1552,13 @@ sync:chart:registry-home-mrdvince-me-redis-7-2-alpine:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-redis-7-2-alpine/
     - if: $SYNC_UPSTREAM_BLOCK == "gitlab"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:gitlab/
+    - if: $SYNC_UPSTREAM_BLOCK == "infisical"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:infisical/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/gitlab/**/*
+        - apps/services/infisical/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-redis-8-alpine:
   extends: '.sync-chart-image'
