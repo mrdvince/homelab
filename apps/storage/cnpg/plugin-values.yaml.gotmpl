@@ -1,0 +1,7 @@
+{{ if not (.Values | get "renderStockImages" false) }}
+image:
+  registry: {{ .Values.imageRegistry }}
+
+sidecarImage:
+  registry: {{ .Values.imageRegistry }}
+{{ end }}

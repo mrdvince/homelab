@@ -1,24 +1,19 @@
-fullnameOverride: test-cluster
-type: postgresql
-
-version:
-  postgresql: "17"
-
-mode: standalone
+namespace: cnpg-test
 
 cluster:
+  name: test-cluster
 {{ if not (.Values | get "renderStockImages" false) }}
   imageName: {{ .Values.imageRegistry }}/cloudnative-pg/postgresql:18
+{{ else }}
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
 {{ end }}
   instances: 3
   storage:
     size: 5Gi
     storageClass: longhorn
   walStorage:
-    enabled: true
     size: 1Gi
     storageClass: longhorn
-
   resources:
     limits:
       cpu: 500m
@@ -26,43 +21,37 @@ cluster:
     requests:
       cpu: 100m
       memory: 256Mi
-
   postgresql:
     parameters:
-      max_slot_wal_keep_size: "1GB"
-
+      max_slot_wal_keep_size: 1GB
   initdb:
     database: testdb
     owner: testuser
 
-backups:
-  enabled: true
-  provider: s3
-  endpointURL: "https://s3.home.mrdvince.me"
-  destinationPath: "s3://cnpg-backups"
-  s3:
-    region: "home"
-    bucket: "cnpg-backups"
-    accessKey: {{ .Values.s3.accessKey | quote }}
-    secretKey: {{ .Values.s3.secretKey | quote }}
-  secret:
-    create: true
-    name: "test-cluster-s3-creds"
-
+objectStore:
+  name: test-cluster-backups
+  endpointURL: https://s3.home.mrdvince.me
+  destinationPath: s3://cnpg-backups/test-cluster-plugin
+  retentionPolicy: 7d
+  instanceSidecarEnv:
+    - name: AWS_DEFAULT_REGION
+      value: home
+    - name: AWS_REQUEST_CHECKSUM_CALCULATION
+      value: when_required
+    - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+      value: when_required
   wal:
     compression: gzip
-    encryption: ""
     maxParallel: 1
-
   data:
     compression: gzip
-    encryption: ""
     jobs: 1
 
-  scheduledBackups:
-    - name: daily-backup
-      schedule: "0 0 0 * * *"
-      backupOwnerReference: self
-      method: barmanObjectStore
+credentials:
+  name: test-cluster-s3-creds
+  accessKey: {{ .Values.s3.accessKey | quote }}
+  secretKey: {{ .Values.s3.secretKey | quote }}
 
-  retentionPolicy: "7d"
+scheduledBackup:
+  name: daily-backup
+  schedule: "0 0 0 * * *"

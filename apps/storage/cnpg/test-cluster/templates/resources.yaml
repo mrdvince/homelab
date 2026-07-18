@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: cnpg-plugin-cluster
+    app.kubernetes.io/instance: {{ .Values.cluster.name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.credentials.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: cnpg-plugin-cluster
+    app.kubernetes.io/instance: {{ .Values.cluster.name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    cnpg.io/reload: ""
+type: Opaque
+stringData:
+  ACCESS_KEY_ID: {{ .Values.credentials.accessKey | quote }}
+  ACCESS_SECRET_KEY: {{ .Values.credentials.secretKey | quote }}
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: {{ .Values.objectStore.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: cnpg-plugin-cluster
+    app.kubernetes.io/instance: {{ .Values.cluster.name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  configuration:
+    destinationPath: {{ .Values.objectStore.destinationPath }}
+    endpointURL: {{ .Values.objectStore.endpointURL }}
+    s3Credentials:
+      accessKeyId:
+        name: {{ .Values.credentials.name }}
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: {{ .Values.credentials.name }}
+        key: ACCESS_SECRET_KEY
+    wal:
+      compression: {{ .Values.objectStore.wal.compression }}
+      maxParallel: {{ .Values.objectStore.wal.maxParallel }}
+    data:
+      compression: {{ .Values.objectStore.data.compression }}
+      jobs: {{ .Values.objectStore.data.jobs }}
+  retentionPolicy: {{ .Values.objectStore.retentionPolicy }}
+  instanceSidecarConfiguration:
+    env:
+{{ toYaml .Values.objectStore.instanceSidecarEnv | indent 6 }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.cluster.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: cnpg-plugin-cluster
+    app.kubernetes.io/instance: {{ .Values.cluster.name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  imageName: {{ .Values.cluster.imageName }}
+  instances: {{ .Values.cluster.instances }}
+  storage:
+    size: {{ .Values.cluster.storage.size }}
+    storageClass: {{ .Values.cluster.storage.storageClass }}
+  walStorage:
+    size: {{ .Values.cluster.walStorage.size }}
+    storageClass: {{ .Values.cluster.walStorage.storageClass }}
+  resources:
+{{ toYaml .Values.cluster.resources | indent 4 }}
+  postgresql:
+{{ toYaml .Values.cluster.postgresql | indent 4 }}
+  bootstrap:
+    initdb:
+{{ toYaml .Values.cluster.initdb | indent 6 }}
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: {{ .Values.objectStore.name }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: {{ .Values.cluster.name }}-{{ .Values.scheduledBackup.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: cnpg-plugin-cluster
+    app.kubernetes.io/instance: {{ .Values.cluster.name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  schedule: {{ .Values.scheduledBackup.schedule | quote }}
+  backupOwnerReference: self
+  cluster:
+    name: {{ .Values.cluster.name }}
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io

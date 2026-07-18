@@ -3,6 +3,9 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+      - enableBarmanPluginCanary: false
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
   - name: cnpg
@@ -15,3 +18,21 @@ releases:
     version: 0.29.0
     values:
       - values.yaml.gotmpl
+
+  - name: plugin-barman-cloud
+    namespace: cnpg-system
+    chart: cnpg/plugin-barman-cloud
+    version: 0.7.0
+    needs:
+      - cnpg-system/cnpg
+    values:
+      - plugin-values.yaml.gotmpl
+
+  - name: test-cluster
+    namespace: cnpg-system
+    chart: ./test-cluster
+    installed: {{ .Values.enableBarmanPluginCanary }}
+    needs:
+      - cnpg-system/plugin-barman-cloud
+    values:
+      - test-cluster/values.yaml.gotmpl

@@ -395,6 +395,34 @@ sync:chart:ghcr-io-cloudnative-pg-cloudnative-pg-1-30-0:
       changes:
         - apps/storage/cnpg/**/*
         - infrastructure/images/config.yaml
+sync:chart:ghcr-io-cloudnative-pg-plugin-barman-cloud-sidecar-v0-13-0:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.13.0
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.13.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:ghcr-io-cloudnative-pg-plugin-barman-cloud-sidecar-v0-13-0/
+    - if: $SYNC_UPSTREAM_BLOCK == "cnpg"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:cnpg/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/storage/cnpg/**/*
+        - infrastructure/images/config.yaml
+sync:chart:ghcr-io-cloudnative-pg-plugin-barman-cloud-v0-13-0:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/cloudnative-pg/plugin-barman-cloud:v0.13.0
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "ghcr.io/cloudnative-pg/plugin-barman-cloud:v0.13.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:ghcr-io-cloudnative-pg-plugin-barman-cloud-v0-13-0/
+    - if: $SYNC_UPSTREAM_BLOCK == "cnpg"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:cnpg/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/storage/cnpg/**/*
+        - infrastructure/images/config.yaml
 sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
   extends: '.sync-chart-image'
   variables:
@@ -420,8 +448,6 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:rxresume/
     - if: $SYNC_UPSTREAM_BLOCK == "scanopy"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:scanopy/
-    - if: $SYNC_UPSTREAM_BLOCK == "test-cluster"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:test-cluster/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
@@ -434,7 +460,6 @@ sync:chart:ghcr-io-cloudnative-pg-postgresql-17:
         - apps/services/penpot/**/*
         - apps/services/rxresume/**/*
         - apps/services/scanopy/**/*
-        - apps/storage/cnpg/test-cluster/**/*
         - infrastructure/images/config.yaml
 sync:chart:ghcr-io-dexidp-dex-v2-45-1:
   extends: '.sync-chart-image'

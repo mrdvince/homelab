@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cnpg-plugin-cluster
+description: CloudNativePG canary cluster using the Barman Cloud Plugin
+type: application
+version: 0.1.0
+appVersion: "1.30.0"
