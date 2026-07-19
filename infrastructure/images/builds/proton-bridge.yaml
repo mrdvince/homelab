@@ -1,0 +1,6 @@
+proton-bridge:
+  repo: https://github.com/ProtonMail/proton-bridge.git
+  commit: f1f599e97167265cb0d10ad3d169269c324d9cc7
+  dockerfile: infrastructure/images/dockerfiles/proton-bridge/Dockerfile
+  image: homelab/proton-bridge
+  tag: "3.25.0-1"

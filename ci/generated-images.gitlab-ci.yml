@@ -35,6 +35,18 @@ build:excalidraw:
       changes:
         - infrastructure/images/builds/excalidraw.yaml
         - infrastructure/images/dockerfiles/excalidraw/Dockerfile
+build:proton-bridge:
+  extends: '.build-image'
+  variables:
+    BUILD_NAME: proton-bridge
+  rules:
+    - if: $BUILD_IMAGE == "proton-bridge"
+    - if: $BUILD_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/builds/proton-bridge.yaml
+        - infrastructure/images/dockerfiles/proton-bridge/Dockerfile
 build:renovate:
   extends: '.build-image'
   variables:
