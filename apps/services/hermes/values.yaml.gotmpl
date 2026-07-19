@@ -31,6 +31,43 @@ controllers:
           capabilities:
             drop:
               - ALL
+      configure-proton-bridge:
+        image:
+          repository: {{ .Values.imageRegistry }}/homelab/proton-bridge
+          tag: "3.25.0-1"
+        command:
+          - /bin/sh
+        args:
+          - -ec
+          - |
+            install -d -m 0700 "${GNUPGHOME}" "${PASSWORD_STORE_DIR}"
+
+            key_fingerprint="$(gpg --batch --with-colons --list-secret-keys | awk -F: '$1 == "fpr" { print $10; exit }')"
+            if [ -z "${key_fingerprint}" ]; then
+              gpg --batch --passphrase '' --quick-generate-key "Proton Bridge <bridge@localhost.invalid>" default default never
+              key_fingerprint="$(gpg --batch --with-colons --list-secret-keys | awk -F: '$1 == "fpr" { print $10; exit }')"
+            fi
+
+            if [ ! -s "${PASSWORD_STORE_DIR}/.gpg-id" ]; then
+              pass init "${key_fingerprint}"
+            fi
+        env:
+          HOME: /var/lib/proton-bridge
+          GNUPGHOME: /var/lib/proton-bridge/.gnupg
+          PASSWORD_STORE_DIR: /var/lib/proton-bridge/.password-store
+          TMPDIR: /tmp
+          XDG_CACHE_HOME: /var/lib/proton-bridge/.cache
+          XDG_CONFIG_HOME: /var/lib/proton-bridge/.config
+          XDG_DATA_HOME: /var/lib/proton-bridge/.local/share
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities:
+            drop:
+              - ALL
     containers:
       main:
         image:
@@ -174,6 +211,37 @@ controllers:
           capabilities:
             drop:
               - ALL
+      proton-bridge:
+        image:
+          repository: {{ .Values.imageRegistry }}/homelab/proton-bridge
+          tag: "3.25.0-1"
+        command:
+          - /bin/sleep
+        args:
+          - infinity
+        env:
+          HOME: /var/lib/proton-bridge
+          GNUPGHOME: /var/lib/proton-bridge/.gnupg
+          PASSWORD_STORE_DIR: /var/lib/proton-bridge/.password-store
+          TMPDIR: /tmp
+          XDG_CACHE_HOME: /var/lib/proton-bridge/.cache
+          XDG_CONFIG_HOME: /var/lib/proton-bridge/.config
+          XDG_DATA_HOME: /var/lib/proton-bridge/.local/share
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities:
+            drop:
+              - ALL
 
 defaultPodOptions:
   automountServiceAccountToken: false
@@ -231,6 +299,28 @@ persistence:
     advancedMounts:
       main:
         signal-cli:
+          - path: /tmp
+  proton-bridge-data:
+    type: persistentVolumeClaim
+    forceRename: hermes-proton-bridge-data
+    retain: true
+    accessMode: ReadWriteOnce
+    size: 20Gi
+    storageClass: truenas-iscsi-retain
+    advancedMounts:
+      main:
+        configure-proton-bridge:
+          - path: /var/lib/proton-bridge
+        proton-bridge:
+          - path: /var/lib/proton-bridge
+  proton-bridge-tmp:
+    type: emptyDir
+    sizeLimit: 256Mi
+    advancedMounts:
+      main:
+        configure-proton-bridge:
+          - path: /tmp
+        proton-bridge:
           - path: /tmp
 
 service:
