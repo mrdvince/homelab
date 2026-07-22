@@ -1,0 +1,19 @@
+#!/command/with-contenv sh
+
+set -eu
+
+if [ -z "${SIGNAL_HTTP_URL:-}" ]; then
+    exit 0
+fi
+
+attempt=0
+until curl -sS --output /dev/null --max-time 2 "${SIGNAL_HTTP_URL}/"; do
+    attempt=$((attempt + 1))
+    if [ "$attempt" -ge 60 ]; then
+        echo "signal readiness check timed out after 60 attempts" >&2
+        exit 1
+    fi
+    sleep 1
+done
+
+echo "signal http listener is ready"

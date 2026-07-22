@@ -73,7 +73,7 @@ FROM upstream
 
 LABEL org.opencontainers.image.source="https://github.com/NousResearch/hermes-agent" \
       org.opencontainers.image.description="hermes agent with the homelab cli toolchain" \
-      org.opencontainers.image.version="2026.7.1-1"
+      org.opencontainers.image.version="2026.7.1-2"
 
 ENV CHECKPOINT_DISABLE=1 \
     HELM_DATA_HOME=/opt/hermes/homelab-tools/helm
@@ -86,6 +86,7 @@ RUN apt-get update \
 
 COPY --from=tools /out/bin/ /usr/local/bin/
 COPY --from=tools /out/helm/ /opt/hermes/homelab-tools/helm/
+COPY --chmod=0755 infrastructure/images/dockerfiles/hermes-agent/016-wait-for-signal /etc/cont-init.d/016-wait-for-signal
 
 RUN terraform version \
     && terragrunt --version \
