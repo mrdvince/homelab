@@ -35,6 +35,18 @@ build:excalidraw:
       changes:
         - infrastructure/images/builds/excalidraw.yaml
         - infrastructure/images/dockerfiles/excalidraw/Dockerfile
+build:hermes-agent:
+  extends: '.build-image'
+  variables:
+    BUILD_NAME: hermes-agent
+  rules:
+    - if: $BUILD_IMAGE == "hermes-agent"
+    - if: $BUILD_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/builds/hermes-agent.yaml
+        - infrastructure/images/dockerfiles/hermes-agent/Dockerfile
 build:proton-bridge:
   extends: '.build-image'
   variables:

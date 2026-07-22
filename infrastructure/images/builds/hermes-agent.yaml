@@ -1,0 +1,4 @@
+hermes-agent:
+  dockerfile: infrastructure/images/dockerfiles/hermes-agent/Dockerfile
+  image: homelab/hermes-agent
+  tag: "2026.7.1-1"
