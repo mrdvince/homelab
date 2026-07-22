@@ -68,9 +68,9 @@ RUN apt-get update \
     && install "/tmp/nu-${NU_VERSION}-x86_64-unknown-linux-gnu/nu" /out/bin/nu \
     && chmod 0755 /out/bin/* \
     && PATH="/out/bin:${PATH}" HELM_PLUGINS=/out/helm-plugins \
-        helm plugin install https://github.com/databus23/helm-diff --version "v${HELM_DIFF_VERSION}" \
+        helm plugin install https://github.com/databus23/helm-diff --version "v${HELM_DIFF_VERSION}" --verify=false \
     && PATH="/out/bin:${PATH}" HELM_PLUGINS=/out/helm-plugins \
-        helm plugin install https://github.com/jkroepke/helm-secrets --version "v${HELM_SECRETS_VERSION}" \
+        helm plugin install https://github.com/jkroepke/helm-secrets --version "v${HELM_SECRETS_VERSION}" --verify=false \
     && rm -rf /tmp/*
 
 FROM upstream
