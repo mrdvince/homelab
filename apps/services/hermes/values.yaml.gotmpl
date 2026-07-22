@@ -101,6 +101,7 @@ controllers:
           FIRECRAWL_API_URL: http://firecrawl-main:3002
           AGENT_BROWSER_ARGS: --no-sandbox
           AGENT_BROWSER_EXECUTABLE_PATH: /opt/hermes/.playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell
+          KUBECONFIG: /etc/hermes-kubernetes/config
           API_SERVER_ENABLED: "true"
           API_SERVER_HOST: 0.0.0.0
           API_SERVER_PORT: "8642"
@@ -254,6 +255,29 @@ defaultPodOptions:
     fsGroup: 10000
     fsGroupChangePolicy: OnRootMismatch
 
+configMaps:
+  kubernetes:
+    data:
+      config: |
+        apiVersion: v1
+        kind: Config
+        clusters:
+          - name: aion
+            cluster:
+              certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              server: https://10.30.30.145:6443
+        contexts:
+          - name: aion
+            context:
+              cluster: aion
+              namespace: hermes
+              user: hermes
+        current-context: aion
+        users:
+          - name: hermes
+            user:
+              tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+
 serviceAccount:
   hermes:
     forceRename: hermes
@@ -312,6 +336,15 @@ persistence:
       main:
         main:
           - path: /var/run/secrets/kubernetes.io/serviceaccount
+            readOnly: true
+  kubernetes-config:
+    type: configMap
+    identifier: kubernetes
+    advancedMounts:
+      main:
+        main:
+          - path: /etc/hermes-kubernetes/config
+            subPath: config
             readOnly: true
   signal-data:
     type: persistentVolumeClaim
