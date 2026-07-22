@@ -2,6 +2,8 @@ controllers:
   main:
     revisionHistoryLimit: 1
     strategy: Recreate
+    serviceAccount:
+      identifier: hermes
     initContainers:
       configure-web:
         image:
@@ -71,8 +73,8 @@ controllers:
     containers:
       main:
         image:
-          repository: {{ .Values.imageRegistry }}/{{ (index .Values.hermesImages 0).image }}
-          tag: "{{ (index .Values.hermesImages 0).tag }}"
+          repository: {{ .Values.imageRegistry }}/homelab/hermes-agent
+          tag: "2026.7.1-1"
         args:
           - gateway
           - run
@@ -252,6 +254,10 @@ defaultPodOptions:
     fsGroup: 10000
     fsGroupChangePolicy: OnRootMismatch
 
+serviceAccount:
+  hermes:
+    forceRename: hermes
+
 secrets:
   environment:
     stringData:
@@ -282,6 +288,31 @@ persistence:
       main:
         main:
           - path: /dev/shm
+  kubernetes-credentials:
+    type: custom
+    volumeSpec:
+      projected:
+        defaultMode: 384
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3600
+              path: token
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+                - key: ca.crt
+                  path: ca.crt
+          - downwardAPI:
+              items:
+                - path: namespace
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+    advancedMounts:
+      main:
+        main:
+          - path: /var/run/secrets/kubernetes.io/serviceaccount
+            readOnly: true
   signal-data:
     type: persistentVolumeClaim
     forceRename: hermes-signal-data
@@ -350,6 +381,21 @@ ingress:
           - hermes.{{ .Values.domain }}
 
 rawResources:
+  kubernetes-admin-binding:
+    forceRename: hermes-kubernetes-admin
+    manifest:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: hermes-kubernetes-admin
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+        - kind: ServiceAccount
+          name: hermes
+          namespace: hermes
   network-policy:
     forceRename: hermes
     manifest:
@@ -396,6 +442,12 @@ rawResources:
                       protocol: TCP
             - toEntities:
                 - world
+            - toEntities:
+                - kube-apiserver
+              toPorts:
+                - ports:
+                    - port: "6443"
+                      protocol: TCP
 
         - description: allow the dashboard through traefik and the agent API from open webui
           endpointSelector:
