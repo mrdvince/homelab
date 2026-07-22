@@ -28,7 +28,7 @@ USER root
 RUN apt-get update \
     && apt-get install -y --no-install-recommends unzip \
     && rm -rf /var/lib/apt/lists/* \
-    && install -d /out/bin /out/helm-plugins \
+    && install -d /out/bin /out/helm \
     && curl -fsSL --retry 3 -o /tmp/terraform.zip \
         "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
     && echo "${TERRAFORM_SHA256}  /tmp/terraform.zip" | sha256sum -c - \
@@ -65,7 +65,7 @@ RUN apt-get update \
     && tar -xzf /tmp/nu.tar.gz -C /tmp \
     && install "/tmp/nu-${NU_VERSION}-x86_64-unknown-linux-gnu/nu" /out/bin/nu \
     && chmod 0755 /out/bin/* \
-    && PATH="/out/bin:${PATH}" HELM_PLUGINS=/out/helm-plugins \
+    && PATH="/out/bin:${PATH}" HELM_DATA_HOME=/out/helm \
         helmfile init --force \
     && rm -rf /tmp/*
 
@@ -76,7 +76,7 @@ LABEL org.opencontainers.image.source="https://github.com/NousResearch/hermes-ag
       org.opencontainers.image.version="2026.7.1-1"
 
 ENV CHECKPOINT_DISABLE=1 \
-    HELM_PLUGINS=/opt/hermes/homelab-tools/helm-plugins
+    HELM_DATA_HOME=/opt/hermes/homelab-tools/helm
 
 USER root
 
@@ -85,7 +85,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=tools /out/bin/ /usr/local/bin/
-COPY --from=tools /out/helm-plugins/ /opt/hermes/homelab-tools/helm-plugins/
+COPY --from=tools /out/helm/ /opt/hermes/homelab-tools/helm/
 
 RUN terraform version \
     && terragrunt --version \
