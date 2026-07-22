@@ -22,8 +22,6 @@ ARG YQ_VERSION=4.52.5
 ARG YQ_SHA256=75d893a0d5940d1019cb7cdc60001d9e876623852c31cfc6267047bc31149fa9
 ARG NU_VERSION=0.114.0
 ARG NU_SHA256=3896777ebf3678f6d41736a5e995ba8360b338eb73c713254fc024e08ec72289
-ARG HELM_DIFF_VERSION=3.15.10
-ARG HELM_SECRETS_VERSION=4.7.7
 
 USER root
 
@@ -68,9 +66,7 @@ RUN apt-get update \
     && install "/tmp/nu-${NU_VERSION}-x86_64-unknown-linux-gnu/nu" /out/bin/nu \
     && chmod 0755 /out/bin/* \
     && PATH="/out/bin:${PATH}" HELM_PLUGINS=/out/helm-plugins \
-        helm plugin install https://github.com/databus23/helm-diff --version "v${HELM_DIFF_VERSION}" --verify=false \
-    && PATH="/out/bin:${PATH}" HELM_PLUGINS=/out/helm-plugins \
-        helm plugin install https://github.com/jkroepke/helm-secrets --version "v${HELM_SECRETS_VERSION}" --verify=false \
+        helmfile init --force \
     && rm -rf /tmp/*
 
 FROM upstream
