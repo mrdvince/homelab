@@ -1,6 +1,7 @@
 controllers:
   main:
     revisionHistoryLimit: 1
+    strategy: Recreate
     containers:
       main:
         image:
@@ -20,6 +21,7 @@ controllers:
               secretKeyRef:
                 name: booklore
                 key: database-password
+          DISK_TYPE: LOCAL
           SWAGGER_ENABLED: "false"
           FORCE_DISABLE_OIDC: "false"
         resources:
@@ -133,27 +135,30 @@ persistence:
           - path: /var/lib/mysql
   data:
     type: persistentVolumeClaim
+    forceRename: booklore-data-iscsi
     accessMode: ReadWriteOnce
     size: 5Gi
-    storageClass: nfs-csi-retain
+    storageClass: truenas-iscsi-retain
     advancedMounts:
       main:
         main:
           - path: /app/data
   books:
     type: persistentVolumeClaim
+    forceRename: booklore-books-iscsi
     accessMode: ReadWriteOnce
     size: 100Gi
-    storageClass: nfs-csi-retain
+    storageClass: truenas-iscsi-retain
     advancedMounts:
       main:
         main:
           - path: /books
   bookdrop:
     type: persistentVolumeClaim
+    forceRename: booklore-bookdrop-iscsi
     accessMode: ReadWriteOnce
     size: 10Gi
-    storageClass: nfs-csi-retain
+    storageClass: truenas-iscsi-retain
     advancedMounts:
       main:
         main:
