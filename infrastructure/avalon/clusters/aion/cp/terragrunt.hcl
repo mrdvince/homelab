@@ -8,7 +8,7 @@ include "envcommon" {
 }
 
 inputs = {
-  node_name = "avalon"
+  node_name = "tirnanog"
 
   instances = [
     {
@@ -28,17 +28,19 @@ inputs = {
     },
   ]
 
-  cores   = 4
-  memory  = 8192
-  balloon = 8192
-  bios    = "ovmf"
-  machine = "q35"
-  on_boot = true
+  cores         = 4
+  memory        = 8192
+  balloon       = 8192
+  bios          = "ovmf"
+  machine       = "q35"
+  on_boot       = true
+  cpu_type      = "x86-64-v3"
+  cpu_flags     = ["+aes"]
   agent_enabled = true
   agent_timeout = "3m"
 
   disk = {
-    storage   = "nvme-data"
+    storage   = "styx-lvm"
     size      = 200
     interface = "scsi0"
     format    = "raw"
@@ -47,8 +49,14 @@ inputs = {
     iothread  = true
   }
 
+  efi_disk = {
+    storage           = "styx-lvm"
+    type              = "4m"
+    pre_enrolled_keys = false
+  }
+
   cdrom = {
-    iso       = "nfs-avalon:iso/talos-1.11.5.iso"
+    iso       = "none"
     interface = "ide2"
   }
 
