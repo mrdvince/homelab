@@ -207,7 +207,21 @@ def package-hash [path: string] {
     | sort
     | each {|entry|
         let relative_path = ($entry | path relative-to $extract_root)
-        $"($relative_path)\u{0}(open --raw $entry | hash sha256)"
+        let content_hash = if ($relative_path | path basename) == "Chart.lock" {
+          let lock = (open --raw $entry | from yaml)
+          (if "generated" in ($lock | columns) {
+            $lock | reject generated
+          } else {
+            $lock
+          })
+          | to json --raw
+          | hash sha256
+        } else if ($relative_path | str ends-with ".tgz") {
+          package-hash ($entry | into string)
+        } else {
+          open --raw $entry | hash sha256
+        }
+        $"($relative_path)\u{0}($content_hash)"
       }
     | str join "\n"
     | hash sha256
