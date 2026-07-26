@@ -87,16 +87,31 @@ service:
 tolerations:
   - key: "CriticalAddonsOnly"
     operator: "Exists"
-  - key: "node-role.kubernetes.io/control-plane"
-    operator: "Exists"
-    effect: "NoSchedule"
-  - key: "node-role.kubernetes.io/master"
-    operator: "Exists"
-    effect: "NoSchedule"
+
+nodeSelector:
+  node.home.mrdvince.me/worker: "true"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: traefik
+            app.kubernetes.io/instance: traefik-traefik
+        topologyKey: kubernetes.io/hostname
 
 priorityClassName: "system-cluster-critical"
 
 deployment:
+  replicas: 2
   revisionHistoryLimit: 1
   podAnnotations:
     prometheus.io/scrape: "true"
