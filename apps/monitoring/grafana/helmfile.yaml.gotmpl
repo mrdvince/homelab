@@ -7,13 +7,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: grafana
-    url: https://grafana.github.io/helm-charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: grafana
     namespace: monitoring
-    chart: grafana/grafana
+    chart: zot/upstream/grafana/grafana
     version: 10.5.15
     values:
       - values.yaml.gotmpl

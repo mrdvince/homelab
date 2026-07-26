@@ -3,15 +3,20 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: grafana
-    url: https://grafana.github.io/helm-charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: beyla
     namespace: monitoring
-    chart: grafana/beyla
+    chart: zot/upstream/grafana/beyla
     version: 1.16.8
     installed: false
     values:

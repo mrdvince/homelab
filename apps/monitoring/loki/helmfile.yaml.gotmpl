@@ -3,15 +3,20 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: grafana
-    url: https://grafana.github.io/helm-charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: loki
     namespace: monitoring
-    chart: grafana/loki
+    chart: zot/upstream/grafana/loki
     version: 7.0.0
     values:
       - values.yaml.gotmpl

@@ -2,11 +2,11 @@ apiVersion: v2
 name: bar-assistant
 description: Bar Assistant - self-hosted cocktail recipe manager
 type: application
-version: 0.1.8
+version: 0.1.9
 appVersion: "5.11.2"
 
 dependencies:
   - name: meilisearch
     version: "0.33.0"
-    repository: https://meilisearch.github.io/meilisearch-kubernetes
+    repository: oci://zot.home.mrdvince.me/helm/upstream/meilisearch
     condition: meilisearch.enabled

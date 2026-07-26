@@ -13,17 +13,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: external-dns
-    url: https://kubernetes-sigs.github.io/external-dns
-  - name: homelab
-    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
-    username: {{ .Values.gitlab_deploy_token.username }}
-    password: {{ .Values.gitlab_deploy_token.token }}
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: adguard-auth
     namespace: external-dns
-    chart: homelab/secret
+    chart: zot/internal/secret
     version: 0.1.0
     values:
       - fullnameOverride: adguard-auth-secret
@@ -34,7 +33,7 @@ releases:
 
   - name: external-dns
     namespace: external-dns
-    chart: external-dns/external-dns
+    chart: zot/upstream/external-dns/external-dns
     version: 1.21.1
     needs:
       - external-dns/adguard-auth

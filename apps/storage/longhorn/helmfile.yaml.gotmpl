@@ -4,15 +4,20 @@ environments:
       - defaultReplicaCount: 2
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: longhorn
-    url: https://charts.longhorn.io
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: longhorn
     namespace: longhorn-system
-    chart: longhorn/longhorn
+    chart: zot/upstream/longhorn/longhorn
     version: 1.12.0
     values:
       - values.yaml.gotmpl

@@ -4,20 +4,27 @@ environments:
       - cluster: aion
         server: https://kubernetes.default.svc
         repoRevision: "HEAD"
+    secrets:
+      - ../../secrets/secrets.enc.yaml
   athos:
     values:
       - cluster: athos
         server: https://kubernetes.default.svc
         repoRevision: "HEAD"
+    secrets:
+      - ../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: argo
-    url: https://argoproj.github.io/argo-helm
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: appsets
     namespace: argocd
-    chart: argo/argocd-apps
+    chart: zot/upstream/argo/argocd-apps
     version: 2.0.5
     values:
       - values.yaml.gotmpl

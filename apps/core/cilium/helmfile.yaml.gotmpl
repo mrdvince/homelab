@@ -32,24 +32,23 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: cilium
-    url: https://helm.cilium.io/
-  - name: homelab
-    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
-    username: {{ .Values.gitlab_deploy_token.username }}
-    password: {{ .Values.gitlab_deploy_token.token }}
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: cilium
     namespace: kube-system
-    chart: cilium/cilium
+    chart: zot/upstream/cilium/cilium
     version: 1.19.5
     values:
       - values.yaml.gotmpl
 
   - name: cilium-config
     namespace: kube-system
-    chart: homelab/cilium-config
+    chart: zot/internal/cilium-config
     version: 0.1.0
     needs:
       - kube-system/cilium

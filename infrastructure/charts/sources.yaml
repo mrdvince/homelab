@@ -1,4 +1,5 @@
 registry:
+  alias: zot
   host: zot.home.mrdvince.me
   namespace: helm
 

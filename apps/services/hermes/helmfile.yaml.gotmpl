@@ -7,13 +7,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: bjw-s
-    url: https://bjw-s-labs.github.io/helm-charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: hermes
     namespace: hermes
-    chart: bjw-s/app-template
+    chart: zot/upstream/bjw-s/app-template
     version: 5.0.1
     values:
       - values.yaml.gotmpl

@@ -7,28 +7,23 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: bjw-s
-    url: https://bjw-s-labs.github.io/helm-charts
-  - name: cnpg
-    url: https://cloudnative-pg.github.io/charts
-  - name: gitlab
-    url: https://charts.gitlab.io
-  - name: homelab
-    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
-    username: {{ .Values.gitlab_deploy_token.username }}
-    password: {{ .Values.gitlab_deploy_token.token }}
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: gitlab-postgres
     namespace: gitlab
-    chart: cnpg/cluster
+    chart: zot/upstream/cnpg/cluster
     version: 0.7.0
     values:
       - postgres/values.yaml.gotmpl
 
   - name: gitlab-s3-secrets
     namespace: gitlab
-    chart: homelab/secret
+    chart: zot/internal/secret
     version: 0.1.0
     values:
       - fullnameOverride: gitlab-s3-connection
@@ -44,7 +39,7 @@ releases:
 
   - name: gitlab-s3-backup-secrets
     namespace: gitlab
-    chart: homelab/secret
+    chart: zot/internal/secret
     version: 0.1.0
     values:
       - fullnameOverride: gitlab-s3-backup-connection
@@ -63,7 +58,7 @@ releases:
 
   - name: gitlab-oidc-provider
     namespace: gitlab
-    chart: homelab/secret
+    chart: zot/internal/secret
     version: 0.1.0
     values:
       - fullnameOverride: gitlab-oidc-provider
@@ -91,14 +86,14 @@ releases:
 
   - name: gitlab-redis
     namespace: gitlab
-    chart: bjw-s/app-template
+    chart: zot/upstream/bjw-s/app-template
     version: 4.6.2
     values:
       - redis/values.yaml.gotmpl
 
   - name: gitlab
     namespace: gitlab
-    chart: gitlab/gitlab
+    chart: zot/upstream/gitlab/gitlab
     version: 10.1.1
     needs:
       - gitlab-postgres

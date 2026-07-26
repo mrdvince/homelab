@@ -146,10 +146,13 @@ sync:helm-charts:
     entrypoint: [""]
   script:
     - test -n "${SOPS_AGE_KEY:-}"
-    - sops --decrypt --extract '["zot"]["charon_password"]' secrets/secrets.enc.yaml | helm registry login zot.home.mrdvince.me --username charon --password-stdin
+    - export ZOT_USERNAME="$(sops --decrypt --extract '["zot"]["charon_username"]' secrets/secrets.enc.yaml)"
+    - test -n "${ZOT_USERNAME:-}"
+    - sops --decrypt --extract '["zot"]["charon_password"]' secrets/secrets.enc.yaml | helm registry login zot.home.mrdvince.me --username "$ZOT_USERNAME" --password-stdin
     - nu ci/charts.nu sync --latest
     - nu ci/charts.nu verify-remote
     - helm registry logout zot.home.mrdvince.me
+    - unset ZOT_USERNAME
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

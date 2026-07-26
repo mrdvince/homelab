@@ -3,19 +3,26 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: metrics-server
-    url: https://kubernetes-sigs.github.io/metrics-server/
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: metrics-server
     namespace: kube-system
-    chart: metrics-server/metrics-server
+    chart: zot/upstream/metrics-server/metrics-server
     version: 3.13.1
     values:
       - args:

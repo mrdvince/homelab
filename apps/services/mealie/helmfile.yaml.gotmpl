@@ -7,22 +7,23 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: bjw-s
-    url: https://bjw-s-labs.github.io/helm-charts
-  - name: cnpg
-    url: https://cloudnative-pg.github.io/charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: mealie-postgres
     namespace: apps
-    chart: cnpg/cluster
+    chart: zot/upstream/cnpg/cluster
     version: 0.7.0
     values:
       - postgres/values.yaml.gotmpl
 
   - name: mealie
     namespace: apps
-    chart: bjw-s/app-template
+    chart: zot/upstream/bjw-s/app-template
     version: 5.0.1
     values:
       - mealie/values.yaml.gotmpl

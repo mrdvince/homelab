@@ -7,13 +7,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: argo
-    url: https://argoproj.github.io/argo-helm
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: argocd
     namespace: argocd
-    chart: argo/argo-cd
+    chart: zot/upstream/argo/argo-cd
     version: 10.1.2
     values:
       - values.yaml.gotmpl

@@ -3,19 +3,26 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: emberstack
-    url: https://emberstack.github.io/helm-charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: reflector
     namespace: reflector
-    chart: emberstack/reflector
+    chart: zot/upstream/emberstack/reflector
     version: 10.0.46
     values:
       - values.yaml.gotmpl

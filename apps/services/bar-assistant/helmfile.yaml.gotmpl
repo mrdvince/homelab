@@ -7,15 +7,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: homelab
-    url: https://gitlab.home.mrdvince.me/api/v4/projects/36/packages/helm/stable
-    username: {{ .Values.gitlab_deploy_token.username }}
-    password: {{ .Values.gitlab_deploy_token.token }}
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: bar-assistant
     namespace: apps
-    chart: homelab/bar-assistant
-    version: 0.1.8
+    chart: zot/internal/bar-assistant
+    version: 0.1.9
     values:
       - values.yaml.gotmpl

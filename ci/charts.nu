@@ -15,9 +15,12 @@ def clean-value [value: string] {
 
 def parse-chart-ref [cfg: record, chart_ref: string] {
   let value = (clean-value $chart_ref)
-  let prefix = $"oci://($cfg.registry.host)/($cfg.registry.namespace)/"
-  let relative = if ($value | str starts-with $prefix) {
-    $value | str replace $prefix ""
+  let oci_prefix = $"oci://($cfg.registry.host)/($cfg.registry.namespace)/"
+  let alias_prefix = $"($cfg.registry.alias)/"
+  let relative = if ($value | str starts-with $oci_prefix) {
+    $value | str replace $oci_prefix ""
+  } else if ($value | str starts-with $alias_prefix) {
+    $value | str replace $alias_prefix ""
   } else {
     $value
   }
@@ -61,11 +64,13 @@ def release-rows [cfg: record] {
             null
           } else {
             let parsed = (parse-chart-ref $cfg ($chart_match | first | get value))
-            $parsed
-            | merge {
-                version: (clean-value ($version_match | first | get value))
-                source_file: ($file | into string)
-              }
+            {
+              kind: $parsed.kind
+              source: $parsed.source
+              name: $parsed.name
+              version: (clean-value ($version_match | first | get value))
+              source_file: ($file | into string)
+            }
           }
         }
       | compact
@@ -124,11 +129,12 @@ def internal-rows [] {
 }
 
 def inventory [cfg: record] {
-  (release-rows $cfg)
+  (internal-rows)
+  | append (release-rows $cfg)
   | append (dependency-rows $cfg)
-  | append (internal-rows)
   | uniq-by kind source name version
   | sort-by kind source name version
+  | collect
 }
 
 def destination-base [cfg: record, row: record] {
@@ -193,7 +199,21 @@ def package-row [cfg: record, row: record, output_dir: string] {
 }
 
 def package-hash [path: string] {
-  open --raw $path | hash sha256
+  let extract_root = (^mktemp -d)
+  ^tar -xzf $path -C $extract_root
+  let digest = (
+    glob $"($extract_root)/**/*"
+    | where {|entry| ($entry | path type) == "file"}
+    | sort
+    | each {|entry|
+        let relative_path = ($entry | path relative-to $extract_root)
+        $"($relative_path)\u{0}(open --raw $entry | hash sha256)"
+      }
+    | str join "\n"
+    | hash sha256
+  )
+  ^rm -rf $extract_root
+  $digest
 }
 
 def pull-package [cfg: record, row: record, output_dir: string] {
@@ -291,12 +311,13 @@ def "main verify" [] {
 
 def "main sync" [--latest, --source: string, --name: string] {
   let cfg = (settings)
-  let rows = (inventory $cfg)
+  let rows = (inventory $cfg | collect)
   validate-inventory $cfg $rows
   let selected = (
     $rows
     | where {|row| ($source == null) or ($row.source == $source)}
     | where {|row| ($name == null) or ($row.name == $name)}
+    | collect
   )
   if ($selected | is-empty) {
     error make {msg: "no chart artifacts matched the requested filters"}
@@ -309,7 +330,7 @@ def "main sync" [--latest, --source: string, --name: string] {
     }
 
     if $latest {
-      let upstream = ($selected | where kind == upstream | uniq-by source name)
+      let upstream = ($selected | where kind == upstream | uniq-by source name | collect)
       for row in $upstream {
         sync-row $cfg (latest-row $cfg $row $work_root) $work_root
       }
@@ -339,7 +360,7 @@ def "main verify-remote" [--source: string, --name: string] {
       let output_dir = (^mktemp -d $"($work_root)/pull.XXXXXX")
       let pulled = (pull-package $cfg $row $output_dir)
       if $pulled.exit_code != 0 {
-        fail-command $"failed anonymous pull of (destination-ref $cfg $row):($row.version)" $pulled
+        fail-command $"failed remote pull of (destination-ref $cfg $row):($row.version)" $pulled
       }
       print $"pulled (destination-ref $cfg $row):($row.version)"
     }

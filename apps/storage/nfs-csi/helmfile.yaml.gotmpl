@@ -9,13 +9,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: csi-driver-nfs
-    url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: csi-driver-nfs
     namespace: kube-system
-    chart: csi-driver-nfs/csi-driver-nfs
+    chart: zot/upstream/csi-driver-nfs/csi-driver-nfs
     version: 4.13.4
     values:
       - values.yaml.gotmpl

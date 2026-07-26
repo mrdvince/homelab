@@ -4,15 +4,20 @@ environments:
       - loadBalancerIP: "10.30.40.50"
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: traefik
-    url: https://traefik.github.io/charts
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: traefik
     namespace: traefik
-    chart: traefik/traefik
+    chart: zot/upstream/traefik/traefik
     version: 41.0.1
     values:
       - values.yaml.gotmpl

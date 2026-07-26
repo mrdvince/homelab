@@ -14,13 +14,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: democratic-csi
-    url: https://democratic-csi.github.io/charts/
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: democratic-csi-iscsi
     namespace: kube-system
-    chart: democratic-csi/democratic-csi
+    chart: zot/upstream/democratic-csi/democratic-csi
     version: 0.15.1
     values:
       - values.yaml.gotmpl

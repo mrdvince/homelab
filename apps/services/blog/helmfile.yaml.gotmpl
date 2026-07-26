@@ -8,13 +8,16 @@ environments:
       - ../../../secrets/secrets.enc.yaml
 ---
 repositories:
-  - name: bitnami
-    url: https://charts.bitnami.com/bitnami
+  - name: zot
+    url: zot.home.mrdvince.me/helm
+    oci: true
+    username: {{ .Values.zot.charon_username }}
+    password: {{ .Values.zot.charon_password }}
 
 releases:
   - name: blog
     namespace: blog
-    chart: bitnami/ghost
+    chart: zot/upstream/bitnami/ghost
     version: 24.0.3
     values:
       - values.yaml.gotmpl
