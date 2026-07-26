@@ -28,13 +28,10 @@ cluster:
       memory: 768Mi
 
   affinity:
+    podAntiAffinityType: required
+    topologyKey: kubernetes.io/hostname
     nodeSelector:
-      kubernetes.io/hostname: aion-24
-    tolerations:
-      - key: dedicated
-        operator: Equal
-        value: gitlab
-        effect: NoSchedule
+      node.home.mrdvince.me/worker: "true"
 
   postgresql:
     parameters:

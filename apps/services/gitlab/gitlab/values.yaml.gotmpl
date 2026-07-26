@@ -1,5 +1,5 @@
-x-gitlabNodeSelector: &gitlabNodeSelector
-  kubernetes.io/hostname: aion-24
+x-gitlabWorkerNodeSelector: &gitlabWorkerNodeSelector
+  node.home.mrdvince.me/worker: "true"
 
 global:
 {{ if not (.Values | get "renderStockImages" false) }}
@@ -33,6 +33,13 @@ global:
 
   pdb:
     apiVersion: policy/v1
+
+  nodeSelector:
+    node.home.mrdvince.me/worker: "true"
+  antiAffinity: hard
+  affinity:
+    podAntiAffinity:
+      topologyKey: kubernetes.io/hostname
 
   psql:
     host: gitlab-postgres-rw.gitlab.svc.cluster.local
@@ -123,12 +130,6 @@ global:
 postgresql:
   install: false
 
-x-gitlabTolerations: &gitlabTolerations
-  - key: dedicated
-    operator: Equal
-    value: gitlab
-    effect: NoSchedule
-
 nginx-ingress:
   enabled: false
 
@@ -149,8 +150,7 @@ gitlab-runner:
 {{ end }}
   rbac:
     create: true
-  nodeSelector: *gitlabNodeSelector
-  tolerations: *gitlabTolerations
+  nodeSelector: *gitlabWorkerNodeSelector
   runners:
     locked: false
     secret: "nonempty"
@@ -168,6 +168,8 @@ gitlab-runner:
         privileged = true
         logs_base_dir = "/tmp"
         scripts_base_dir = "/tmp"
+        [runners.kubernetes.node_selector]
+          "node.home.mrdvince.me/worker" = "true"
         [[runners.kubernetes.volumes.empty_dir]]
           name = "docker-certs"
           mount_path = "/certs/client"
@@ -189,7 +191,6 @@ upgradeCheck:
   enabled: false
 
 shared-secrets:
-  tolerations: *gitlabTolerations
 {{ if not (.Values | get "renderStockImages" false) }}
   selfsign:
     image:
@@ -202,14 +203,11 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-toolbox-ee
 {{ end }}
-    tolerations: *gitlabTolerations
-
   webservice:
 {{ if not (.Values | get "renderStockImages" false) }}
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-webservice-ee
 {{ end }}
-    tolerations: *gitlabTolerations
     deployment:
       strategy:
         rollingUpdate:
@@ -266,9 +264,9 @@ gitlab:
         limits:
           cpu: 1
           memory: 1Gi
-    replicas: 1
-    minReplicas: 1
-    maxReplicas: 1
+    replicas: 2
+    minReplicas: 2
+    maxReplicas: 3
     workerProcesses: 2
     resources:
       requests:
@@ -277,20 +275,11 @@ gitlab:
       limits:
         cpu: 3
         memory: 4Gi
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: node-role.kubernetes.io/control-plane
-                  operator: DoesNotExist
-
   sidekiq:
 {{ if not (.Values | get "renderStockImages" false) }}
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-sidekiq-ee
 {{ end }}
-    tolerations: *gitlabTolerations
     extraEnv:
       SKIP_RAISE_ON_INITIALIZE_CONNECTIONS: "true"
     livenessProbe:
@@ -307,7 +296,7 @@ gitlab:
       failureThreshold: 12
     replicas: 1
     minReplicas: 1
-    maxReplicas: 1
+    maxReplicas: 2
     deployment:
       strategy:
         rollingUpdate:
@@ -319,14 +308,6 @@ gitlab:
         memory: 1Gi
       limits:
         memory: 3Gi
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: node-role.kubernetes.io/control-plane
-                  operator: DoesNotExist
-
   gitaly:
 {{ if not (.Values | get "renderStockImages" false) }}
     image:
@@ -334,8 +315,6 @@ gitlab:
 {{ end }}
     persistence:
       storageClass: truenas-iscsi-retain
-    nodeSelector: *gitlabNodeSelector
-    tolerations: *gitlabTolerations
     resources:
       requests:
         cpu: 500m
@@ -349,7 +328,6 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-shell
 {{ end }}
-    tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
     maxReplicas: 1
@@ -359,7 +337,6 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-kas
 {{ end }}
-    tolerations: *gitlabTolerations
     replicas: 1
     minReplicas: 1
     maxReplicas: 1
@@ -369,14 +346,11 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-exporter
 {{ end }}
-    tolerations: *gitlabTolerations
-
   toolbox:
 {{ if not (.Values | get "renderStockImages" false) }}
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-toolbox-ee
 {{ end }}
-    tolerations: *gitlabTolerations
     replicas: 1
     backups:
       objectStorage:
