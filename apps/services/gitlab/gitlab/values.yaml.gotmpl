@@ -208,6 +208,9 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-webservice-ee
 {{ end }}
+    nodeSelector:
+      node.home.mrdvince.me/worker: "true"
+      kubernetes.io/hostname: aion-25
     deployment:
       strategy:
         rollingUpdate:
@@ -264,9 +267,9 @@ gitlab:
         limits:
           cpu: 1
           memory: 1Gi
-    replicas: 2
-    minReplicas: 2
-    maxReplicas: 3
+    replicas: 1
+    minReplicas: 1
+    maxReplicas: 1
     workerProcesses: 2
     resources:
       requests:
