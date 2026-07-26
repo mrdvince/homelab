@@ -67,6 +67,9 @@ secrets:
             "auth": {
               "sessionKeysFile": "/etc/zot/sessionKeys.json",
               "apikey": true,
+              "htpasswd": {
+                "path": "/etc/zot/htpasswd"
+              },
               "openid": {
                 "callbackAllowOrigins": ["https://zot.{{ .Values.domain }}"],
                 "providers": {
@@ -87,6 +90,20 @@ secrets:
             },
             "accessControl": {
               "repositories": {
+                "helm/**": {
+                  "policies": [
+                    {
+                      "users": ["zot-chart-publisher"],
+                      "actions": ["read", "create", "update"]
+                    },
+                    {
+                      "users": ["zero"],
+                      "actions": ["read", "create", "update", "delete"]
+                    }
+                  ],
+                  "anonymousPolicy": ["read"],
+                  "defaultPolicy": []
+                },
                 "**": {
                   "policies": [
                     {
@@ -123,6 +140,8 @@ secrets:
           "hashKey": {{ .Values.zot.session_hash_key | quote }},
           "encryptKey": {{ .Values.zot.session_encrypt_key | quote }}
         }
+      htpasswd: |
+        {{ .Values.zot.registry_publisher_htpasswd }}
 
 persistence:
   data:
@@ -146,6 +165,9 @@ persistence:
             readOnly: true
           - path: /etc/zot/sessionKeys.json
             subPath: sessionKeys.json
+            readOnly: true
+          - path: /etc/zot/htpasswd
+            subPath: htpasswd
             readOnly: true
   tmp:
     type: emptyDir
