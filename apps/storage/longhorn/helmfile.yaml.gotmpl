@@ -7,12 +7,8 @@ environments:
     secrets:
       - ../../../secrets/secrets.enc.yaml
 ---
-repositories:
-  - name: zot
-    url: zot.home.mrdvince.me/helm
-    oci: true
-    username: {{ .Values.zot.charon_username }}
-    password: {{ .Values.zot.charon_password }}
+bases:
+  - ../../../infrastructure/charts/repositories.yaml.gotmpl
 
 releases:
   - name: longhorn
