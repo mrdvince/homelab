@@ -270,14 +270,14 @@ gitlab:
     replicas: 1
     minReplicas: 1
     maxReplicas: 1
-    workerProcesses: 2
+    workerProcesses: 4
     resources:
       requests:
-        cpu: 700m
-        memory: 2Gi
+        cpu: 4
+        memory: 5Gi
       limits:
-        cpu: 3
-        memory: 4Gi
+        cpu: 4
+        memory: 7Gi
   sidekiq:
 {{ if not (.Values | get "renderStockImages" false) }}
     image:
