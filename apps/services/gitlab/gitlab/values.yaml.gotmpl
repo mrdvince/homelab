@@ -190,16 +190,16 @@ gitlab-runner:
 upgradeCheck:
   enabled: false
 
-shared-secrets:
 {{ if not (.Values | get "renderStockImages" false) }}
+shared-secrets:
   selfsign:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/cfssl-self-sign
 {{ end }}
 
 gitlab:
-  migrations:
 {{ if not (.Values | get "renderStockImages" false) }}
+  migrations:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-toolbox-ee
 {{ end }}
@@ -341,8 +341,8 @@ gitlab:
     minReplicas: 1
     maxReplicas: 1
 
-  gitlab-exporter:
 {{ if not (.Values | get "renderStockImages" false) }}
+  gitlab-exporter:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-exporter
 {{ end }}
