@@ -93,10 +93,13 @@ repoServer:
               - key: node-role.kubernetes.io/control-plane
                 operator: DoesNotExist
   extraArgs:
-    - --parallelismlimit=4
+    - --parallelismlimit=2
     - --otlp-address={{ .Values.otlpEndpoint }}
     - --otlp-insecure=true
     - --otlp-attrs=env:{{ .Environment.Name }}
+  livenessProbe:
+    timeoutSeconds: 5
+    failureThreshold: 6
   extraContainers:
     - name: helmfile
       image: {{ .Values.imageRegistry }}/helmfile/helmfile:v1.2.3
