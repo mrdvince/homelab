@@ -93,7 +93,7 @@ secrets:
                 "helm/**": {
                   "policies": [
                     {
-                      "users": ["zot-chart-publisher"],
+                      "users": ["charon"],
                       "actions": ["read", "create", "update"]
                     },
                     {
@@ -101,7 +101,6 @@ secrets:
                       "actions": ["read", "create", "update", "delete"]
                     }
                   ],
-                  "anonymousPolicy": ["read"],
                   "defaultPolicy": []
                 },
                 "**": {
@@ -141,7 +140,7 @@ secrets:
           "encryptKey": {{ .Values.zot.session_encrypt_key | quote }}
         }
       htpasswd: |
-        {{ .Values.zot.registry_publisher_htpasswd }}
+        {{ .Values.zot.charon_htpasswd }}
 
 persistence:
   data:
