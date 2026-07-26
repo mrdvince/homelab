@@ -11,13 +11,23 @@ dependency "cp" {
   config_path = "../cp"
 }
 
-dependency "workers" {
-  config_path = "../../../../elysium/clusters/aion/workers"
+dependencies {
+  paths = [
+    "../../../../elysium/clusters/aion/workers",
+    "../../../../tirnanog/clusters/aion/workers",
+  ]
 }
 
 locals {
   external_kubelet_ssh = include.root.locals.secret_vars.aion.external_kubelet_ssh
   network_interface    = "eth0"
+  worker_node_endpoints = {
+    aion-21 = { endpoint = "10.30.30.134" }
+    aion-22 = { endpoint = "10.30.30.135" }
+    aion-23 = { endpoint = "10.30.30.136" }
+    aion-24 = { endpoint = "10.30.30.137" }
+    aion-25 = { endpoint = "10.30.30.138" }
+  }
 }
 
 inputs = {
@@ -26,28 +36,17 @@ inputs = {
   talos_version      = "v1.13.4"
   kubernetes_version = "1.35.6"
 
-  controlplane_nodes = values(dependency.cp.outputs.vm_ipv4_addresses)
-  worker_node_endpoints = {
-    aion-21 = {
-      endpoint = "10.30.30.134"
-    }
-    aion-22 = {
-      endpoint = "10.30.30.135"
-    }
-    aion-23 = {
-      endpoint = "10.30.30.136"
-    }
-    aion-24 = {
-      endpoint = "10.30.30.137"
-    }
-  }
-  worker_node_initial_taints = {
-    aion-24 = [
-      {
-        key    = "dedicated"
-        value  = "gitlab"
-        effect = "PreferNoSchedule"
-      }
+  controlplane_nodes    = values(dependency.cp.outputs.vm_ipv4_addresses)
+  worker_node_endpoints = local.worker_node_endpoints
+  worker_node_patches = {
+    for node_name in keys(local.worker_node_endpoints) : node_name => [
+      yamlencode({
+        machine = {
+          nodeLabels = {
+            "node.home.mrdvince.me/worker" = "true"
+          }
+        }
+      })
     ]
   }
 
