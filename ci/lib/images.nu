@@ -77,9 +77,11 @@ export def render-upstream-manifests [cfg: record] {
   rm -rf $cfg.rendered_dir
   mkdir $cfg.rendered_dir
   let helm_plugins = (^helm env HELM_PLUGINS | str trim)
+  let helmfile_paths = (all-helmfile-paths)
+  let render_threads = if $nu.os-info.name == "macos" { 1 } else { $cfg.render_threads }
 
-  all-helmfile-paths
-  | par-each --threads $cfg.render_threads {|helmfile_path|
+  $helmfile_paths
+  | par-each --threads $render_threads {|helmfile_path|
       let output_name = (
         $helmfile_path
         | str replace -a "/" "__"
@@ -92,13 +94,15 @@ export def render-upstream-manifests [cfg: record] {
         HELM_CACHE_HOME: ([$helm_home "cache"] | path join)
         HELM_CONFIG_HOME: ([$helm_home "config"] | path join)
         HELM_DATA_HOME: ([$helm_home "data"] | path join)
+        HELM_REGISTRY_CONFIG: ([$helm_home "registry" "config.json"] | path join)
+        HELMFILE_CACHE_HOME: ([$helm_home "helmfile-cache"] | path join)
+        HELMFILE_TEMPDIR: ([$helm_home "helmfile-tmp"] | path join)
         HELM_PLUGINS: $helm_plugins
       }
 
       mkdir $helm_home
       print $"rendering ($helmfile_path)"
       with-env $helm_env {
-        ^helmfile -f $helmfile_path -e $cfg.env_name repos | ignore
         ^helmfile -f $helmfile_path -e $cfg.env_name template --include-crds --skip-tests -q --state-values-set renderStockImages=true | save -f $output_path
       }
 
