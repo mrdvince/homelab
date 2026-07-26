@@ -52,7 +52,7 @@ configs:
     create: true
     plugins:
       helmfile:
-        allowConcurrency: true
+        allowConcurrency: false
         generate:
           command:
             - bash
@@ -68,7 +68,7 @@ configs:
                 helmfile repos
                 helmfile -n "$ARGOCD_APP_NAMESPACE" template --include-crds --skip-tests -q
               fi
-        lockRepo: false
+        lockRepo: true
 
 controller:
   revisionHistoryLimit: 1
@@ -78,6 +78,20 @@ controller:
     - --otlp-attrs=env:{{ .Environment.Name }}
 
 repoServer:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
   extraArgs:
     - --otlp-address={{ .Values.otlpEndpoint }}
     - --otlp-insecure=true
@@ -100,6 +114,13 @@ repoServer:
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: "2"
+          memory: 1Gi
       volumeMounts:
         - mountPath: /var/run/argocd
           name: var-files
