@@ -93,6 +93,7 @@ repoServer:
               - key: node-role.kubernetes.io/control-plane
                 operator: DoesNotExist
   extraArgs:
+    - --parallelismlimit=4
     - --otlp-address={{ .Values.otlpEndpoint }}
     - --otlp-insecure=true
     - --otlp-attrs=env:{{ .Environment.Name }}
@@ -117,10 +118,10 @@ repoServer:
       resources:
         requests:
           cpu: 100m
-          memory: 256Mi
+          memory: 512Mi
         limits:
           cpu: "2"
-          memory: 1Gi
+          memory: 2Gi
       volumeMounts:
         - mountPath: /var/run/argocd
           name: var-files
