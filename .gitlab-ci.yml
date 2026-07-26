@@ -86,6 +86,26 @@ verify:ci-scripts:
         - ci/**/*
         - renovate.json
 
+verify:chart-inventory:
+  stage: test
+  image:
+    name: $BUILDER_BOOTSTRAP_IMAGE
+    entrypoint: [""]
+  script:
+    - nu ci/charts.nu verify
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: &chart_inventory_changes
+        - apps/**/helmfile.yaml.gotmpl
+        - charts/**/*
+        - infrastructure/charts/sources.yaml
+        - ci/charts.nu
+        - .gitlab-ci.yml
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes: *chart_inventory_changes
+
 .build-image:
   stage: build
   image:
@@ -118,3 +138,21 @@ verify:ci-scripts:
 .sync-chart-image:
   extends: .sync-image
   stage: sync-chart
+
+sync:helm-charts:
+  stage: sync-chart
+  image:
+    name: $BUILDER_IMAGE
+    entrypoint: [""]
+  script:
+    - test -n "${SOPS_AGE_KEY:-}"
+    - sops --decrypt --extract '["zot"]["registry_publisher_password"]' secrets/secrets.enc.yaml | helm registry login zot.home.mrdvince.me --username zot-chart-publisher --password-stdin
+    - nu ci/charts.nu sync --latest
+    - helm registry logout zot.home.mrdvince.me
+    - nu ci/charts.nu verify-remote
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes: *chart_inventory_changes
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: manual

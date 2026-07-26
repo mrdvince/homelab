@@ -1,0 +1,24 @@
+registry:
+  host: zot.home.mrdvince.me
+  namespace: helm
+
+sources:
+  argo: https://argoproj.github.io/argo-helm
+  bitnami: https://charts.bitnami.com/bitnami
+  bjw-s: https://bjw-s-labs.github.io/helm-charts
+  cilium: https://helm.cilium.io/
+  cnpg: https://cloudnative-pg.github.io/charts
+  csi-driver-nfs: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+  democratic-csi: https://democratic-csi.github.io/charts/
+  emberstack: https://emberstack.github.io/helm-charts
+  external-dns: https://kubernetes-sigs.github.io/external-dns
+  gitlab: https://charts.gitlab.io
+  grafana: https://grafana.github.io/helm-charts
+  jetstack: https://charts.jetstack.io
+  longhorn: https://charts.longhorn.io
+  meilisearch: https://meilisearch.github.io/meilisearch-kubernetes
+  metrics-server: https://kubernetes-sigs.github.io/metrics-server/
+  netbox: https://charts.netbox.oss.netboxlabs.com/
+  penpot: https://helm.penpot.app
+  prometheus-community: https://prometheus-community.github.io/helm-charts
+  traefik: https://traefik.github.io/charts
