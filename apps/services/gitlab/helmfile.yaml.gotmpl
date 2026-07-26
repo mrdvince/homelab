@@ -51,12 +51,15 @@ releases:
     set:
       - name: stringData.connection
         value: |
-          provider: AWS
-          region: home
-          aws_access_key_id: {{ .Values.s3.accessKey }}
-          aws_secret_access_key: {{ .Values.s3.secretKey }}
-          endpoint: https://s3.{{ .Values.domain }}
-          path_style: true
+          [default]
+          access_key = {{ .Values.s3.accessKey }}
+          secret_key = {{ .Values.s3.secretKey }}
+          bucket_location = home
+          host_base = s3.{{ .Values.domain }}
+          host_bucket = s3.{{ .Values.domain }}
+          use_https = True
+          signature_v2 = False
+          preserve_attrs = False
 
   - name: gitlab-oidc-provider
     namespace: gitlab

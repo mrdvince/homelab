@@ -332,6 +332,8 @@ gitlab:
     image:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitaly
 {{ end }}
+    persistence:
+      storageClass: truenas-iscsi-retain
     nodeSelector: *gitlabNodeSelector
     tolerations: *gitlabTolerations
     resources:
