@@ -48,6 +48,10 @@ configs:
       dex.authentik.clientSecret: {{ .Values | get "argo-oidc.client_secret" }}
   params:
     server.insecure: true
+    controller.repo.server.timeout.seconds: "180"
+    server.repo.server.timeout.seconds: "180"
+    controller.status.processors: "4"
+    controller.operation.processors: "2"
   cmp:
     create: true
     plugins:
@@ -107,6 +111,8 @@ repoServer:
       env:
         - name: SOPS_AGE_KEY_FILE
           value: /app/config/age/key.txt
+        - name: ARGOCD_EXEC_TIMEOUT
+          value: 180s
         - name: HELM_CACHE_HOME
           value: /tmp/helm/cache
         - name: HELM_CONFIG_HOME
