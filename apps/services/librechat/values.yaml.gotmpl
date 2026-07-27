@@ -1,0 +1,383 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    strategy: Recreate
+    initContainers:
+      wait-for-mongodb:
+        image:
+          repository: {{ .Values.imageRegistry }}/library/busybox
+          tag: "1.37.0"
+        command:
+          - sh
+          - -c
+          - until nc -z librechat-mongodb 27017; do sleep 2; done
+        securityContext:
+          runAsUser: 65534
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.librechatImages 0).image }}
+          tag: "{{ (index .Values.librechatImages 0).tag }}"
+        env:
+          HOST: 0.0.0.0
+          PORT: "3080"
+          TZ: Europe/Amsterdam
+          CONFIG_PATH: /app/librechat.yaml
+          MONGO_URI:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: mongo-uri
+          DOMAIN_CLIENT: https://librechat.{{ .Values.domain }}
+          DOMAIN_SERVER: https://librechat.{{ .Values.domain }}
+          NO_INDEX: "true"
+          TRUST_PROXY: "1"
+          DEBUG_LOGGING: "false"
+          DEBUG_CONSOLE: "false"
+          LOG_TO_FILE: "false"
+          ALLOW_EMAIL_LOGIN: "false"
+          ALLOW_REGISTRATION: "false"
+          ALLOW_SOCIAL_LOGIN: "true"
+          ALLOW_SOCIAL_REGISTRATION: "true"
+          ALLOW_PASSWORD_RESET: "false"
+          ALLOW_ACCOUNT_DELETION: "false"
+          ALLOW_SHARED_LINKS: "false"
+          ALLOW_SHARED_LINKS_PUBLIC: "false"
+          OPENID_CLIENT_ID:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: oidc-client-id
+          OPENID_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: oidc-client-secret
+          OPENID_ISSUER: https://auth.{{ .Values.domain }}/application/o/open-webui/
+          OPENID_SESSION_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: oidc-session-secret
+          OPENID_SCOPE: openid profile email
+          OPENID_CALLBACK_URL: /oauth/openid/callback
+          OPENID_BUTTON_LABEL: Authentik
+          OPENID_AUTO_REDIRECT: "true"
+          OPENID_USE_PKCE: "true"
+          OPENID_GENERATE_NONCE: "true"
+          OPENID_USE_END_SESSION_ENDPOINT: "true"
+          JWT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: jwt-secret
+          JWT_REFRESH_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: jwt-refresh-secret
+          CREDS_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: credentials-key
+          CREDS_IV:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: credentials-iv
+          HERMES_API_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: hermes-api-key
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: "1"
+            memory: 2Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 3080
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 3080
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+  mongodb:
+    revisionHistoryLimit: 1
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: {{ .Values.imageRegistry }}/{{ (index .Values.librechatImages 1).image }}
+          tag: "{{ (index .Values.librechatImages 1).tag }}"
+        args:
+          - mongod
+          - --bind_ip_all
+        env:
+          MONGO_INITDB_ROOT_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: mongo-username
+          MONGO_INITDB_ROOT_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: librechat
+                key: mongo-password
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 27017
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              tcpSocket:
+                port: 27017
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 18
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    fsGroup: 999
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+
+configMaps:
+  configuration:
+    data:
+      librechat.yaml: |
+        version: 1.3.13
+        cache: true
+
+        fileStrategy: local
+        fileConfig:
+          endpoints:
+            Hermes:
+              fileLimit: 5
+              fileSizeLimit: 25
+              totalSizeLimit: 50
+              supportedMimeTypes:
+                - "^image/(jpeg|png|gif|webp)$"
+                - "^application/pdf$"
+                - "^application/json$"
+                - "^text/(plain|markdown|csv)$"
+          serverFileSizeLimit: 50
+          fileTokenLimit: 100000
+          text:
+            supportedMimeTypes:
+              - "^application/pdf$"
+              - "^application/json$"
+              - "^text/(plain|markdown|csv)$"
+
+        memory:
+          disabled: true
+
+        summarization:
+          enabled: false
+
+        interface:
+          modelSelect: false
+          parameters: false
+          presets: false
+          prompts: false
+          bookmarks: false
+          memories: false
+          multiConvo: false
+          temporaryChat: false
+          autoSubmitFromUrl: false
+          contextUsage: false
+          buildInfo: false
+          agents: false
+          remoteAgents:
+            use: false
+            create: false
+            share: false
+            public: false
+          skills: false
+          marketplace:
+            use: false
+          mcpServers:
+            use: false
+            create: false
+            share: false
+            public: false
+          sharedLinks:
+            create: false
+            share: false
+            public: false
+            snapshotFiles: false
+          peoplePicker:
+            users: false
+            groups: false
+            roles: false
+          runCode: false
+          webSearch: false
+          fileSearch: false
+          fileCitations: false
+          defaultPinnedTools: []
+
+        endpoints:
+          custom:
+            - name: Hermes
+              apiKey: '${HERMES_API_KEY}'
+              baseURL: http://hermes.hermes.svc.cluster.local:8642/v1
+              models:
+                default:
+                  - hermes-agent
+                fetch: false
+              titleConvo: false
+              modelDisplayLabel: Hermes
+              dropParams:
+                - user
+              customParams:
+                reasoningFormat: disabled
+
+secrets:
+  environment:
+    stringData:
+      hermes-api-key: {{ .Values.hermes.api_key }}
+      mongo-username: {{ .Values.librechat.mongo.username }}
+      mongo-password: {{ .Values.librechat.mongo.password }}
+      mongo-uri: "mongodb://{{ .Values.librechat.mongo.username }}:{{ .Values.librechat.mongo.password }}@librechat-mongodb:27017/LibreChat?authSource=admin"
+      oidc-client-id: {{ .Values.librechat.oidc.client_id }}
+      oidc-client-secret: {{ .Values.librechat.oidc.client_secret }}
+      oidc-session-secret: {{ .Values.librechat.oidc.session_secret }}
+      jwt-secret: {{ .Values.librechat.jwt_secret }}
+      jwt-refresh-secret: {{ .Values.librechat.jwt_refresh_secret }}
+      credentials-key: {{ .Values.librechat.credentials_key }}
+      credentials-iv: {{ .Values.librechat.credentials_iv }}
+
+persistence:
+  configuration:
+    type: configMap
+    identifier: configuration
+    advancedMounts:
+      main:
+        main:
+          - path: /app/librechat.yaml
+            subPath: librechat.yaml
+            readOnly: true
+  mongodb-data:
+    type: persistentVolumeClaim
+    forceRename: librechat-mongodb
+    retain: true
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: truenas-iscsi-retain
+    advancedMounts:
+      mongodb:
+        main:
+          - path: /data/db
+  uploads:
+    type: persistentVolumeClaim
+    forceRename: librechat-uploads
+    retain: true
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        main:
+          - path: /app/uploads
+  images:
+    type: persistentVolumeClaim
+    forceRename: librechat-images
+    retain: true
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: nfs-csi-retain
+    advancedMounts:
+      main:
+        main:
+          - path: /app/client/public/images
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 3080
+  mongodb:
+    controller: mongodb
+    ports:
+      mongodb:
+        port: 27017
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: librechat.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: http
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - librechat.{{ .Values.domain }}

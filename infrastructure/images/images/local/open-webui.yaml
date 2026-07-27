@@ -1,4 +1,0 @@
-openWebuiImages:
-  - registry: ghcr.io
-    image: open-webui/open-webui
-    tag: "v0.10.2"

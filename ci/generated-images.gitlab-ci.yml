@@ -989,6 +989,20 @@ sync:chart:registry-home-mrdvince-me-corentinth-it-tools-2024-10-22-7ca5933:
       changes:
         - apps/services/it-tools/**/*
         - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-danny-avila-librechat-v0-8-7:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/danny-avila/librechat:v0.8.7
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/danny-avila/librechat:v0.8.7"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-danny-avila-librechat-v0-8-7/
+    - if: $SYNC_UPSTREAM_BLOCK == "librechat"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:librechat/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/librechat/**/*
+        - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-democratic-csi-csi-grpc-proxy-v0-5-7:
   extends: '.sync-chart-image'
   variables:
@@ -1248,12 +1262,15 @@ sync:chart:registry-home-mrdvince-me-library-busybox-1-37-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:firecrawl/
     - if: $SYNC_UPSTREAM_BLOCK == "freshrss"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:freshrss/
+    - if: $SYNC_UPSTREAM_BLOCK == "librechat"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:librechat/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/adventurelog/**/*
         - apps/services/firecrawl/**/*
         - apps/services/freshrss/**/*
+        - apps/services/librechat/**/*
         - apps/storage/democratic-csi/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-library-mariadb-11-4-8-sha256-bc474f00629f0123c10f9e1bca193a45d18af15a:
@@ -1269,6 +1286,20 @@ sync:chart:registry-home-mrdvince-me-library-mariadb-11-4-8-sha256-bc474f00629f0
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/booklore/**/*
+        - infrastructure/images/config.yaml
+sync:chart:registry-home-mrdvince-me-library-mongo-8-0-20:
+  extends: '.sync-chart-image'
+  variables:
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/library/mongo:8.0.20
+  rules:
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/library/mongo:8.0.20"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-library-mongo-8-0-20/
+    - if: $SYNC_UPSTREAM_BLOCK == "librechat"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:librechat/
+    - if: $SYNC_UPSTREAM_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - apps/services/librechat/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-library-rabbitmq-3-management-sha256-e582c0bc7766f3342496d8485efb5a1df:
   extends: '.sync-chart-image'
@@ -1381,20 +1412,6 @@ sync:chart:registry-home-mrdvince-me-nousresearch-hermes-agent-v2026-7-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - apps/services/hermes/**/*
-        - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-open-webui-open-webui-v0-10-2:
-  extends: '.sync-chart-image'
-  variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/open-webui/open-webui:v0.10.2
-  rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/open-webui/open-webui:v0.10.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-open-webui-open-webui-v0-10-2/
-    - if: $SYNC_UPSTREAM_BLOCK == "open-webui"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:open-webui/
-    - if: $SYNC_UPSTREAM_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - apps/services/open-webui/**/*
         - infrastructure/images/config.yaml
 sync:chart:registry-home-mrdvince-me-paperless-ngx-paperless-ngx-2-20-6:
   extends: '.sync-chart-image'
@@ -2332,19 +2349,6 @@ sync:local:ghcr-io-mealie-recipes-mealie-v3-10-2:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/mealie.yaml
-sync:local:ghcr-io-open-webui-open-webui-v0-10-2:
-  extends: '.sync-local-image'
-  variables:
-    IMAGE_TO_SYNC: ghcr.io/open-webui/open-webui:v0.10.2
-  rules:
-    - if: $SYNC_LOCAL_IMAGE == "ghcr.io/open-webui/open-webui:v0.10.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:ghcr-io-open-webui-open-webui-v0-10-2/
-    - if: $SYNC_LOCAL_BLOCK == "open-webui"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:open-webui/
-    - if: $SYNC_LOCAL_IMAGES == "true"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - infrastructure/images/images/local/open-webui.yaml
 sync:local:ghcr-io-paperless-ngx-paperless-ngx-2-20-6:
   extends: '.sync-local-image'
   variables:

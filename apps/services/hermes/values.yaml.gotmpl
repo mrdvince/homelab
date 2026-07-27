@@ -482,7 +482,7 @@ rawResources:
                     - port: "6443"
                       protocol: TCP
 
-        - description: allow the dashboard through traefik and the agent API from open webui
+        - description: allow the dashboard through traefik and the agent API from librechat
           endpointSelector:
             matchLabels:
               app.kubernetes.io/instance: hermes
@@ -499,7 +499,7 @@ rawResources:
             - fromEndpoints:
                 - matchLabels:
                     "k8s:io.kubernetes.pod.namespace": apps
-                    app.kubernetes.io/instance: open-webui
+                    app.kubernetes.io/instance: librechat
               toPorts:
                 - ports:
                     - port: "8642"

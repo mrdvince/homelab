@@ -10,12 +10,11 @@ include "envcommon" {
 inputs = {
   authentik_application = {
     open-webui = {
-      name      = "Open WebUI"
-      meta_icon = "application-icons/open-webui.svg"
+      name = "LibreChat"
       allowed_redirect_uris = [
         {
           matching_mode = "strict"
-          url           = "https://open-webui.home.mrdvince.me/oauth/oidc/callback"
+          url           = "https://librechat.home.mrdvince.me/oauth/openid/callback"
         },
       ]
     }
