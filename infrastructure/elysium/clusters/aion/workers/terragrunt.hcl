@@ -33,19 +33,28 @@ inputs = {
       resources = {
         cores   = 6
         memory  = 12288
-        balloon = 12288
+        balloon = 0
       }
+    },
+    {
+      vmname       = "aion-26"
+      vmid         = 9009
+      macaddr      = "02:CD:00:B5:38:E4"
+      ipv4_address = "10.30.30.139"
     },
   ]
 
-  cores     = 4
-  memory    = 16384
-  balloon   = 16384
-  bios      = "ovmf"
-  cpu_flags = ["+aes"]
-  cpu_type  = "x86-64-v3"
-  machine   = "q35"
-  on_boot   = true
+  cores                      = 4
+  memory                     = 16384
+  balloon                    = 16384
+  bios                       = "ovmf"
+  cpu_flags                  = ["+aes"]
+  cpu_type                   = "x86-64-v3"
+  machine                    = "q35"
+  on_boot                    = true
+  agent_timeout              = "3m"
+  agent_wait_for_ip_disabled = true
+  reboot_after_update        = false
 
   include_vmname_tag = true
 

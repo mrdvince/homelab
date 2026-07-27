@@ -13,6 +13,7 @@ dependency "cp" {
 
 dependencies {
   paths = [
+    "../worker",
     "../../../../elysium/clusters/aion/workers",
     "../../../../tirnanog/clusters/aion/workers",
   ]
@@ -27,6 +28,9 @@ locals {
     aion-23 = { endpoint = "10.30.30.136" }
     aion-24 = { endpoint = "10.30.30.137" }
     aion-25 = { endpoint = "10.30.30.138" }
+    aion-26 = { endpoint = "10.30.30.139" }
+    aion-27 = { endpoint = "10.30.30.140" }
+    aion-28 = { endpoint = "10.30.30.144" }
   }
 }
 
@@ -50,8 +54,9 @@ inputs = {
     ]
   }
 
-  extensions   = ["iscsi-tools", "util-linux-tools", "qemu-guest-agent"]
-  auto_upgrade = true
+  extensions                        = ["iscsi-tools", "util-linux-tools", "qemu-guest-agent"]
+  auto_upgrade                      = true
+  allow_scheduling_on_controlplanes = false
 
   external_kubelet_upgrade_commands = {
     flux = <<-EOT

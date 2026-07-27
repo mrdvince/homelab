@@ -17,6 +17,17 @@ inputs = {
       macaddr      = "72:4B:9C:56:2D:A8"
       ipv4_address = "10.30.30.138"
     },
+    {
+      vmname       = "aion-28"
+      vmid         = 9011
+      macaddr      = "02:13:0C:96:A5:2C"
+      ipv4_address = "10.30.30.144"
+      resources = {
+        cores   = 4
+        memory  = 16384
+        balloon = 16384
+      }
+    },
   ]
 
   cores                      = 8

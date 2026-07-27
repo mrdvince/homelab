@@ -8,32 +8,20 @@ include "envcommon" {
 }
 
 inputs = {
-  node_name = "tirnanog"
+  node_name = "avalon"
 
   instances = [
     {
-      vmname       = "aion-cp-01"
-      vmid         = 9001
-      macaddr      = "CA:08:B1:D7:42:FF"
-      ipv4_address = "10.30.30.141"
-    },
-    {
-      vmname       = "aion-cp-02"
-      vmid         = 9002
-      macaddr      = "D2:1F:CC:81:09:F7"
-      ipv4_address = "10.30.30.142"
-    },
-    {
-      vmname       = "aion-cp-03"
-      vmid         = 9003
-      macaddr      = "D6:DB:15:B4:D2:8A"
-      ipv4_address = "10.30.30.143"
+      vmname       = "aion-27"
+      vmid         = 9010
+      macaddr      = "02:A4:A7:B4:6E:98"
+      ipv4_address = "10.30.30.140"
     },
   ]
 
-  cores                      = 2
-  memory                     = 8192
-  balloon                    = 8192
+  cores                      = 4
+  memory                     = 16384
+  balloon                    = 16384
   bios                       = "ovmf"
   machine                    = "q35"
   on_boot                    = true
@@ -44,8 +32,10 @@ inputs = {
   agent_wait_for_ip_disabled = true
   reboot_after_update        = false
 
+  include_vmname_tag = true
+
   disk = {
-    storage   = "styx-lvm"
+    storage   = "nvme-data"
     size      = 200
     interface = "scsi0"
     format    = "raw"
@@ -55,15 +45,15 @@ inputs = {
   }
 
   efi_disk = {
-    storage           = "styx-lvm"
+    storage           = "nvme-data"
     type              = "4m"
     pre_enrolled_keys = false
   }
 
   cdrom = {
-    iso       = "none"
+    iso       = "realm-nfs:iso/metal-amd64.iso"
     interface = "ide2"
   }
 
-  tags = ["controlplane", "talos", "aion"]
+  tags = ["worker", "talos", "aion"]
 }
