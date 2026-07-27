@@ -132,14 +132,6 @@ inputs = {
           }
         ]
         kubelet = {
-          extraMounts = [
-            {
-              destination = "/var/lib/longhorn"
-              type        = "bind"
-              source      = "/var/lib/longhorn"
-              options     = ["bind", "rshared", "rw"]
-            }
-          ]
           extraConfig = {
             featureGates = {
               UserNamespacesSupport = true

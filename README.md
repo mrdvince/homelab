@@ -22,7 +22,7 @@ homelab/
 │   ├── _argocd/             # app-of-apps with ApplicationSets
 │   ├── core/                # platform essentials (traefik, cert-manager, cilium, etc)
 │   ├── monitoring/          # observability stack (prometheus, grafana, loki, tempo)
-│   ├── storage/             # cnpg, longhorn
+│   ├── storage/             # cnpg and CSI drivers
 │   └── services/            # user-facing apps (gitlab, blog, actual, etc)
 │
 ├── charts/                  # custom helm charts
@@ -48,7 +48,7 @@ Each application in `apps/` follows a standard layout: an `argocd.yaml` for Argo
 - **kubernetes**: Talos (v1.12), Cilium CNI, Traefik ingress
 - **gitops**: ArgoCD with Helmfile plugin, Helm charts published to GitLab
 - **observability**: Prometheus, Grafana, Loki, Tempo, Alloy, Pyroscope
-- **storage**: Longhorn for block storage, CloudNativePG for PostgreSQL
+- **storage**: TrueNAS-backed iSCSI and NFS through CSI, CloudNativePG for PostgreSQL
 - **auth**: Authentik with OIDC configured for ArgoCD, Grafana, Proxmox, and apps
 - **secrets**: SOPS with age encryption, pre-commit hooks for leak detection
 

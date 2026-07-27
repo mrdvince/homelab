@@ -16,7 +16,6 @@ sources:
   gitlab: https://charts.gitlab.io
   grafana: https://grafana.github.io/helm-charts
   jetstack: https://charts.jetstack.io
-  longhorn: https://charts.longhorn.io
   meilisearch: https://meilisearch.github.io/meilisearch-kubernetes
   metrics-server: https://kubernetes-sigs.github.io/metrics-server/
   netbox: https://charts.netbox.oss.netboxlabs.com/

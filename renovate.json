@@ -106,15 +106,6 @@
       "addLabels": ["critical-infra"]
     },
     {
-      "description": "keep longhorn updates isolated from bulk chart/image bumps",
-      "matchManagers": ["helmfile", "custom.regex"],
-      "matchPackageNames": ["/longhorn/"],
-      "groupName": "longhorn stack",
-      "automerge": false,
-      "dependencyDashboardApproval": true,
-      "addLabels": ["critical-infra"]
-    },
-    {
       "description": "ignore ghost app chart and bundled bitnami legacy images",
       "matchPackageNames": [
         "ghost",

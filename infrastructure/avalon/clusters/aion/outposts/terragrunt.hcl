@@ -12,12 +12,6 @@ inputs = {
   policy_expression     = null
 
   proxy_application = {
-    longhorn = {
-      name          = "Longhorn"
-      meta_icon     = "application-icons/longhorn.svg"
-      external_host = "https://longhorn.home.mrdvince.me"
-      mode          = "forward_single"
-    }
     traefik = {
       name          = "Traefik"
       meta_icon     = "application-icons/traefik-proxy.svg"

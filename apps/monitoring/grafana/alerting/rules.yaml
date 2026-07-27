@@ -275,7 +275,7 @@ groups:
         annotations:
           summary: A critical storage or filesystem error was logged on a Proxmox host.
           query: '{platform="proxmox"} |~ "(?i)(no space left on device|i/o error|read-only file system|ext4-fs error|xfs.*error)"'
-          action: Check disk, filesystem, and Longhorn/VM storage state on the affected host.
+          action: Check disk, filesystem, and VM/iSCSI storage state on the affected host.
         labels:
           severity: critical
           team: homelab
