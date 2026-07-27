@@ -1926,6 +1926,19 @@ sync:local:docker-io-library-mariadb-11-4-8-sha256-bc474f00629f0123c10f9e1bca193
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/booklore.yaml
+sync:local:docker-io-library-mongo-8-0-20:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: docker.io/library/mongo:8.0.20
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/library/mongo:8.0.20"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-library-mongo-8-0-20/
+    - if: $SYNC_LOCAL_BLOCK == "librechat"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:librechat/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/librechat.yaml
 sync:local:docker-io-library-rabbitmq-3-management-sha256-e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017:
   extends: '.sync-local-image'
   variables:
@@ -2189,6 +2202,19 @@ sync:local:ghcr-io-corentinth-it-tools-2024-10-22-7ca5933:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/it-tools.yaml
+sync:local:ghcr-io-danny-avila-librechat-v0-8-7:
+  extends: '.sync-local-image'
+  variables:
+    IMAGE_TO_SYNC: ghcr.io/danny-avila/librechat:v0.8.7
+  rules:
+    - if: $SYNC_LOCAL_IMAGE == "ghcr.io/danny-avila/librechat:v0.8.7"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:ghcr-io-danny-avila-librechat-v0-8-7/
+    - if: $SYNC_LOCAL_BLOCK == "librechat"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:librechat/
+    - if: $SYNC_LOCAL_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/images/local/librechat.yaml
 sync:local:ghcr-io-democratic-csi-csi-grpc-proxy-v0-5-7:
   extends: '.sync-local-image'
   variables:

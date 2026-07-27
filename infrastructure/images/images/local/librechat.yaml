@@ -1,0 +1,7 @@
+librechatImages:
+  - registry: ghcr.io
+    image: danny-avila/librechat
+    tag: "v0.8.7"
+  - registry: docker.io
+    image: library/mongo
+    tag: "8.0.20"
