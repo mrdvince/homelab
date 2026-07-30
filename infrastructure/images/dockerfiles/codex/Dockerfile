@@ -99,7 +99,7 @@ FROM ${BASE_IMAGE}
 
 LABEL org.opencontainers.image.source="https://github.com/openai/codex" \
       org.opencontainers.image.description="codex with the homelab cli toolchain and persistent linuxbrew" \
-      org.opencontainers.image.version="0.146.0-2"
+      org.opencontainers.image.version="0.146.0-3"
 
 ENV CODEX_HOME=/opt/data/home/.codex \
     CODEX_SQLITE_HOME=/opt/data/home/.codex \
@@ -162,6 +162,7 @@ COPY --from=tools /out/bin/ /usr/local/bin/
 COPY --from=tools /out/helm/ /opt/codex/helm/
 COPY --from=tools /out/homebrew/ /opt/codex/homebrew/
 COPY --chmod=0755 infrastructure/images/dockerfiles/codex/codex-remote-control /usr/local/bin/codex-remote-control
+COPY infrastructure/images/dockerfiles/codex/codex-profile.sh /etc/profile.d/codex.sh
 
 RUN codex --version \
     && codex remote-control --help >/dev/null \

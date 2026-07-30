@@ -1,4 +1,4 @@
 codex:
   dockerfile: infrastructure/images/dockerfiles/codex/Dockerfile
   image: homelab/codex
-  tag: "0.146.0-2"
+  tag: "0.146.0-3"

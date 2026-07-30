@@ -8,7 +8,7 @@ controllers:
       initialize-data:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/codex
-          tag: "0.146.0-2"
+          tag: "0.146.0-3"
         command:
           - /bin/bash
         args:
@@ -46,7 +46,7 @@ controllers:
       app-server:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/codex
-          tag: "0.146.0-2"
+          tag: "0.146.0-3"
         args:
           - codex
           - app-server
@@ -101,7 +101,7 @@ controllers:
       remote-control:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/codex
-          tag: "0.146.0-2"
+          tag: "0.146.0-3"
         args:
           - codex-remote-control
         env:
