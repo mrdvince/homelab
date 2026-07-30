@@ -10,7 +10,7 @@ build:alloy:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/alloy.yaml
-        - infrastructure/images/dockerfiles/alloy/Dockerfile
+        - infrastructure/images/dockerfiles/alloy/**/*
 build:builder:
   extends: '.build-image'
   variables:
@@ -22,7 +22,19 @@ build:builder:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/builder.yaml
-        - infrastructure/images/dockerfiles/builder/Dockerfile
+        - infrastructure/images/dockerfiles/builder/**/*
+build:codex:
+  extends: '.build-image'
+  variables:
+    BUILD_NAME: codex
+  rules:
+    - if: $BUILD_IMAGE == "codex"
+    - if: $BUILD_IMAGES == "true"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /build-all/
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - infrastructure/images/builds/codex.yaml
+        - infrastructure/images/dockerfiles/codex/**/*
 build:excalidraw:
   extends: '.build-image'
   variables:
@@ -34,7 +46,7 @@ build:excalidraw:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/excalidraw.yaml
-        - infrastructure/images/dockerfiles/excalidraw/Dockerfile
+        - infrastructure/images/dockerfiles/excalidraw/**/*
 build:hermes-agent:
   extends: '.build-image'
   variables:
@@ -46,7 +58,7 @@ build:hermes-agent:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/hermes-agent.yaml
-        - infrastructure/images/dockerfiles/hermes-agent/Dockerfile
+        - infrastructure/images/dockerfiles/hermes-agent/**/*
 build:proton-bridge:
   extends: '.build-image'
   variables:
@@ -58,7 +70,7 @@ build:proton-bridge:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/proton-bridge.yaml
-        - infrastructure/images/dockerfiles/proton-bridge/Dockerfile
+        - infrastructure/images/dockerfiles/proton-bridge/**/*
 build:renovate:
   extends: '.build-image'
   variables:
@@ -70,7 +82,7 @@ build:renovate:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/renovate.yaml
-        - infrastructure/images/dockerfiles/renovate/Dockerfile
+        - infrastructure/images/dockerfiles/renovate/**/*
 build:signal-cli:
   extends: '.build-image'
   variables:
@@ -82,7 +94,7 @@ build:signal-cli:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/builds/signal-cli.yaml
-        - infrastructure/images/dockerfiles/signal-cli/Dockerfile
+        - infrastructure/images/dockerfiles/signal-cli/**/*
 sync:chart:docker-io-emberstack-kubernetes-reflector-10-0-46:
   extends: '.sync-chart-image'
   variables:

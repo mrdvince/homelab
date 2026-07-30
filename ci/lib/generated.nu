@@ -8,6 +8,8 @@ def safe-image-name [image: string] {
 }
 
 def build-rules [row: record] {
+  let dockerfile_dir = ($row.dockerfile | path dirname)
+
   [
     {if: $'$BUILD_IMAGE == "($row.name)"'}
     {if: '$BUILD_IMAGES == "true"'}
@@ -16,7 +18,7 @@ def build-rules [row: record] {
       if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       changes: [
         $row.source_file
-        $row.dockerfile
+        $"($dockerfile_dir)/**/*"
       ]
     }
   ]

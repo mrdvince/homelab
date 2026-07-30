@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+stop_remote_control() {
+  codex remote-control stop >/dev/null 2>&1 || true
+}
+
+trap stop_remote_control EXIT INT TERM
+
+until codex login status >/dev/null 2>&1; do
+  echo "waiting for codex authentication"
+  sleep 10
+done
+
+codex remote-control start
+
+while codex app-server daemon version >/dev/null 2>&1; do
+  sleep 15
+done
+
+echo "codex app-server daemon stopped unexpectedly" >&2
+exit 1
