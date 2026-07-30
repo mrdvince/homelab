@@ -23,6 +23,7 @@ controllers:
               /mnt/data/projects \
               /mnt/data/tmp
             install -d -m 0755 -o 1000 -g 1000 /mnt/data/homebrew
+            install -d -m 0700 -o 1000 -g 1000 /mnt/data/home/.ssh
 
             if [ ! -x /mnt/data/homebrew/bin/brew ]; then
               cp -a /opt/codex/homebrew/. /mnt/data/homebrew/
@@ -202,10 +203,14 @@ persistence:
           - path: /opt/data
           - path: /home/linuxbrew/.linuxbrew
             subPath: homebrew
+          - path: /home/codex/.ssh
+            subPath: home/.ssh
         remote-control:
           - path: /opt/data
           - path: /home/linuxbrew/.linuxbrew
             subPath: homebrew
+          - path: /home/codex/.ssh
+            subPath: home/.ssh
   app-server-token:
     type: secret
     identifier: environment
