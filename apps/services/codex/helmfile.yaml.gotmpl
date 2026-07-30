@@ -1,0 +1,18 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+bases:
+  - ../../../infrastructure/charts/repositories.yaml.gotmpl
+
+releases:
+  - name: codex
+    namespace: scriptorium
+    chart: zot/upstream/bjw-s/app-template
+    version: 5.0.1
+    values:
+      - values.yaml.gotmpl

@@ -1,0 +1,368 @@
+controllers:
+  main:
+    revisionHistoryLimit: 1
+    strategy: Recreate
+    serviceAccount:
+      identifier: codex
+    initContainers:
+      initialize-data:
+        image:
+          repository: {{ .Values.imageRegistry }}/homelab/codex
+          tag: "0.146.0-1"
+        command:
+          - /bin/bash
+        args:
+          - -ec
+          - |
+            install -d -m 0750 -o 1000 -g 1000 \
+              /mnt/data/home \
+              /mnt/data/projects \
+              /mnt/data/tmp
+            install -d -m 0755 -o 1000 -g 1000 /mnt/data/homebrew
+
+            if [ ! -x /mnt/data/homebrew/bin/brew ]; then
+              cp -a /opt/codex/homebrew/. /mnt/data/homebrew/
+              chown -R 1000:1000 /mnt/data/homebrew
+            fi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: false
+          runAsUser: 0
+          runAsGroup: 0
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - CHOWN
+              - DAC_OVERRIDE
+              - FOWNER
+    containers:
+      app-server:
+        image:
+          repository: {{ .Values.imageRegistry }}/homelab/codex
+          tag: "0.146.0-1"
+        args:
+          - codex
+          - app-server
+          - --listen
+          - ws://0.0.0.0:4500
+          - --ws-auth
+          - capability-token
+          - --ws-token-file
+          - /etc/codex-secrets/app-server-token
+        env:
+          RUST_LOG: info
+          TZ: Europe/Amsterdam
+        resources:
+          requests:
+            cpu: 1500m
+            memory: 5Gi
+          limits:
+            cpu: "3"
+            memory: 10Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 4500
+              initialDelaySeconds: 20
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /readyz
+                port: 4500
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+              - ALL
+      remote-control:
+        image:
+          repository: {{ .Values.imageRegistry }}/homelab/codex
+          tag: "0.146.0-1"
+        args:
+          - codex-remote-control
+        env:
+          RUST_LOG: info
+          TZ: Europe/Amsterdam
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2Gi
+          limits:
+            cpu: "1"
+            memory: 6Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+              - ALL
+
+defaultPodOptions:
+  automountServiceAccountToken: false
+  hostname: codex
+  terminationGracePeriodSeconds: 60
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - aion-25
+                  - aion-28
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - aion-25
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+
+configMaps:
+  kubernetes:
+    data:
+      config: |
+        apiVersion: v1
+        kind: Config
+        clusters:
+          - name: aion
+            cluster:
+              certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              server: https://10.30.30.145:6443
+        contexts:
+          - name: aion
+            context:
+              cluster: aion
+              namespace: scriptorium
+              user: codex
+        current-context: aion
+        users:
+          - name: codex
+            user:
+              tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+serviceAccount:
+  codex:
+    forceRename: codex
+
+secrets:
+  environment:
+    stringData:
+      app-server-token: {{ .Values.codex.app_server_token }}
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    forceRename: codex
+    retain: true
+    accessMode: ReadWriteOnce
+    size: 100Gi
+    storageClass: truenas-iscsi-retain
+    advancedMounts:
+      main:
+        initialize-data:
+          - path: /mnt/data
+        app-server:
+          - path: /opt/data
+          - path: /home/linuxbrew/.linuxbrew
+            subPath: homebrew
+        remote-control:
+          - path: /opt/data
+          - path: /home/linuxbrew/.linuxbrew
+            subPath: homebrew
+  app-server-token:
+    type: secret
+    identifier: environment
+    advancedMounts:
+      main:
+        app-server:
+          - path: /etc/codex-secrets/app-server-token
+            subPath: app-server-token
+            readOnly: true
+  kubernetes-credentials:
+    type: custom
+    volumeSpec:
+      projected:
+        defaultMode: 288
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3600
+              path: token
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+                - key: ca.crt
+                  path: ca.crt
+          - downwardAPI:
+              items:
+                - path: namespace
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+    advancedMounts:
+      main:
+        app-server:
+          - path: /var/run/secrets/kubernetes.io/serviceaccount
+            readOnly: true
+        remote-control:
+          - path: /var/run/secrets/kubernetes.io/serviceaccount
+            readOnly: true
+  kubernetes-config:
+    type: configMap
+    identifier: kubernetes
+    advancedMounts:
+      main:
+        app-server:
+          - path: /etc/codex-kubernetes/config
+            subPath: config
+            readOnly: true
+        remote-control:
+          - path: /etc/codex-kubernetes/config
+            subPath: config
+            readOnly: true
+  shared-memory:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 2Gi
+    advancedMounts:
+      main:
+        app-server:
+          - path: /dev/shm
+        remote-control:
+          - path: /dev/shm
+  tmp:
+    type: emptyDir
+    sizeLimit: 20Gi
+    advancedMounts:
+      main:
+        app-server:
+          - path: /tmp
+        remote-control:
+          - path: /tmp
+
+service:
+  main:
+    controller: main
+    ports:
+      websocket:
+        port: 4500
+
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: codex.{{ .Values.domain }}
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: main
+              port: websocket
+    tls:
+      - secretName: wildcard-home-mrdvince-me-tls
+        hosts:
+          - codex.{{ .Values.domain }}
+
+rawResources:
+  kubernetes-admin-binding:
+    forceRename: codex-kubernetes-admin
+    manifest:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: codex-kubernetes-admin
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+        - kind: ServiceAccount
+          name: codex
+          namespace: scriptorium
+  network-policy:
+    forceRename: codex
+    manifest:
+      apiVersion: cilium.io/v2
+      kind: CiliumNetworkPolicy
+      metadata:
+        name: codex
+      specs:
+        - description: isolate the namespace while preserving internet and kubernetes access
+          endpointSelector: {}
+          ingress:
+            - fromEndpoints:
+                - matchLabels: {}
+            - fromEntities:
+                - host
+              toPorts:
+                - ports:
+                    - port: "4500"
+                      protocol: TCP
+          egress:
+            - toEndpoints:
+                - matchLabels: {}
+            - toEndpoints:
+                - matchLabels:
+                    "k8s:io.kubernetes.pod.namespace": kube-system
+                    "k8s:k8s-app": kube-dns
+              toPorts:
+                - ports:
+                    - port: "53"
+                      protocol: UDP
+                    - port: "53"
+                      protocol: TCP
+            - toEntities:
+                - world
+            - toEntities:
+                - kube-apiserver
+              toPorts:
+                - ports:
+                    - port: "6443"
+                      protocol: TCP
+        - description: allow the app-server only through traefik
+          endpointSelector:
+            matchLabels:
+              app.kubernetes.io/instance: codex
+          ingress:
+            - fromEndpoints:
+                - matchLabels:
+                    "k8s:io.kubernetes.pod.namespace": traefik
+                    app.kubernetes.io/name: traefik
+                    app.kubernetes.io/instance: traefik-traefik
+              toPorts:
+                - ports:
+                    - port: "4500"
+                      protocol: TCP
