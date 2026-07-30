@@ -8,7 +8,7 @@ controllers:
       initialize-data:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/codex
-          tag: "0.146.0-1"
+          tag: "0.146.0-2"
         command:
           - /bin/bash
         args:
@@ -45,7 +45,7 @@ controllers:
       app-server:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/codex
-          tag: "0.146.0-1"
+          tag: "0.146.0-2"
         args:
           - codex
           - app-server
@@ -100,7 +100,7 @@ controllers:
       remote-control:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/codex
-          tag: "0.146.0-1"
+          tag: "0.146.0-2"
         args:
           - codex-remote-control
         env:
@@ -336,35 +336,8 @@ rawResources:
                     - port: "4500"
                       protocol: TCP
           egress:
-            - toEndpoints:
-                - matchLabels: {}
-            - toEndpoints:
-                - matchLabels:
-                    "k8s:io.kubernetes.pod.namespace": kube-system
-                    "k8s:k8s-app": kube-dns
-              toPorts:
-                - ports:
-                    - port: "53"
-                      protocol: UDP
-                    - port: "53"
-                      protocol: TCP
-            - toEndpoints:
-                - matchLabels:
-                    "k8s:io.kubernetes.pod.namespace": traefik
-                    app.kubernetes.io/name: traefik
-                    app.kubernetes.io/instance: traefik-traefik
-              toPorts:
-                - ports:
-                    - port: "22"
-                      protocol: TCP
             - toEntities:
-                - world
-            - toEntities:
-                - kube-apiserver
-              toPorts:
-                - ports:
-                    - port: "6443"
-                      protocol: TCP
+                - all
         - description: allow the app-server only through traefik
           endpointSelector:
             matchLabels:
