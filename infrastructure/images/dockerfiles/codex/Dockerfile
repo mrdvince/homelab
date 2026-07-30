@@ -99,7 +99,7 @@ FROM ${BASE_IMAGE}
 
 LABEL org.opencontainers.image.source="https://github.com/openai/codex" \
       org.opencontainers.image.description="codex with the homelab cli toolchain and persistent linuxbrew" \
-      org.opencontainers.image.version="0.146.0-1"
+      org.opencontainers.image.version="0.146.0-2"
 
 ENV CODEX_HOME=/opt/data/home/.codex \
     CODEX_SQLITE_HOME=/opt/data/home/.codex \

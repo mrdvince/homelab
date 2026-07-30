@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC2317
 stop_remote_control() {
   codex remote-control stop >/dev/null 2>&1 || true
 }
@@ -11,6 +12,10 @@ until codex login status >/dev/null 2>&1; do
   echo "waiting for codex authentication"
   sleep 10
 done
+
+install -d -m 0750 "$CODEX_HOME/packages/standalone/current"
+ln -sfn "$(command -v codex)" "$CODEX_HOME/packages/standalone/current/codex"
+rm -rf "$CODEX_HOME/app-server-daemon"
 
 codex remote-control start
 
