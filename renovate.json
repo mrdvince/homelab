@@ -9,7 +9,7 @@
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
   "postUpgradeTasks": {
-    "commands": ["nu ci/images.nu generate-ci"],
+    "commands": ["nu ci/images.nu generate-ci --skip-render"],
     "fileFilters": ["ci/generated-images.gitlab-ci.yml"],
     "executionMode": "branch"
   },
@@ -73,6 +73,14 @@
         "infrastructure/images/dockerfiles/**"
       ],
       "groupName": "container images"
+    },
+    {
+      "description": "keep hermes updates out of bulk image bumps",
+      "matchPackageNames": [
+        "docker.io/nousresearch/hermes-agent",
+        "nousresearch/hermes-agent"
+      ],
+      "groupName": "hermes"
     },
     {
       "description": "keep alloy journal libraries aligned with the debian 12 distroless base",

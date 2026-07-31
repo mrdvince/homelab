@@ -25,7 +25,7 @@ variables:
   BUILDER_BOOTSTRAP_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
   BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
   # renovate: datasource=npm depName=renovate
-  RENOVATE_IMAGE: "registry.home.mrdvince.me/homelab/renovate:43.248.0"
+  RENOVATE_IMAGE: "registry.home.mrdvince.me/homelab/renovate:43.279.1"
 
 renovate:
   stage: renovate
@@ -36,7 +36,7 @@ renovate:
     GIT_STRATEGY: none
     RENOVATE_PLATFORM: gitlab
     RENOVATE_ENDPOINT: "$CI_API_V4_URL"
-    RENOVATE_ALLOWED_COMMANDS: '["^nu ci/images\\.nu generate-ci$"]'
+    RENOVATE_ALLOWED_COMMANDS: '["^nu ci/images\\.nu generate-ci --skip-render$"]'
     LOG_LEVEL: info
   script:
     - renovate "$CI_PROJECT_PATH"
@@ -51,7 +51,12 @@ verify:image-inventory:
     name: $BUILDER_BOOTSTRAP_IMAGE
     entrypoint: [""]
   script:
-    - nu ci/images.nu verify-ci
+    - |
+      if [ -n "${SOPS_AGE_KEY:-}" ]; then
+        nu ci/images.nu verify-ci
+      else
+        nu ci/images.nu verify-ci --skip-render
+      fi
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
