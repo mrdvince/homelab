@@ -1,4 +1,4 @@
-ARG HERMES_IMAGE=docker.io/nousresearch/hermes-agent:v2026.7.20@sha256:f7b35053268f532f98955195c909f15a230470fbcbdacaa9fdecb95707dad04a
+ARG HERMES_IMAGE=docker.io/nousresearch/hermes-agent:v2026.7.1@sha256:b6c019227889e6675424a2b6223b2cafdd36bf7d1048d1ddd8e043b880d6cc0f
 
 FROM ${HERMES_IMAGE} AS upstream
 
