@@ -36,10 +36,15 @@ renovate:
     GIT_STRATEGY: none
     RENOVATE_PLATFORM: gitlab
     RENOVATE_ENDPOINT: "$CI_API_V4_URL"
-    RENOVATE_ALLOWED_COMMANDS: '["^nu ci/images\\.nu generate-ci --skip-render$"]'
+    RENOVATE_ALLOWED_COMMANDS: '["^nu ci/images\\.nu generate-ci$"]'
     LOG_LEVEL: info
   script:
-    - renovate "$CI_PROJECT_PATH"
+    - |
+      test -n "${SOPS_AGE_KEY:-}"
+      export RENOVATE_SECRETS
+      RENOVATE_SECRETS="$(node -e 'process.stdout.write(JSON.stringify({SOPS_AGE_KEY: process.env.SOPS_AGE_KEY}))')"
+      export RENOVATE_CUSTOM_ENV_VARIABLES='{"SOPS_AGE_KEY":"{{ secrets.SOPS_AGE_KEY }}"}'
+      renovate "$CI_PROJECT_PATH"
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $RENOVATE == "true"
     - if: $RENOVATE == "true"
