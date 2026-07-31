@@ -25,7 +25,7 @@ variables:
   BUILDER_BOOTSTRAP_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
   BUILDER_IMAGE: "registry.home.mrdvince.me/homelab/builder:1.4.3"
   # renovate: datasource=npm depName=renovate
-  RENOVATE_IMAGE: "registry.home.mrdvince.me/homelab/renovate:43.279.1"
+  RENOVATE_IMAGE: "registry.home.mrdvince.me/homelab/renovate:43.280.0"
 
 renovate:
   stage: renovate

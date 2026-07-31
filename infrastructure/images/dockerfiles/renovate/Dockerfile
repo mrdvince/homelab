@@ -1,7 +1,7 @@
 FROM registry.home.mrdvince.me/homelab/builder:1.4.3
 
 # renovate: datasource=npm depName=renovate
-ARG RENOVATE_VERSION=43.279.1
+ARG RENOVATE_VERSION=43.280.0
 
 RUN apk add --no-cache \
     nodejs \
