@@ -83,6 +83,11 @@
       "groupName": "hermes"
     },
     {
+      "description": "keep mongodb updates out of bulk image bumps",
+      "matchPackageNames": ["library/mongo"],
+      "groupName": "mongodb"
+    },
+    {
       "description": "keep alloy journal libraries aligned with the debian 12 distroless base",
       "matchManagers": ["dockerfile"],
       "matchFileNames": ["infrastructure/images/dockerfiles/alloy/Dockerfile"],

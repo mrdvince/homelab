@@ -864,13 +864,13 @@ sync:chart:registry-gitlab-com-gitlab-org-gitlab-runner-alpine-v19-0-1:
       changes:
         - apps/services/gitlab/**/*
         - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-actualbudget-actual-server-26-6-0:
+sync:chart:registry-home-mrdvince-me-actualbudget-actual-server-26-7-0:
   extends: '.sync-chart-image'
   variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/actualbudget/actual-server:26.6.0
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/actualbudget/actual-server:26.7.0
   rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/actualbudget/actual-server:26.6.0"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-actualbudget-actual-server-26-6-0/
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/actualbudget/actual-server:26.7.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-actualbudget-actual-server-26-7-0/
     - if: $SYNC_UPSTREAM_BLOCK == "actual"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:actual/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
@@ -906,13 +906,13 @@ sync:chart:registry-home-mrdvince-me-barassistant-salt-rim-4-15-0:
       changes:
         - apps/services/bar-assistant/**/*
         - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-barassistant-server-5-15-2:
+sync:chart:registry-home-mrdvince-me-barassistant-server-5-15-3:
   extends: '.sync-chart-image'
   variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/barassistant/server:5.15.2
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/barassistant/server:5.15.3
   rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/barassistant/server:5.15.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-barassistant-server-5-15-2/
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/barassistant/server:5.15.3"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-barassistant-server-5-15-3/
     - if: $SYNC_UPSTREAM_BLOCK == "bar-assistant"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:bar-assistant/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
@@ -1116,13 +1116,13 @@ sync:chart:registry-home-mrdvince-me-freshrss-freshrss-1-29-1:
       changes:
         - apps/services/freshrss/**/*
         - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-getmeili-meilisearch-v1-48:
+sync:chart:registry-home-mrdvince-me-getmeili-meilisearch-v1-50:
   extends: '.sync-chart-image'
   variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/getmeili/meilisearch:v1.48
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/getmeili/meilisearch:v1.50
   rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/getmeili/meilisearch:v1.48"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-getmeili-meilisearch-v1-48/
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/getmeili/meilisearch:v1.50"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-getmeili-meilisearch-v1-50/
     - if: $SYNC_UPSTREAM_BLOCK == "bar-assistant"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:bar-assistant/
     - if: $SYNC_UPSTREAM_BLOCK == "karakeep"
@@ -1220,13 +1220,13 @@ sync:chart:registry-home-mrdvince-me-iib0011-omni-tools-0-6-0:
       changes:
         - apps/services/omni-tools/**/*
         - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-infisical-infisical-v0-160-7:
+sync:chart:registry-home-mrdvince-me-infisical-infisical-v0-162-13:
   extends: '.sync-chart-image'
   variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/infisical/infisical:v0.160.7
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/infisical/infisical:v0.162.13
   rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/infisical/infisical:v0.160.7"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-infisical-infisical-v0-160-7/
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/infisical/infisical:v0.162.13"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-infisical-infisical-v0-162-13/
     - if: $SYNC_UPSTREAM_BLOCK == "infisical"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:infisical/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
@@ -1234,13 +1234,13 @@ sync:chart:registry-home-mrdvince-me-infisical-infisical-v0-160-7:
       changes:
         - apps/services/infisical/**/*
         - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-jgraph-drawio-30-2-6:
+sync:chart:registry-home-mrdvince-me-jgraph-drawio-30-4-3:
   extends: '.sync-chart-image'
   variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/jgraph/drawio:30.2.6
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/jgraph/drawio:30.4.3
   rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/jgraph/drawio:30.2.6"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-jgraph-drawio-30-2-6/
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/jgraph/drawio:30.4.3"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-jgraph-drawio-30-4-3/
     - if: $SYNC_UPSTREAM_BLOCK == "drawio"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:drawio/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
@@ -1316,13 +1316,13 @@ sync:chart:registry-home-mrdvince-me-library-mariadb-11-4-8-sha256-bc474f00629f0
       changes:
         - apps/services/booklore/**/*
         - infrastructure/images/config.yaml
-sync:chart:registry-home-mrdvince-me-library-mongo-8-0-20:
+sync:chart:registry-home-mrdvince-me-library-mongo-8-3-7:
   extends: '.sync-chart-image'
   variables:
-    IMAGE_TO_SYNC: registry.home.mrdvince.me/library/mongo:8.0.20
+    IMAGE_TO_SYNC: registry.home.mrdvince.me/library/mongo:8.3.7
   rules:
-    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/library/mongo:8.0.20"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-library-mongo-8-0-20/
+    - if: $SYNC_UPSTREAM_IMAGE == "registry.home.mrdvince.me/library/mongo:8.3.7"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:registry-home-mrdvince-me-library-mongo-8-3-7/
     - if: $SYNC_UPSTREAM_BLOCK == "librechat"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-upstream:librechat/
     - if: $SYNC_UPSTREAM_IMAGES == "true"
@@ -1829,13 +1829,13 @@ sync:chart:registry-k8s-io-sig-storage-snapshot-controller-v8-6-0:
       changes:
         - apps/storage/nfs-csi/**/*
         - infrastructure/images/config.yaml
-sync:local:docker-io-actualbudget-actual-server-26-6-0:
+sync:local:docker-io-actualbudget-actual-server-26-7-0:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/actualbudget/actual-server:26.6.0
+    IMAGE_TO_SYNC: docker.io/actualbudget/actual-server:26.7.0
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/actualbudget/actual-server:26.6.0"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-actualbudget-actual-server-26-6-0/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/actualbudget/actual-server:26.7.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-actualbudget-actual-server-26-7-0/
     - if: $SYNC_LOCAL_BLOCK == "apps"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:apps/
     - if: $SYNC_LOCAL_IMAGES == "true"
@@ -1868,13 +1868,13 @@ sync:local:docker-io-barassistant-salt-rim-4-15-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/apps.yaml
-sync:local:docker-io-barassistant-server-5-15-2:
+sync:local:docker-io-barassistant-server-5-15-3:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/barassistant/server:5.15.2
+    IMAGE_TO_SYNC: docker.io/barassistant/server:5.15.3
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/barassistant/server:5.15.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-barassistant-server-5-15-2/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/barassistant/server:5.15.3"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-barassistant-server-5-15-3/
     - if: $SYNC_LOCAL_BLOCK == "apps"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:apps/
     - if: $SYNC_LOCAL_IMAGES == "true"
@@ -1894,13 +1894,13 @@ sync:local:docker-io-freshrss-freshrss-1-29-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/freshrss.yaml
-sync:local:docker-io-getmeili-meilisearch-v1-48:
+sync:local:docker-io-getmeili-meilisearch-v1-50:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/getmeili/meilisearch:v1.48
+    IMAGE_TO_SYNC: docker.io/getmeili/meilisearch:v1.50
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/getmeili/meilisearch:v1.48"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-getmeili-meilisearch-v1-48/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/getmeili/meilisearch:v1.50"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-getmeili-meilisearch-v1-50/
     - if: $SYNC_LOCAL_BLOCK == "apps"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:apps/
     - if: $SYNC_LOCAL_IMAGES == "true"
@@ -1920,26 +1920,26 @@ sync:local:docker-io-iib0011-omni-tools-0-6-0:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/omni-tools.yaml
-sync:local:docker-io-infisical-infisical-v0-160-7:
+sync:local:docker-io-infisical-infisical-v0-162-13:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/infisical/infisical:v0.160.7
+    IMAGE_TO_SYNC: docker.io/infisical/infisical:v0.162.13
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/infisical/infisical:v0.160.7"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-infisical-infisical-v0-160-7/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/infisical/infisical:v0.162.13"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-infisical-infisical-v0-162-13/
     - if: $SYNC_LOCAL_BLOCK == "infisical"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:infisical/
     - if: $SYNC_LOCAL_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/infisical.yaml
-sync:local:docker-io-jgraph-drawio-30-2-6:
+sync:local:docker-io-jgraph-drawio-30-4-3:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/jgraph/drawio:30.2.6
+    IMAGE_TO_SYNC: docker.io/jgraph/drawio:30.4.3
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/jgraph/drawio:30.2.6"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-jgraph-drawio-30-2-6/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/jgraph/drawio:30.4.3"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-jgraph-drawio-30-4-3/
     - if: $SYNC_LOCAL_BLOCK == "drawio"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:drawio/
     - if: $SYNC_LOCAL_IMAGES == "true"
@@ -2011,52 +2011,52 @@ sync:local:docker-io-nousresearch-hermes-agent-v2026-7-1:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/hermes.yaml
-sync:local:docker-io-penpotapp-backend-2-16-2:
+sync:local:docker-io-penpotapp-backend-2-17-0:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/penpotapp/backend:2.16.2
+    IMAGE_TO_SYNC: docker.io/penpotapp/backend:2.17.0
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/backend:2.16.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-backend-2-16-2/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/backend:2.17.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-backend-2-17-0/
     - if: $SYNC_LOCAL_BLOCK == "penpot"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
     - if: $SYNC_LOCAL_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/penpot.yaml
-sync:local:docker-io-penpotapp-exporter-2-16-2:
+sync:local:docker-io-penpotapp-exporter-2-17-0:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/penpotapp/exporter:2.16.2
+    IMAGE_TO_SYNC: docker.io/penpotapp/exporter:2.17.0
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/exporter:2.16.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-exporter-2-16-2/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/exporter:2.17.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-exporter-2-17-0/
     - if: $SYNC_LOCAL_BLOCK == "penpot"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
     - if: $SYNC_LOCAL_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/penpot.yaml
-sync:local:docker-io-penpotapp-frontend-2-16-2:
+sync:local:docker-io-penpotapp-frontend-2-17-0:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/penpotapp/frontend:2.16.2
+    IMAGE_TO_SYNC: docker.io/penpotapp/frontend:2.17.0
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/frontend:2.16.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-frontend-2-16-2/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/frontend:2.17.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-frontend-2-17-0/
     - if: $SYNC_LOCAL_BLOCK == "penpot"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
     - if: $SYNC_LOCAL_IMAGES == "true"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/penpot.yaml
-sync:local:docker-io-penpotapp-mcp-2-16-2:
+sync:local:docker-io-penpotapp-mcp-2-17-0:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/penpotapp/mcp:2.16.2
+    IMAGE_TO_SYNC: docker.io/penpotapp/mcp:2.17.0
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/mcp:2.16.2"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-mcp-2-16-2/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/penpotapp/mcp:2.17.0"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-penpotapp-mcp-2-17-0/
     - if: $SYNC_LOCAL_BLOCK == "penpot"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:penpot/
     - if: $SYNC_LOCAL_IMAGES == "true"
@@ -2102,13 +2102,13 @@ sync:local:docker-io-redis-8-alpine:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/redis.yaml
-sync:local:docker-io-renovate-renovate-43-248-0:
+sync:local:docker-io-renovate-renovate-43-279-1:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/renovate/renovate:43.248.0
+    IMAGE_TO_SYNC: docker.io/renovate/renovate:43.279.1
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/renovate/renovate:43.248.0"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-renovate-renovate-43-248-0/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/renovate/renovate:43.279.1"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-renovate-renovate-43-279-1/
     - if: $SYNC_LOCAL_BLOCK == "renovate"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:renovate/
     - if: $SYNC_LOCAL_IMAGES == "true"

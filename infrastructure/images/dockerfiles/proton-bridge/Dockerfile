@@ -1,5 +1,5 @@
 # renovate: datasource=docker depName=golang
-FROM golang:1.26.2-bookworm@sha256:47ce5636e9936b2c5cbf708925578ef386b4f8872aec74a67bd13a627d242b19 AS build
+FROM golang:1.26.5-bookworm@sha256:1ecb7edf62a0408027bd5729dfd6b1b8766e578e8df93995b225dfd0944eb651 AS build
 
 # renovate: datasource=github-releases depName=ProtonMail/proton-bridge extractVersion=^v(?<version>.*)$
 ARG BRIDGE_VERSION=3.25.0
