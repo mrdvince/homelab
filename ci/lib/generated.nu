@@ -172,7 +172,7 @@ export def chart-rows-from-pipeline [pipeline: record] {
 
 export def chart-source-hash [] {
   let source_files = (
-    ^git ls-files -- apps charts infrastructure/charts infrastructure/images/config.yaml
+    ^git ls-files -- apps charts infrastructure/charts infrastructure/images/config.yaml infrastructure/images/images
     | lines
     | where {|path| $path | is-not-empty }
     | sort
