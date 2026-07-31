@@ -20,4 +20,12 @@ def main [] {
   )
   assert equal ($runtime_manager.managerFilePatterns | length) 3
   assert equal $runtime_manager.datasourceTemplate npm
+
+  let hermes_rule = (
+    $config.packageRules
+    | where description? == "keep hermes updates out of bulk image bumps"
+    | first
+  )
+  assert equal $hermes_rule.groupName hermes
+  assert equal ($hermes_rule.matchPackageNames | length) 2
 }

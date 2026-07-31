@@ -75,6 +75,14 @@
       "groupName": "container images"
     },
     {
+      "description": "keep hermes updates out of bulk image bumps",
+      "matchPackageNames": [
+        "docker.io/nousresearch/hermes-agent",
+        "nousresearch/hermes-agent"
+      ],
+      "groupName": "hermes"
+    },
+    {
       "description": "keep alloy journal libraries aligned with the debian 12 distroless base",
       "matchManagers": ["dockerfile"],
       "matchFileNames": ["infrastructure/images/dockerfiles/alloy/Dockerfile"],
