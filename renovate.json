@@ -9,7 +9,7 @@
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
   "postUpgradeTasks": {
-    "commands": ["nu ci/images.nu generate-ci"],
+    "commands": ["nu ci/images.nu generate-ci --skip-render"],
     "fileFilters": ["ci/generated-images.gitlab-ci.yml"],
     "executionMode": "branch"
   },

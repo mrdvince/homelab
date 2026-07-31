@@ -80,8 +80,9 @@ export def render-upstream-manifests [cfg: record] {
   let helmfile_paths = (all-helmfile-paths)
   let render_threads = if $nu.os-info.name == "macos" { 1 } else { $cfg.render_threads }
 
-  $helmfile_paths
-  | par-each --threads $render_threads {|helmfile_path|
+  let render_results = (
+    $helmfile_paths
+    | par-each --threads $render_threads {|helmfile_path|
       let output_name = (
         $helmfile_path
         | str replace -a "/" "__"
@@ -102,13 +103,31 @@ export def render-upstream-manifests [cfg: record] {
 
       mkdir $helm_home
       print $"rendering ($helmfile_path)"
-      with-env $helm_env {
-        ^helmfile -f $helmfile_path -e $cfg.env_name template --include-crds --skip-tests -q --state-values-set renderStockImages=true | save -f $output_path
+      let result = (with-env $helm_env {
+        ^helmfile -f $helmfile_path -e $cfg.env_name template --include-crds --skip-tests -q --state-values-set renderStockImages=true
+        | complete
+      })
+
+      if $result.exit_code == 0 {
+        $result.stdout | save -f $output_path
       }
 
-      {source_file: $helmfile_path, rendered_file: $output_path}
+      {
+        source_file: $helmfile_path
+        rendered_file: $output_path
+        exit_code: $result.exit_code
+      }
     }
-  | sort-by source_file
+    | sort-by source_file
+  )
+  let failures = ($render_results | where exit_code != 0)
+
+  if ($failures | is-not-empty) {
+    let failed_paths = ($failures | get source_file | str join ", ")
+    error make {msg: $"failed to render Helmfiles: ($failed_paths)"}
+  }
+
+  $render_results | reject exit_code
 }
 
 export def extract-images [rendered_file: string] {

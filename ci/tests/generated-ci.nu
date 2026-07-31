@@ -1,7 +1,11 @@
 #!/usr/bin/env nu
 
 use std/assert
-use ../lib/generated.nu [pipeline-record]
+use ../lib/generated.nu [
+  chart-rows-from-pipeline
+  chart-source-hash-from-pipeline
+  pipeline-record
+]
 
 def main [] {
   let builds = [
@@ -111,6 +115,12 @@ def main [] {
     | first 2
   ) [apps/core/example/**/* apps/services/example/**/*]
   assert equal ($pipeline | get sync:local:ghcr-io-example-service-v4-5-6 | get rules | last | get changes | first) infrastructure/images/images/local/example.yaml
+  assert equal (chart-rows-from-pipeline $pipeline) ($charts | sort-by image source_file)
+
+  let pipeline_with_hash = (pipeline-record $builds $charts $locals "test-hash")
+  assert equal (
+    chart-source-hash-from-pipeline $pipeline_with_hash
+  ) "test-hash"
 
   let yaml = ($pipeline | to yaml)
   assert not ($yaml =~ 'trigger:')

@@ -9,7 +9,7 @@ def main [] {
   assert equal $config.branchConcurrentLimit 0
   assert equal $config.prConcurrentLimit 0
   assert equal $config.prHourlyLimit 0
-  assert equal $task.commands ["nu ci/images.nu generate-ci"]
+  assert equal $task.commands ["nu ci/images.nu generate-ci --skip-render"]
   assert equal $task.fileFilters [ci/generated-images.gitlab-ci.yml]
   assert equal $task.executionMode branch
 
