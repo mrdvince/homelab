@@ -1972,13 +1972,13 @@ sync:local:docker-io-library-mariadb-11-4-8-sha256-bc474f00629f0123c10f9e1bca193
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - infrastructure/images/images/local/booklore.yaml
-sync:local:docker-io-library-mongo-8-3-7:
+sync:local:docker-io-library-mongo-8-0-20:
   extends: '.sync-local-image'
   variables:
-    IMAGE_TO_SYNC: docker.io/library/mongo:8.3.7
+    IMAGE_TO_SYNC: docker.io/library/mongo:8.0.20
   rules:
-    - if: $SYNC_LOCAL_IMAGE == "docker.io/library/mongo:8.3.7"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-library-mongo-8-3-7/
+    - if: $SYNC_LOCAL_IMAGE == "docker.io/library/mongo:8.0.20"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:docker-io-library-mongo-8-0-20/
     - if: $SYNC_LOCAL_BLOCK == "librechat"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /sync-local:librechat/
     - if: $SYNC_LOCAL_IMAGES == "true"

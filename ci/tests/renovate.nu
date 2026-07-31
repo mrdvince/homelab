@@ -28,4 +28,12 @@ def main [] {
   )
   assert equal $hermes_rule.groupName hermes
   assert equal ($hermes_rule.matchPackageNames | length) 2
+
+  let mongodb_rule = (
+    $config.packageRules
+    | where description? == "keep mongodb updates out of bulk image bumps"
+    | first
+  )
+  assert equal $mongodb_rule.groupName mongodb
+  assert equal $mongodb_rule.matchPackageNames [library/mongo]
 }
