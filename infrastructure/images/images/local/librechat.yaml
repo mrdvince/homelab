@@ -4,4 +4,4 @@ librechatImages:
     tag: "v0.8.7"
   - registry: docker.io
     image: library/mongo
-    tag: "8.0.20"
+    tag: "8.3.7"
