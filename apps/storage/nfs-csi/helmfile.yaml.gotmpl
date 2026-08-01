@@ -5,8 +5,6 @@ environments:
       - ../../../infrastructure/images/images/**/*.yaml
       - nfs:
           share: /mnt/swamp/moss/aion
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl

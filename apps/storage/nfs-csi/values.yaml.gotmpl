@@ -15,7 +15,7 @@ controller:
 storageClasses:
   - name: nfs-csi
     parameters:
-      server: {{ .Values.nfs_server }}
+      server: {{ .Values.nfsServer }}
       share: {{ .Values.nfs.share }}
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
@@ -23,7 +23,7 @@ storageClasses:
       - nfsvers=4.1
   - name: nfs-csi-retain
     parameters:
-      server: {{ .Values.nfs_server }}
+      server: {{ .Values.nfsServer }}
       share: {{ .Values.nfs.share }}
     reclaimPolicy: Retain
     volumeBindingMode: Immediate

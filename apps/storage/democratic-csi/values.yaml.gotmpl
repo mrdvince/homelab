@@ -60,13 +60,13 @@ driver:
     instance_id: aion
     httpConnection:
       protocol: https
-      host: {{ .Values.nfs_server }}
+      host: {{ .Values.nfsServer }}
       port: 443
       apiKey: {{ .Values.truenas.democratic_csi.api_key | quote }}
       allowInsecure: true
       apiVersion: 2
     sshConnection:
-      host: {{ .Values.nfs_server }}
+      host: {{ .Values.nfsServer }}
       port: 22
       username: {{ .Values.truenas.democratic_csi.username }}
       privateKey: |
@@ -79,7 +79,7 @@ driver:
       zvolEnableReservation: false
       zvolBlocksize: 16K
     iscsi:
-      targetPortal: {{ .Values.nfs_server }}
+      targetPortal: {{ .Values.nfsServer }}
       targetPortals: []
       namePrefix: csi-
       nameSuffix: "-aion"
