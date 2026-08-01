@@ -19,6 +19,7 @@ scopedNamespaces:
   - apps
   - argocd
   - gitlab
+  - cnpg-system
 scopedRBAC: true
 installCRDs: true
 {{ else if eq .Release.Name "homelab" }}
@@ -158,4 +159,97 @@ rawResources:
               engineVersion: v1
               data:
                 registry.json: {{ `{{ "{{ .helm_registry_config.Value }}" }}` | quote }}
+
+  apps-cnpgbackup:
+    forceRename: cnpgbackup
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: cnpgbackup
+        namespace: apps
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /s3
+        targets:
+          - name: cnpgbackup
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                ACCESS_KEY_ID: {{ `{{ "{{ .accessKey.Value }}" }}` | quote }}
+                ACCESS_SECRET_KEY: {{ `{{ "{{ .secretKey.Value }}" }}` | quote }}
+
+  gitlab-cnpgbackup:
+    forceRename: cnpgbackup
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: cnpgbackup
+        namespace: gitlab
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /s3
+        targets:
+          - name: cnpgbackup
+            namespace: gitlab
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                ACCESS_KEY_ID: {{ `{{ "{{ .accessKey.Value }}" }}` | quote }}
+                ACCESS_SECRET_KEY: {{ `{{ "{{ .secretKey.Value }}" }}` | quote }}
+
+  cnpgsystem-cnpgbackup:
+    forceRename: cnpgbackup
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: cnpgbackup
+        namespace: cnpg-system
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /s3
+        targets:
+          - name: cnpgbackup
+            namespace: cnpg-system
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                ACCESS_KEY_ID: {{ `{{ "{{ .accessKey.Value }}" }}` | quote }}
+                ACCESS_SECRET_KEY: {{ `{{ "{{ .secretKey.Value }}" }}` | quote }}
 {{ end }}
