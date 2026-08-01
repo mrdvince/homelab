@@ -15,8 +15,6 @@ releases:
     installed: false
     chart: zot/upstream/cnpg/cluster
     version: 0.7.0
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - postgres/values.yaml.gotmpl
 
@@ -25,8 +23,6 @@ releases:
     installed: false
     chart: zot/upstream/netbox/netbox
     version: 8.3.30
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - netbox/values.yaml.gotmpl
     needs:

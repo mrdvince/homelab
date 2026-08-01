@@ -14,8 +14,6 @@ releases:
     namespace: gitlab
     chart: zot/upstream/cnpg/cluster
     version: 0.7.0
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - postgres/values.yaml.gotmpl
 
@@ -23,8 +21,6 @@ releases:
     namespace: gitlab
     chart: zot/internal/secret
     version: 0.1.0
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - fullnameOverride: gitlab-s3-connection
         stringData:
@@ -40,8 +36,6 @@ releases:
     namespace: gitlab
     chart: zot/internal/secret
     version: 0.1.0
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - fullnameOverride: gitlab-s3-backup-connection
         stringData:
@@ -60,8 +54,6 @@ releases:
     namespace: gitlab
     chart: zot/internal/secret
     version: 0.1.0
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - fullnameOverride: gitlab-oidc-provider
         stringData:
@@ -89,8 +81,6 @@ releases:
     namespace: gitlab
     chart: zot/upstream/bjw-s/app-template
     version: 4.6.2
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - redis/values.yaml.gotmpl
 
@@ -98,8 +88,6 @@ releases:
     namespace: gitlab
     chart: zot/upstream/gitlab/gitlab
     version: 10.1.1
-    transformers:
-      - ../../_helmfile/sync.yaml
     needs:
       - gitlab-postgres
       - gitlab-redis

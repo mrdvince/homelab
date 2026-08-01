@@ -14,8 +14,6 @@ releases:
     namespace: apps
     chart: zot/upstream/cnpg/cluster
     version: 0.7.0
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - postgres/values.yaml.gotmpl
 
@@ -23,8 +21,6 @@ releases:
     namespace: apps
     chart: zot/upstream/bjw-s/app-template
     version: 5.0.1
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - valkey/values.yaml.gotmpl
 
@@ -32,8 +28,6 @@ releases:
     namespace: apps
     chart: zot/internal/secret
     version: 0.1.0
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - fullnameOverride: penpot
         data:
@@ -47,8 +41,6 @@ releases:
     namespace: apps
     chart: zot/upstream/penpot/penpot
     version: 1.6.1
-    transformers:
-      - ../../_helmfile/sync.yaml
     values:
       - values.yaml.gotmpl
     needs:

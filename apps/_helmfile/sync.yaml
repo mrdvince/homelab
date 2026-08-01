@@ -1,9 +1,0 @@
-apiVersion: builtin
-kind: AnnotationsTransformer
-metadata:
-  name: sync
-annotations:
-  argocd.argoproj.io/sync-options: ServerSideApply=false
-fieldSpecs:
-  - path: metadata/annotations
-    create: true
