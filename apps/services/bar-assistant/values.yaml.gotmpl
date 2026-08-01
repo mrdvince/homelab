@@ -2,17 +2,16 @@ podSecurityContext:
   fsGroup: 33
 
 api:
+  authentik:
+    existingSecret: barassistantinfisical
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 0).image }}
     tag: "{{ (index .Values.barAssistant 0).tag }}"
   env:
     APP_URL: https://bar.{{ .Values.domain }}
     ALLOW_REGISTRATION: "true"
-    MEILISEARCH_KEY: {{ .Values.meilisearch_master_key }}
     # authentik SSO
     AUTHENTIK_BASE_URL: https://auth.{{ .Values.domain }}
-    AUTHENTIK_CLIENT_ID: {{ index .Values "bar-assistant-oidc" "client_id" }}
-    AUTHENTIK_CLIENT_SECRET: {{ index .Values "bar-assistant-oidc" "client_secret" }}
     AUTHENTIK_REDIRECT_URI: https://bar.{{ .Values.domain }}/oauth/callback
   resources:
     limits:
@@ -47,11 +46,11 @@ valkey:
 
 meilisearch:
   enabled: true
+  auth:
+    existingMasterKeySecret: barassistantinfisical
   image:
     repository: {{ .Values.imageRegistry }}/{{ (index .Values.barAssistant 3).image }}
     tag: "{{ (index .Values.barAssistant 3).tag }}"
-  environment:
-    MEILI_MASTER_KEY: {{ .Values.meilisearch_master_key }}
   persistence:
     enabled: true
     storageClass: nfs-csi-retain
