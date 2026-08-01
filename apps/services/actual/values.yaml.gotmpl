@@ -45,5 +45,4 @@ login:
     discoveryUrl: https://auth.{{ .Values.domain }}/application/o/actual/
     authMethod: openid
     enforce: false
-    clientId: {{ .Values.actual.client_id }}
-    clientSecret: {{ .Values.actual.client_secret }}
+    existingSecret: actualoidc
