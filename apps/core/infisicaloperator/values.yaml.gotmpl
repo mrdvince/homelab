@@ -252,4 +252,57 @@ rawResources:
               data:
                 ACCESS_KEY_ID: {{ `{{ "{{ .accessKey.Value }}" }}` | quote }}
                 ACCESS_SECRET_KEY: {{ `{{ "{{ .secretKey.Value }}" }}` | quote }}
+
+  gitlab-s3:
+    forceRename: gitlabs3
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: gitlabs3
+        namespace: gitlab
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /s3
+        targets:
+          - name: gitlabs3connection
+            namespace: gitlab
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                connection: |
+                  provider: AWS
+                  region: home
+                  aws_access_key_id: {{ `{{ "{{ .accessKey.Value }}" }}` }}
+                  aws_secret_access_key: {{ `{{ "{{ .secretKey.Value }}" }}` }}
+                  endpoint: https://s3.{{ .Values.domain }}
+                  path_style: true
+          - name: gitlabs3backup
+            namespace: gitlab
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                connection: |
+                  [default]
+                  access_key = {{ `{{ "{{ .accessKey.Value }}" }}` }}
+                  secret_key = {{ `{{ "{{ .secretKey.Value }}" }}` }}
+                  bucket_location = home
+                  host_base = s3.{{ .Values.domain }}
+                  host_bucket = s3.{{ .Values.domain }}
+                  use_https = True
+                  signature_v2 = False
+                  preserve_attrs = False
 {{ end }}
