@@ -39,17 +39,17 @@ provider:
       - name: ADGUARD_URL
         valueFrom:
           secretKeyRef:
-            name: adguard-auth-secret
+            name: adguardauth
             key: url
       - name: ADGUARD_USER
         valueFrom:
           secretKeyRef:
-            name: adguard-auth-secret
+            name: adguardauth
             key: user
       - name: ADGUARD_PASSWORD
         valueFrom:
           secretKeyRef:
-            name: adguard-auth-secret
+            name: adguardauth
             key: password
       - name: LOG_LEVEL
         value: info

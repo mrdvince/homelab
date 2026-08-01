@@ -3,35 +3,18 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
   athos:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl
 
 releases:
-  - name: adguard-auth
-    namespace: external-dns
-    chart: zot/internal/secret
-    version: 0.1.0
-    values:
-      - fullnameOverride: adguard-auth-secret
-        data:
-          url: {{ .Values.adhome.url }}
-          user: {{ .Values.adhome.user }}
-          password: {{ .Values.adhome.password }}
-
   - name: external-dns
     namespace: external-dns
     chart: zot/upstream/external-dns/external-dns
     version: 1.21.1
-    needs:
-      - external-dns/adguard-auth
     values:
       - values.yaml.gotmpl
