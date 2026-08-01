@@ -12,8 +12,6 @@ environments:
         cilium_op: 2
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 
   athos:
     values:
@@ -28,8 +26,6 @@ environments:
         cilium_op: 1
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl
