@@ -40,7 +40,7 @@ homelab/
 └── secrets/                 # sops-encrypted secrets
 ```
 
-Each application in `apps/` is discovered from its directory and uses a `helmfile.yaml.gotmpl` for chart configuration plus a `values.yaml.gotmpl` for environment-specific values. Add an `argocd.yaml` only when the application needs application-level overrides such as a non-default namespace, ignored differences, or client-side apply. Server-side apply is the default; applications that require the legacy apply and diff strategy set `serverSideApply: false` in that overlay.
+Each application in `apps/` is discovered from its directory and uses a `helmfile.yaml.gotmpl` for chart configuration plus a `values.yaml.gotmpl` for environment-specific values. Add an `argocd.yaml` only when the application needs a structured application-specific override such as ignored differences. The ApplicationSets centrally own non-default destination namespaces and apply-strategy exceptions; server-side apply remains the default.
 
 ## Stack
 
