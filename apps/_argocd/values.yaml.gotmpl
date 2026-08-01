@@ -3,14 +3,33 @@ applicationsets:
     namespace: argocd
     goTemplate: true
     generators:
-      - git:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
-          revision: {{ .Values.repoRevision }}
-          files:
-            - path: apps/core/*/argocd.yaml
+      - merge:
+          mergeKeys:
+            - appName
+          generators:
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      directories:
+                        - path: apps/core/*
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      files:
+                        - path: apps/core/*/argocd.yaml
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
     template:
       metadata:
-        name: '{{`{{ .path.basename }}`}}'
+        name: '{{`{{ .appName }}`}}'
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
@@ -24,7 +43,7 @@ applicationsets:
                 value: {{ .Values.cluster }}
         destination:
           server: {{ .Values.server }}
-          namespace: '{{`{{ default .path.basename .namespace }}`}}'
+          namespace: '{{`{{ dig "namespace" .path.basename . }}`}}'
         syncPolicy:
           automated:
             prune: true
@@ -43,14 +62,33 @@ applicationsets:
     namespace: argocd
     goTemplate: true
     generators:
-      - git:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
-          revision: {{ .Values.repoRevision }}
-          files:
-            - path: apps/services/*/argocd.yaml
+      - merge:
+          mergeKeys:
+            - appName
+          generators:
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      directories:
+                        - path: apps/services/*
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      files:
+                        - path: apps/services/*/argocd.yaml
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
     template:
       metadata:
-        name: '{{`{{ .path.basename }}`}}'
+        name: '{{`{{ .appName }}`}}'
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
@@ -64,40 +102,52 @@ applicationsets:
                 value: {{ .Values.cluster }}
         destination:
           server: {{ .Values.server }}
-          namespace: '{{`{{ default .path.basename .namespace }}`}}'
+          namespace: '{{`{{ dig "namespace" "apps" . }}`}}'
         syncPolicy:
           automated:
             prune: true
             selfHeal: true
             allowEmpty: true
-    templatePatch: |
-      spec:
-        {{`{{- if hasKey . "ignoreDifferences" }}`}}
-        ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 6 }}`}}
-        {{`{{- end }}`}}
-        {{`{{- if and (hasKey . "serverSideApply") (not .serverSideApply) }}`}}
-        syncPolicy:
-          syncOptions:
-            - CreateNamespace=true
-        {{`{{- else }}`}}
-        syncPolicy:
           syncOptions:
             - CreateNamespace=true
             - ServerSideApply=true
-        {{`{{- end }}`}}
+    templatePatch: |
+      {{`{{- if hasKey . "ignoreDifferences" }}`}}
+      spec:
+        ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
+      {{`{{- end }}`}}
 
   storage-apps:
     namespace: argocd
     goTemplate: true
     generators:
-      - git:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
-          revision: {{ .Values.repoRevision }}
-          files:
-            - path: apps/storage/*/argocd.yaml
+      - merge:
+          mergeKeys:
+            - appName
+          generators:
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      directories:
+                        - path: apps/storage/*
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      files:
+                        - path: apps/storage/*/argocd.yaml
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
     template:
       metadata:
-        name: '{{`{{ .path.basename }}`}}'
+        name: '{{`{{ .appName }}`}}'
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
@@ -111,7 +161,7 @@ applicationsets:
                 value: {{ .Values.cluster }}
         destination:
           server: {{ .Values.server }}
-          namespace: '{{`{{ default .path.basename .namespace }}`}}'
+          namespace: '{{`{{ dig "namespace" "kube-system" . }}`}}'
         syncPolicy:
           automated:
             prune: true
@@ -130,14 +180,33 @@ applicationsets:
     namespace: argocd
     goTemplate: true
     generators:
-      - git:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
-          revision: {{ .Values.repoRevision }}
-          files:
-            - path: apps/monitoring/*/argocd.yaml
+      - merge:
+          mergeKeys:
+            - appName
+          generators:
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      directories:
+                        - path: apps/monitoring/*
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
+            - matrix:
+                generators:
+                  - git:
+                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      revision: {{ .Values.repoRevision }}
+                      files:
+                        - path: apps/monitoring/*/argocd.yaml
+                  - list:
+                      elements:
+                        - appName: '{{`{{ .path.basename }}`}}'
     template:
       metadata:
-        name: '{{`{{ .path.basename }}`}}'
+        name: '{{`{{ .appName }}`}}'
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
@@ -151,7 +220,7 @@ applicationsets:
                 value: {{ .Values.cluster }}
         destination:
           server: {{ .Values.server }}
-          namespace: '{{`{{ default .path.basename .namespace }}`}}'
+          namespace: '{{`{{ dig "namespace" "monitoring" . }}`}}'
         syncPolicy:
           automated:
             prune: true

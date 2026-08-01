@@ -14,6 +14,8 @@ releases:
     namespace: gitlab
     chart: zot/upstream/cnpg/cluster
     version: 0.7.0
+    transformers:
+      - ../../_helmfile/sync.yaml
     values:
       - postgres/values.yaml.gotmpl
 
@@ -21,69 +23,74 @@ releases:
     namespace: gitlab
     chart: zot/internal/secret
     version: 0.1.0
+    transformers:
+      - ../../_helmfile/sync.yaml
     values:
       - fullnameOverride: gitlab-s3-connection
-    set:
-      - name: stringData.connection
-        value: |
-          provider: AWS
-          region: home
-          aws_access_key_id: {{ .Values.s3.accessKey }}
-          aws_secret_access_key: {{ .Values.s3.secretKey }}
-          endpoint: https://s3.{{ .Values.domain }}
-          path_style: true
+        stringData:
+          connection: |
+            provider: AWS
+            region: home
+            aws_access_key_id: {{ .Values.s3.accessKey }}
+            aws_secret_access_key: {{ .Values.s3.secretKey }}
+            endpoint: https://s3.{{ .Values.domain }}
+            path_style: true
 
   - name: gitlab-s3-backup-secrets
     namespace: gitlab
     chart: zot/internal/secret
     version: 0.1.0
+    transformers:
+      - ../../_helmfile/sync.yaml
     values:
       - fullnameOverride: gitlab-s3-backup-connection
-    set:
-      - name: stringData.connection
-        value: |
-          [default]
-          access_key = {{ .Values.s3.accessKey }}
-          secret_key = {{ .Values.s3.secretKey }}
-          bucket_location = home
-          host_base = s3.{{ .Values.domain }}
-          host_bucket = s3.{{ .Values.domain }}
-          use_https = True
-          signature_v2 = False
-          preserve_attrs = False
+        stringData:
+          connection: |
+            [default]
+            access_key = {{ .Values.s3.accessKey }}
+            secret_key = {{ .Values.s3.secretKey }}
+            bucket_location = home
+            host_base = s3.{{ .Values.domain }}
+            host_bucket = s3.{{ .Values.domain }}
+            use_https = True
+            signature_v2 = False
+            preserve_attrs = False
 
   - name: gitlab-oidc-provider
     namespace: gitlab
     chart: zot/internal/secret
     version: 0.1.0
+    transformers:
+      - ../../_helmfile/sync.yaml
     values:
       - fullnameOverride: gitlab-oidc-provider
-    set:
-      - name: stringData.provider
-        value: |
-          name: openid_connect
-          label: Authentik
-          args:
+        stringData:
+          provider: |
             name: openid_connect
-            scope:
-              - openid
-              - profile
-              - email
-            response_type: code
-            issuer: https://auth.{{ .Values.domain }}/application/o/gitlab/
-            discovery: true
-            client_auth_method: query
-            uid_field: preferred_username
-            pkce: true
-            client_options:
-              identifier: {{ .Values | get "gitlab-oidc.client_id" }}
-              secret: {{ .Values | get "gitlab-oidc.client_secret" }}
-              redirect_uri: https://gitlab.{{ .Values.domain }}/users/auth/openid_connect/callback
+            label: Authentik
+            args:
+              name: openid_connect
+              scope:
+                - openid
+                - profile
+                - email
+              response_type: code
+              issuer: https://auth.{{ .Values.domain }}/application/o/gitlab/
+              discovery: true
+              client_auth_method: query
+              uid_field: preferred_username
+              pkce: true
+              client_options:
+                identifier: {{ .Values | get "gitlab-oidc.client_id" }}
+                secret: {{ .Values | get "gitlab-oidc.client_secret" }}
+                redirect_uri: https://gitlab.{{ .Values.domain }}/users/auth/openid_connect/callback
 
   - name: gitlab-redis
     namespace: gitlab
     chart: zot/upstream/bjw-s/app-template
     version: 4.6.2
+    transformers:
+      - ../../_helmfile/sync.yaml
     values:
       - redis/values.yaml.gotmpl
 
@@ -91,6 +98,8 @@ releases:
     namespace: gitlab
     chart: zot/upstream/gitlab/gitlab
     version: 10.1.1
+    transformers:
+      - ../../_helmfile/sync.yaml
     needs:
       - gitlab-postgres
       - gitlab-redis

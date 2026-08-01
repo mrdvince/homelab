@@ -14,5 +14,7 @@ releases:
     namespace: apps
     chart: zot/upstream/bjw-s/app-template
     version: 5.0.1
+    transformers:
+      - ../../_helmfile/sync.yaml
     values:
       - values.yaml.gotmpl

@@ -1,2 +1,0 @@
-# argocd manages itself after bootstrap
-namespace: argocd
