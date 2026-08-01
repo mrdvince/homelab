@@ -17,6 +17,12 @@ applicationsets:
                   - list:
                       elements:
                         - appName: '{{`{{ .path.basename }}`}}'
+            - list:
+                elements:
+                  - appName: cilium
+                    namespace: kube-system
+                  - appName: metrics-server
+                    namespace: kube-system
             - matrix:
                 generators:
                   - git:
@@ -86,6 +92,42 @@ applicationsets:
                   - list:
                       elements:
                         - appName: '{{`{{ .path.basename }}`}}'
+            - list:
+                elements:
+                  - appName: blog
+                    namespace: blog
+                  - appName: codex
+                    namespace: scriptorium
+                  - appName: firecrawl
+                    namespace: hermes
+                  - appName: gitlab
+                    namespace: gitlab
+                  - appName: hermes
+                    namespace: hermes
+                  - appName: searxng
+                    namespace: hermes
+            - matrix:
+                generators:
+                  - list:
+                      elements:
+                        - appName: adventurelog
+                        - appName: booklore
+                        - appName: freshrss
+                        - appName: gitlab
+                        - appName: infisical
+                        - appName: karakeep
+                        - appName: linkwarden
+                        - appName: mailrise
+                        - appName: mealie
+                        - appName: netbox
+                        - appName: paperless
+                        - appName: penpot
+                        - appName: rxresume
+                        - appName: scanopy
+                        - appName: zot
+                  - list:
+                      elements:
+                        - serverSideApply: "false"
     template:
       metadata:
         name: '{{`{{ .appName }}`}}'
@@ -112,12 +154,12 @@ applicationsets:
             - CreateNamespace=true
             - ServerSideApply=true
     templatePatch: |
-      {{`{{- if or (hasKey . "ignoreDifferences") (and (hasKey . "serverSideApply") (not .serverSideApply)) }}`}}
+      {{`{{- if or (hasKey . "ignoreDifferences") (eq (dig "serverSideApply" "true" .) "false") }}`}}
       spec:
         {{`{{- if hasKey . "ignoreDifferences" }}`}}
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
         {{`{{- end }}`}}
-        {{`{{- if and (hasKey . "serverSideApply") (not .serverSideApply) }}`}}
+        {{`{{- if eq (dig "serverSideApply" "true" .) "false" }}`}}
         syncPolicy:
           syncOptions:
             - CreateNamespace=true
@@ -142,16 +184,10 @@ applicationsets:
                   - list:
                       elements:
                         - appName: '{{`{{ .path.basename }}`}}'
-            - matrix:
-                generators:
-                  - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
-                      revision: {{ .Values.repoRevision }}
-                      files:
-                        - path: apps/storage/*/argocd.yaml
-                  - list:
-                      elements:
-                        - appName: '{{`{{ .path.basename }}`}}'
+            - list:
+                elements:
+                  - appName: cnpg
+                    namespace: cnpg-system
     template:
       metadata:
         name: '{{`{{ .appName }}`}}'
