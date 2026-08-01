@@ -27,31 +27,10 @@ defaultPodOptions:
     runAsGroup: 999
     fsGroup: 999
 
-secrets:
-  config:
-    stringData:
-      mailrise.conf: |
-        configs:
-          "*@*":
-            urls:
-              - ntfys://ntfy.{{ .Values.domain }}/realm
-            mailrise:
-              title_template: "$subject ($from)"
-              body_template: "$body"
-              body_format: text
-        listen:
-          host: 0.0.0.0
-          port: 8025
-        smtp:
-          hostname: mailrise.{{ .Values.domain }}
-          auth:
-            basic:
-              {{ .Values.mailrise.smtp_username }}: {{ .Values.mailrise.smtp_password }}
-
 persistence:
   config:
     type: secret
-    identifier: config
+    name: mailriseinfisical
     advancedMounts:
       main:
         main:

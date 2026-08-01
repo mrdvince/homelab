@@ -29,6 +29,16 @@ controllers:
           SMTP_HELO_HOST: infisical.{{ .Values.domain }}
           SMTP_IGNORE_TLS: "true"
           SMTP_REQUIRE_TLS: "false"
+          SMTP_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: mailriseinfisical
+                key: smtp-username
+          SMTP_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: mailriseinfisical
+                key: smtp-password
         resources:
           requests:
             cpu: 200m

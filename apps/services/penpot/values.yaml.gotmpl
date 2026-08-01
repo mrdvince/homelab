@@ -11,7 +11,7 @@ config:
     enable-smtp
     enable-mcp
     enable-access-tokens
-  existingSecret: penpot
+  existingSecret: penpotinfisical
   secretKeys:
     apiSecretKey: api-secret-key
   telemetryEnabled: false
@@ -38,13 +38,13 @@ config:
     port: "8025"
     tls: false
     ssl: false
-    existingSecret: penpot
+    existingSecret: mailriseinfisical
     secretKeys:
       usernameKey: smtp-username
       passwordKey: smtp-password
 
   providers:
-    existingSecret: penpot
+    existingSecret: penpotinfisical
     secretKeys:
       oidcClientIDKey: oidc-client-id
       oidcClientSecretKey: oidc-client-secret

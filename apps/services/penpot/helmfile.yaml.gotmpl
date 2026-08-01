@@ -3,8 +3,6 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl
@@ -24,19 +22,6 @@ releases:
     values:
       - valkey/values.yaml.gotmpl
 
-  - name: penpot-secrets
-    namespace: apps
-    chart: zot/internal/secret
-    version: 0.1.0
-    values:
-      - fullnameOverride: penpot
-        data:
-          api-secret-key: {{ .Values.penpot.api_secret | trim | quote }}
-          oidc-client-id: {{ .Values.penpot.oidc.client_id | trim | quote }}
-          oidc-client-secret: {{ .Values.penpot.oidc.client_secret | trim | quote }}
-          smtp-username: {{ .Values.mailrise.smtp_username | trim | quote }}
-          smtp-password: {{ .Values.mailrise.smtp_password | trim | quote }}
-
   - name: penpot
     namespace: apps
     chart: zot/upstream/penpot/penpot
@@ -46,4 +31,3 @@ releases:
     needs:
       - penpot-postgres
       - penpot-valkey
-      - penpot-secrets

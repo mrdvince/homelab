@@ -28,8 +28,6 @@ releases:
           ENCRYPTION_KEY: {{ .Values.infisical.encryption_key | trim | quote }}
           REDIS_PASSWORD: {{ .Values.infisical.redis_password | trim | quote }}
           REDIS_URL: {{ printf "redis://:%s@infisical-redis.apps.svc.cluster.local:6379" (.Values.infisical.redis_password | trim) | quote }}
-          SMTP_USERNAME: {{ .Values.mailrise.smtp_username | trim | quote }}
-          SMTP_PASSWORD: {{ .Values.mailrise.smtp_password | trim | quote }}
 
   - name: infisical-redis
     namespace: apps
