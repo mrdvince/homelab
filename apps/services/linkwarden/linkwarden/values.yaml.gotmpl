@@ -33,6 +33,7 @@ rawResources:
               data:
                 client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
                 client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
+                email-server: {{ `{{ "{{ .email_server.Value }}" }}` | quote }}
                 meilisearch-master-key: {{ `{{ "{{ .meilisearch_master_key.Value }}" }}` | quote }}
                 nextauth-secret: {{ `{{ "{{ .nextauth_secret.Value }}" }}` | quote }}
                 smtp-password: {{ `{{ "{{ .smtp_password.Value }}" }}` | quote }}
@@ -85,17 +86,11 @@ controllers:
                 key: client-secret
           NEXT_PUBLIC_EMAIL_PROVIDER: "true"
           EMAIL_FROM: Linkwarden <linkwarden@home.mrdvince.me>
-          SMTP_USERNAME:
+          EMAIL_SERVER:
             valueFrom:
               secretKeyRef:
                 name: linkwardeninfisical
-                key: smtp-username
-          SMTP_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                name: linkwardeninfisical
-                key: smtp-password
-          EMAIL_SERVER: smtp://$(SMTP_USERNAME):$(SMTP_PASSWORD)@mailrise.apps.svc.cluster.local:8025
+                key: email-server
           BASE_URL: https://linkwarden.{{ .Values.domain }}
         resources:
           requests:

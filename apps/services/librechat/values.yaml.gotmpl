@@ -40,6 +40,7 @@ rawResources:
                 jwt-refresh-secret: {{ `{{ "{{ .jwt_refresh_secret.Value }}" }}` | quote }}
                 jwt-secret: {{ `{{ "{{ .jwt_secret.Value }}" }}` | quote }}
                 mongo-password: {{ `{{ "{{ .password.Value }}" }}` | quote }}
+                mongo-uri: {{ `{{ "{{ .uri.Value }}" }}` | quote }}
                 mongo-username: {{ `{{ "{{ .username.Value }}" }}` | quote }}
                 oidc-client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
                 oidc-client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
@@ -78,17 +79,11 @@ controllers:
           PORT: "3080"
           TZ: Europe/Amsterdam
           CONFIG_PATH: /app/librechat.yaml
-          MONGO_USERNAME:
+          MONGO_URI:
             valueFrom:
               secretKeyRef:
                 name: librechatinfisical
-                key: mongo-username
-          MONGO_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                name: librechatinfisical
-                key: mongo-password
-          MONGO_URI: mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@librechat-mongodb:27017/LibreChat?authSource=admin
+                key: mongo-uri
           DOMAIN_CLIENT: https://librechat.{{ .Values.domain }}
           DOMAIN_SERVER: https://librechat.{{ .Values.domain }}
           NO_INDEX: "true"

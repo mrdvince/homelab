@@ -27,8 +27,10 @@ rawResources:
               data:
                 bull-auth-key: {{ `{{ "{{ .bull_auth_key.Value }}" }}` | quote }}
                 postgres-password: {{ `{{ "{{ .postgres_password.Value }}" }}` | quote }}
+                postgres-url: {{ `{{ "{{ .postgres_url.Value }}" }}` | quote }}
                 postgres-username: {{ `{{ "{{ .postgres_username.Value }}" }}` | quote }}
                 rabbitmq-password: {{ `{{ "{{ .rabbitmq_password.Value }}" }}` | quote }}
+                rabbitmq-url: {{ `{{ "{{ .rabbitmq_url.Value }}" }}` | quote }}
                 rabbitmq-username: {{ `{{ "{{ .rabbitmq_username.Value }}" }}` | quote }}
 
 controllers:
@@ -86,19 +88,21 @@ controllers:
               secretKeyRef:
                 name: firecrawlinfisical
                 key: postgres-password
-          NUQ_DATABASE_URL: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@firecrawl-nuq-postgres:5432/postgres
-          NUQ_DATABASE_URL_LISTEN: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@firecrawl-nuq-postgres:5432/postgres
-          RABBITMQ_USERNAME:
+          NUQ_DATABASE_URL:
             valueFrom:
               secretKeyRef:
                 name: firecrawlinfisical
-                key: rabbitmq-username
-          RABBITMQ_PASSWORD:
+                key: postgres-url
+          NUQ_DATABASE_URL_LISTEN:
             valueFrom:
               secretKeyRef:
                 name: firecrawlinfisical
-                key: rabbitmq-password
-          NUQ_RABBITMQ_URL: amqp://$(RABBITMQ_USERNAME):$(RABBITMQ_PASSWORD)@firecrawl-rabbitmq:5672
+                key: postgres-url
+          NUQ_RABBITMQ_URL:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawlinfisical
+                key: rabbitmq-url
           BULL_AUTH_KEY:
             valueFrom:
               secretKeyRef:
