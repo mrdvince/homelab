@@ -19,6 +19,10 @@ api:
     timeoutSeconds: 1
   readinessProbe:
     timeoutSeconds: 1
+  authentik:
+    existingSecret: ""
+    clientIdKey: AUTHENTIK_CLIENT_ID
+    clientSecretKey: AUTHENTIK_CLIENT_SECRET
   persistence:
     enabled: true
     storageClass: ""

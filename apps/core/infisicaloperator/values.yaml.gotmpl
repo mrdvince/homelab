@@ -581,4 +581,39 @@ rawResources:
                 credentials.json: {{ `{{ "{{ .credentials_file.Value }}" }}` | quote }}
                 sessionKeys.json: {{ `{{ "{{ .session_keys_file.Value }}" }}` | quote }}
                 htpasswd: {{ `{{ "{{ .htpasswd_file.Value }}" }}` | quote }}
+
+  bar-assistant:
+    forceRename: barassistantinfisical
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: barassistantinfisical
+        namespace: apps
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /bar-assistant-oidc
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /meilisearch
+        targets:
+          - name: barassistantinfisical
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                AUTHENTIK_CLIENT_ID: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
+                AUTHENTIK_CLIENT_SECRET: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
+                MEILI_MASTER_KEY: {{ `{{ "{{ .meilisearch_master_key.Value }}" }}` | quote }}
 {{ end }}

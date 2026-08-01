@@ -53,7 +53,7 @@ spec:
               {{- if and .Values.meilisearch.enabled (not .Values.api.env.MEILISEARCH_KEY) }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "bar-assistant.fullname" . }}-meilisearch-master-key
+                  name: {{ .Values.meilisearch.auth.existingMasterKeySecret | default (printf "%s-meilisearch-master-key" (include "bar-assistant.fullname" .)) }}
                   key: MEILI_MASTER_KEY
               {{- else }}
               value: {{ .Values.api.env.MEILISEARCH_KEY | quote }}
@@ -70,13 +70,26 @@ spec:
             - name: AUTHENTIK_BASE_URL
               value: {{ . | quote }}
             {{- end }}
-            {{- with .Values.api.env.AUTHENTIK_CLIENT_ID }}
+            {{- if .Values.api.authentik.existingSecret }}
+            - name: AUTHENTIK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.api.authentik.existingSecret }}
+                  key: {{ .Values.api.authentik.clientIdKey }}
+            - name: AUTHENTIK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.api.authentik.existingSecret }}
+                  key: {{ .Values.api.authentik.clientSecretKey }}
+            {{- else }}
+              {{- with .Values.api.env.AUTHENTIK_CLIENT_ID }}
             - name: AUTHENTIK_CLIENT_ID
               value: {{ . | quote }}
-            {{- end }}
-            {{- with .Values.api.env.AUTHENTIK_CLIENT_SECRET }}
+              {{- end }}
+              {{- with .Values.api.env.AUTHENTIK_CLIENT_SECRET }}
             - name: AUTHENTIK_CLIENT_SECRET
               value: {{ . | quote }}
+              {{- end }}
             {{- end }}
             {{- with .Values.api.env.AUTHENTIK_REDIRECT_URI }}
             - name: AUTHENTIK_REDIRECT_URI
