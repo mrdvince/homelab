@@ -331,4 +331,71 @@ rawResources:
             namespace: apps
             kind: Secret
             creationPolicy: Owner
+
+  mailrise:
+    forceRename: mailriseinfisical
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: mailriseinfisical
+        namespace: apps
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /mailrise
+        targets:
+          - name: mailriseinfisical
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                mailrise.conf: {{ `{{ "{{ .config.Value }}" }}` | quote }}
+                smtp-username: {{ `{{ "{{ .smtp_username.Value }}" }}` | quote }}
+                smtp-password: {{ `{{ "{{ .smtp_password.Value }}" }}` | quote }}
+
+  penpot:
+    forceRename: penpotinfisical
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: penpotinfisical
+        namespace: apps
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /penpot
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /penpot/oidc
+        targets:
+          - name: penpotinfisical
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                api-secret-key: {{ `{{ "{{ .api_secret.Value }}" }}` | quote }}
+                oidc-client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
+                oidc-client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
 {{ end }}
