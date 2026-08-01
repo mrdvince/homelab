@@ -15,6 +15,7 @@ sources:
   external-dns: https://kubernetes-sigs.github.io/external-dns
   gitlab: https://charts.gitlab.io
   grafana: https://grafana.github.io/helm-charts
+  infisical: https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts/
   jetstack: https://charts.jetstack.io
   meilisearch: https://meilisearch.github.io/meilisearch-kubernetes
   metrics-server: https://kubernetes-sigs.github.io/metrics-server/

@@ -1,0 +1,97 @@
+{{ if eq .Release.Name "infisicaloperator" }}
+hostAPI: https://infisical.{{ .Values.domain }}/api
+
+controllerManager:
+  serviceAccount:
+    create: true
+    name: infisicaloperator
+  manager:
+    image:
+{{ if not (.Values | get "renderStockImages" false) }}
+      repository: {{ .Values.imageRegistry }}/infisical/kubernetes-operator
+{{ end }}
+      tag: v0.11.5
+  replicas: 1
+
+scopedNamespaces:
+  - infisicaloperator
+scopedRBAC: true
+installCRDs: true
+{{ else if eq .Release.Name "homelab" }}
+global:
+  createDefaultServiceAccount: false
+
+rawResources:
+  identity:
+    forceRename: homelabidentity
+    manifest:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: homelabidentity
+        annotations:
+          argocd.argoproj.io/sync-wave: "1"
+      type: Opaque
+      stringData:
+        identityId: e5a41fc2-a3b6-4112-ac9a-5011a253d9cc
+
+  connection:
+    forceRename: homelab
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalConnection
+      metadata:
+        name: homelab
+        annotations:
+          argocd.argoproj.io/sync-wave: "1"
+      spec:
+        address: https://infisical.{{ .Values.domain }}
+
+  authentication:
+    forceRename: homelab
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalAuth
+      metadata:
+        name: homelab
+        annotations:
+          argocd.argoproj.io/sync-wave: "2"
+      spec:
+        infisicalConnectionRef:
+          name: homelab
+          namespace: infisicaloperator
+        method: kubernetes
+        kubernetes:
+          identityIdRef:
+            name: homelabidentity
+            namespace: infisicaloperator
+            key: identityId
+          serviceAccountRef:
+            name: infisicaloperator
+            namespace: infisicaloperator
+
+  canary:
+    forceRename: homelabcanary
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: homelabcanary
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /infisicaloperator
+        targets:
+          - name: homelabcanary
+            namespace: infisicaloperator
+            kind: Secret
+            creationPolicy: Owner
+{{ end }}

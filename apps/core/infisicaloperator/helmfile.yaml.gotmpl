@@ -1,0 +1,29 @@
+environments:
+  aion:
+    values:
+      - ../../../infrastructure/images/config.yaml
+      - ../../../infrastructure/images/images/**/*.yaml
+    secrets:
+      - ../../../secrets/secrets.enc.yaml
+---
+bases:
+  - ../../../infrastructure/charts/repositories.yaml.gotmpl
+
+releases:
+  - name: infisicaloperator
+    namespace: infisicaloperator
+    createNamespace: true
+    chart: zot/upstream/infisical/secrets-operator
+    version: v0.11.5
+    values:
+      - values.yaml.gotmpl
+
+  - name: homelab
+    namespace: infisicaloperator
+    createNamespace: true
+    chart: zot/upstream/bjw-s/app-template
+    version: 5.0.1
+    values:
+      - values.yaml.gotmpl
+    needs:
+      - infisicaloperator/infisicaloperator
