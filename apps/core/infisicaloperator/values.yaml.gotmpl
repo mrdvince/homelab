@@ -483,6 +483,13 @@ rawResources:
             namespace: monitoring
             kind: Secret
             creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                admin-user: {{ `{{ "{{ .adminUser.Value }}" }}` | quote }}
+                admin-password: {{ `{{ "{{ .adminPassword.Value }}" }}` | quote }}
+                oidc-client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
+                oidc-client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
 
   blog:
     forceRename: bloginfisical
@@ -509,4 +516,10 @@ rawResources:
             namespace: blog
             kind: Secret
             creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                ghost-password: {{ `{{ "{{ .ghostPassword.Value }}" }}` | quote }}
+                mysql-password: {{ `{{ "{{ .ghostMysqlPassword.Value }}" }}` | quote }}
+                mysql-root-password: {{ `{{ "{{ .ghostMysqlRootPassword.Value }}" }}` | quote }}
 {{ end }}
