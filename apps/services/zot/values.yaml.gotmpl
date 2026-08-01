@@ -49,99 +49,6 @@ defaultPodOptions:
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
 
-secrets:
-  config:
-    stringData:
-      config.json: |
-        {
-          "distSpecVersion": "1.1.1",
-          "storage": {
-            "rootDirectory": "/var/lib/registry",
-            "dedupe": true
-          },
-          "http": {
-            "address": "0.0.0.0",
-            "port": "5000",
-            "externalUrl": "https://zot.{{ .Values.domain }}",
-            "realm": "zot",
-            "auth": {
-              "sessionKeysFile": "/etc/zot/sessionKeys.json",
-              "apikey": true,
-              "htpasswd": {
-                "path": "/etc/zot/htpasswd"
-              },
-              "openid": {
-                "callbackAllowOrigins": ["https://zot.{{ .Values.domain }}"],
-                "providers": {
-                  "oidc": {
-                    "name": "Authentik",
-                    "issuer": "https://auth.{{ .Values.domain }}/application/o/zot/",
-                    "credentialsFile": "/etc/zot/credentials.json",
-                    "keypath": "",
-                    "scopes": ["openid", "profile", "email", "groups"],
-                    "claimMapping": {
-                      "username": "preferred_username",
-                      "groups": "groups"
-                    }
-                  }
-                }
-              },
-              "failDelay": 5
-            },
-            "accessControl": {
-              "repositories": {
-                "helm/**": {
-                  "policies": [
-                    {
-                      "users": [{{ .Values.zot.charon_username | quote }}],
-                      "actions": ["read", "create", "update"]
-                    },
-                    {
-                      "users": ["zero"],
-                      "actions": ["read", "create", "update", "delete"]
-                    }
-                  ],
-                  "defaultPolicy": []
-                },
-                "**": {
-                  "policies": [
-                    {
-                      "users": ["zero"],
-                      "actions": ["read", "create", "update", "delete"]
-                    }
-                  ],
-                  "defaultPolicy": []
-                }
-              }
-            }
-          },
-          "log": {
-            "level": "info"
-          },
-          "extensions": {
-            "search": {
-              "cve": {
-                "updateInterval": "24h"
-              }
-            },
-            "ui": {
-              "enable": true
-            }
-          }
-        }
-      credentials.json: |
-        {
-          "clientid": {{ .Values.zot.oidc.client_id | quote }},
-          "clientsecret": {{ .Values.zot.oidc.client_secret | quote }}
-        }
-      sessionKeys.json: |
-        {
-          "hashKey": {{ .Values.zot.session_hash_key | quote }},
-          "encryptKey": {{ .Values.zot.session_encrypt_key | quote }}
-        }
-      htpasswd: |
-        {{ .Values.zot.charon_htpasswd }}
-
 persistence:
   data:
     type: persistentVolumeClaim
@@ -152,7 +59,7 @@ persistence:
       - path: /var/lib/registry
   config:
     type: secret
-    identifier: config
+    name: zotinfisical
     advancedMounts:
       main:
         main:
