@@ -43,77 +43,38 @@ controllers:
               - DAC_OVERRIDE
               - FOWNER
     containers:
-      app-server:
-        image:
-          repository: {{ .Values.imageRegistry }}/homelab/codex
-          tag: "0.146.0-3"
-        args:
-          - codex
-          - app-server
-          - --listen
-          - ws://0.0.0.0:4500
-          - --ws-auth
-          - capability-token
-          - --ws-token-file
-          - /etc/codex-secrets/app-server-token
-        env:
-          RUST_LOG: info
-          TZ: Europe/Amsterdam
-        resources:
-          requests:
-            cpu: 1500m
-            memory: 5Gi
-          limits:
-            cpu: "3"
-            memory: 10Gi
-        probes:
-          liveness:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /healthz
-                port: 4500
-              initialDelaySeconds: 20
-              periodSeconds: 30
-              timeoutSeconds: 5
-              failureThreshold: 3
-          readiness:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /readyz
-                port: 4500
-              initialDelaySeconds: 5
-              periodSeconds: 10
-              timeoutSeconds: 5
-              failureThreshold: 12
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
-          capabilities:
-            drop:
-              - ALL
-      remote-control:
+      codex:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/codex
           tag: "0.146.0-3"
         args:
           - codex-remote-control
         env:
+          CODEX_INTERNAL_ORIGINATOR_OVERRIDE: Codex Desktop
           RUST_LOG: info
           TZ: Europe/Amsterdam
         resources:
           requests:
-            cpu: 500m
-            memory: 2Gi
+            cpu: "2"
+            memory: 7Gi
           limits:
-            cpu: "1"
-            memory: 6Gi
+            cpu: "4"
+            memory: 16Gi
+        probes:
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - codex
+                  - app-server
+                  - daemon
+                  - version
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 12
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
@@ -182,11 +143,6 @@ serviceAccount:
   codex:
     forceRename: codex
 
-secrets:
-  environment:
-    stringData:
-      app-server-token: {{ .Values.codex.app_server_token }}
-
 persistence:
   data:
     type: persistentVolumeClaim
@@ -199,27 +155,12 @@ persistence:
       main:
         initialize-data:
           - path: /mnt/data
-        app-server:
+        codex:
           - path: /opt/data
           - path: /home/linuxbrew/.linuxbrew
             subPath: homebrew
           - path: /home/codex/.ssh
             subPath: home/.ssh
-        remote-control:
-          - path: /opt/data
-          - path: /home/linuxbrew/.linuxbrew
-            subPath: homebrew
-          - path: /home/codex/.ssh
-            subPath: home/.ssh
-  app-server-token:
-    type: secret
-    identifier: environment
-    advancedMounts:
-      main:
-        app-server:
-          - path: /etc/codex-secrets/app-server-token
-            subPath: app-server-token
-            readOnly: true
   kubernetes-credentials:
     type: custom
     volumeSpec:
@@ -242,10 +183,7 @@ persistence:
                     fieldPath: metadata.namespace
     advancedMounts:
       main:
-        app-server:
-          - path: /var/run/secrets/kubernetes.io/serviceaccount
-            readOnly: true
-        remote-control:
+        codex:
           - path: /var/run/secrets/kubernetes.io/serviceaccount
             readOnly: true
   kubernetes-config:
@@ -253,11 +191,7 @@ persistence:
     identifier: kubernetes
     advancedMounts:
       main:
-        app-server:
-          - path: /etc/codex-kubernetes/config
-            subPath: config
-            readOnly: true
-        remote-control:
+        codex:
           - path: /etc/codex-kubernetes/config
             subPath: config
             readOnly: true
@@ -267,43 +201,15 @@ persistence:
     sizeLimit: 2Gi
     advancedMounts:
       main:
-        app-server:
-          - path: /dev/shm
-        remote-control:
+        codex:
           - path: /dev/shm
   tmp:
     type: emptyDir
     sizeLimit: 20Gi
     advancedMounts:
       main:
-        app-server:
+        codex:
           - path: /tmp
-        remote-control:
-          - path: /tmp
-
-service:
-  main:
-    controller: main
-    ports:
-      websocket:
-        port: 4500
-
-ingress:
-  main:
-    enabled: true
-    className: traefik
-    hosts:
-      - host: codex.{{ .Values.domain }}
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: main
-              port: websocket
-    tls:
-      - secretName: wildcard-home-mrdvince-me-tls
-        hosts:
-          - codex.{{ .Values.domain }}
 
 rawResources:
   kubernetes-admin-binding:
@@ -329,31 +235,9 @@ rawResources:
       metadata:
         name: codex
       specs:
-        - description: isolate the namespace while preserving internet and kubernetes access
+        - description: isolate the namespace while preserving outbound access
           endpointSelector: {}
-          ingress:
-            - fromEndpoints:
-                - matchLabels: {}
-            - fromEntities:
-                - host
-              toPorts:
-                - ports:
-                    - port: "4500"
-                      protocol: TCP
+          ingress: []
           egress:
             - toEntities:
                 - all
-        - description: allow the app-server only through traefik
-          endpointSelector:
-            matchLabels:
-              app.kubernetes.io/instance: codex
-          ingress:
-            - fromEndpoints:
-                - matchLabels:
-                    "k8s:io.kubernetes.pod.namespace": traefik
-                    app.kubernetes.io/name: traefik
-                    app.kubernetes.io/instance: traefik-traefik
-              toPorts:
-                - ports:
-                    - port: "4500"
-                      protocol: TCP
