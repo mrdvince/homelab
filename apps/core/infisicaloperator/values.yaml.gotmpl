@@ -522,4 +522,30 @@ rawResources:
                 ghost-password: {{ `{{ "{{ .ghostPassword.Value }}" }}` | quote }}
                 mysql-password: {{ `{{ "{{ .ghostMysqlPassword.Value }}" }}` | quote }}
                 mysql-root-password: {{ `{{ "{{ .ghostMysqlRootPassword.Value }}" }}` | quote }}
+
+  gitlab-oidc:
+    forceRename: gitlaboidc
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: gitlaboidc
+        namespace: gitlab
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /gitlab-oidc
+        targets:
+          - name: gitlaboidc
+            namespace: gitlab
+            kind: Secret
+            creationPolicy: Owner
 {{ end }}
