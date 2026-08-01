@@ -6,7 +6,7 @@ rawResources:
       kind: InfisicalStaticSecret
       metadata:
         name: firecrawl
-        namespace: apps
+        namespace: hermes
       spec:
         infisicalAuthRef:
           name: homelab
@@ -19,7 +19,7 @@ rawResources:
             secretPath: /firecrawl
         targets:
           - name: firecrawlinfisical
-            namespace: apps
+            namespace: hermes
             kind: Secret
             creationPolicy: Owner
             template:

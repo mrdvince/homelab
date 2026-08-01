@@ -6,7 +6,7 @@ rawResources:
       kind: InfisicalStaticSecret
       metadata:
         name: librechat
-        namespace: hermes
+        namespace: apps
       spec:
         infisicalAuthRef:
           name: homelab
@@ -28,7 +28,7 @@ rawResources:
             secretPath: /hermes
         targets:
           - name: librechatinfisical
-            namespace: hermes
+            namespace: apps
             kind: Secret
             creationPolicy: Owner
             template:
