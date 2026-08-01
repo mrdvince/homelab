@@ -31,6 +31,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     containers:
       main:
         image:
@@ -39,7 +41,11 @@ controllers:
         env:
           TZ: "UTC"
           PAPERLESS_URL: https://paperless.{{ .Values.domain }}
-          PAPERLESS_SECRET_KEY: {{ index .Values "paperless-oidc" "client_secret" }}
+          PAPERLESS_SECRET_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: paperlessinfisical
+                key: client-secret
           # Database
           PAPERLESS_DBENGINE: postgresql
           PAPERLESS_DBHOST: paperless-postgres-rw.apps.svc.cluster.local
@@ -56,6 +62,16 @@ controllers:
           # OIDC
           PAPERLESS_ENABLE_ALLAUTH: "true"
           PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
+          OIDC_CLIENT_ID:
+            valueFrom:
+              secretKeyRef:
+                name: paperlessinfisical
+                key: client-id
+          OIDC_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: paperlessinfisical
+                key: client-secret
           PAPERLESS_SOCIALACCOUNT_PROVIDERS: |
             {
               "openid_connect": {
@@ -63,8 +79,8 @@ controllers:
                   {
                     "provider_id": "authentik",
                     "name": "Authentik",
-                    "client_id": "{{ index .Values "paperless-oidc" "client_id" }}",
-                    "secret": "{{ index .Values "paperless-oidc" "client_secret" }}",
+                    "client_id": "$(OIDC_CLIENT_ID)",
+                    "secret": "$(OIDC_CLIENT_SECRET)",
                     "settings": {
                       "server_url": "https://auth.{{ .Values.domain }}/application/o/paperless/.well-known/openid-configuration"
                     }

@@ -39,6 +39,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     strategy: Recreate
     containers:
       main:
@@ -57,7 +59,7 @@ controllers:
           DATABASE_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: booklore
+                name: bookloreinfisical
                 key: database-password
           DISK_TYPE: LOCAL
           SWAGGER_ENABLED: "false"
@@ -110,12 +112,12 @@ controllers:
           MARIADB_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: booklore
+                name: bookloreinfisical
                 key: database-password
           MARIADB_ROOT_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: booklore
+                name: bookloreinfisical
                 key: database-root-password
         resources:
           requests:
@@ -149,17 +151,6 @@ defaultPodOptions:
     runAsNonRoot: true
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
-
-secrets:
-  bootstrap:
-    stringData:
-      database-password: {{ .Values.booklore.db_password }}
-      database-root-password: {{ .Values.booklore.db_root_password }}
-      admin-username: {{ .Values.booklore.admin_username }}
-      admin-email: {{ .Values.booklore.admin_email }}
-      admin-password: {{ .Values.booklore.admin_password }}
-      oidc-client-id: {{ .Values.booklore.oidc.client_id }}
-      oidc-client-secret: {{ .Values.booklore.oidc.client_secret }}
 
 persistence:
   database:

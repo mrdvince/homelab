@@ -33,6 +33,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     initContainers:
       fix-permissions:
         image:
@@ -68,12 +70,29 @@ controllers:
                 key: password
           OIDC_ENABLED: "1"
           OIDC_PROVIDER_METADATA_URL: https://auth.{{ .Values.domain }}/application/o/freshrss/.well-known/openid-configuration
-          OIDC_CLIENT_ID: {{ index .Values "freshrss-oidc" "client_id" }}
-          OIDC_CLIENT_SECRET: {{ index .Values "freshrss-oidc" "client_secret" }}
+          OIDC_CLIENT_ID:
+            valueFrom:
+              secretKeyRef:
+                name: freshrssinfisical
+                key: client-id
+          OIDC_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: freshrssinfisical
+                key: client-secret
           OIDC_X_FORWARDED_HEADERS: "X-Forwarded-Port X-Forwarded-Proto X-Forwarded-Host"
           OIDC_SCOPES: "openid email profile"
           OIDC_REMOTE_USER_CLAIM: "preferred_username"
-          OIDC_CLIENT_CRYPTO_KEY: {{ index .Values "freshrss-oidc" "crypto_key" }}
+          OIDC_CLIENT_CRYPTO_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: freshrssinfisical
+                key: crypto-key
+          FRESHRSS_ADMIN_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: freshrssinfisical
+                key: admin-username
           FRESHRSS_INSTALL: |-
             --api-enabled
             --auth-type http_auth
@@ -83,10 +102,10 @@ controllers:
             --db-password ${DB_PASSWORD}
             --db-type pgsql
             --db-user freshrss
-            --default-user {{ index .Values "freshrss-oidc" "admin_uname" }}
+            --default-user ${FRESHRSS_ADMIN_USERNAME}
             --language en
           FRESHRSS_USER: |-
-            --user {{ index .Values "freshrss-oidc" "admin_uname" }}
+            --user ${FRESHRSS_ADMIN_USERNAME}
             --password ${OIDC_CLIENT_CRYPTO_KEY}
             --api-password ${OIDC_CLIENT_CRYPTO_KEY}
         lifecycle:
@@ -98,8 +117,8 @@ controllers:
                 - |
                   sleep 30
                   if [ -f /feeds/feeds.opml ] && [ ! -f /var/www/FreshRSS/data/.feeds-imported ]; then
-                    ./cli/import-for-user.php --user {{ index .Values "freshrss-oidc" "admin_uname" }} --filename /feeds/feeds.opml && \
-                    ./cli/actualize-user.php --user {{ index .Values "freshrss-oidc" "admin_uname" }} && \
+                    ./cli/import-for-user.php --user "${FRESHRSS_ADMIN_USERNAME}" --filename /feeds/feeds.opml && \
+                    ./cli/actualize-user.php --user "${FRESHRSS_ADMIN_USERNAME}" && \
                     touch /var/www/FreshRSS/data/.feeds-imported
                   fi
         resources:

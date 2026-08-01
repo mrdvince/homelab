@@ -1,6 +1,8 @@
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     strategy: Recreate
     serviceAccount:
       identifier: hermes
@@ -88,12 +90,12 @@ controllers:
           HERMES_DASHBOARD_OIDC_CLIENT_ID:
             valueFrom:
               secretKeyRef:
-                name: hermes
+                name: hermesinfisical
                 key: oidc-client-id
           HERMES_DASHBOARD_OIDC_CLIENT_SECRET:
             valueFrom:
               secretKeyRef:
-                name: hermes
+                name: hermesinfisical
                 key: oidc-client-secret
           HERMES_DASHBOARD_OIDC_SCOPES: openid profile email offline_access
           HERMES_GATEWAY_BOOTSTRAP_STATE: running
@@ -109,13 +111,13 @@ controllers:
           API_SERVER_KEY:
             valueFrom:
               secretKeyRef:
-                name: hermes
+                name: hermesinfisical
                 key: api-key
           SIGNAL_HTTP_URL: http://127.0.0.1:8080
           SIGNAL_ACCOUNT:
             valueFrom:
               secretKeyRef:
-                name: hermes
+                name: hermesinfisical
                 key: signal-account
         resources:
           requests:
@@ -170,7 +172,7 @@ controllers:
           SIGNAL_ACCOUNT:
             valueFrom:
               secretKeyRef:
-                name: hermes
+                name: hermesinfisical
                 key: signal-account
         resources:
           requests:
@@ -281,14 +283,6 @@ configMaps:
 serviceAccount:
   hermes:
     forceRename: hermes
-
-secrets:
-  environment:
-    stringData:
-      oidc-client-id: {{ .Values.hermes.oidc.client_id }}
-      oidc-client-secret: {{ .Values.hermes.oidc.client_secret }}
-      api-key: {{ .Values.hermes.api_key }}
-      signal-account: {{ .Values.hermes.signal.account | quote }}
 
 persistence:
   data:

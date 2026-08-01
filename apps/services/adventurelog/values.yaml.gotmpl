@@ -39,6 +39,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     initContainers:
       prepare-runtime:
         image:
@@ -125,27 +127,27 @@ controllers:
           POSTGRES_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: adventurelog
+                name: adventureloginfisical
                 key: postgres-password
           SECRET_KEY:
             valueFrom:
               secretKeyRef:
-                name: adventurelog
+                name: adventureloginfisical
                 key: django-secret-key
           DJANGO_ADMIN_USERNAME:
             valueFrom:
               secretKeyRef:
-                name: adventurelog
+                name: adventureloginfisical
                 key: admin-username
           DJANGO_ADMIN_EMAIL:
             valueFrom:
               secretKeyRef:
-                name: adventurelog
+                name: adventureloginfisical
                 key: admin-email
           DJANGO_ADMIN_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: adventurelog
+                name: adventureloginfisical
                 key: admin-password
           PUBLIC_URL: https://adventurelog.{{ .Values.domain }}
           CSRF_TRUSTED_ORIGINS: https://adventurelog.{{ .Values.domain }}
@@ -283,7 +285,7 @@ controllers:
           POSTGRES_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: adventurelog
+                name: adventureloginfisical
                 key: postgres-password
         resources:
           requests:
@@ -317,17 +319,6 @@ defaultPodOptions:
     runAsNonRoot: true
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
-
-secrets:
-  config:
-    stringData:
-      postgres-password: {{ .Values.adventurelog.postgres_password }}
-      django-secret-key: {{ .Values.adventurelog.secret_key }}
-      admin-username: {{ .Values.adventurelog.admin_username }}
-      admin-email: {{ .Values.adventurelog.admin_email }}
-      admin-password: {{ .Values.adventurelog.admin_password }}
-      oidc-client-id: {{ .Values.adventurelog.oidc.client_id }}
-      oidc-client-secret: {{ .Values.adventurelog.oidc.client_secret }}
 
 configMaps:
   nginx:

@@ -31,6 +31,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     containers:
       main:
         image:
@@ -46,7 +48,17 @@ controllers:
               secretKeyRef:
                 name: scanopy-postgres-app
                 key: uri
-          SCANOPY_OIDC_PROVIDERS: '[{name="Authentik",slug="authentik",issuer_url="https://auth.{{ .Values.domain }}/application/o/scanopy/",client_id="{{ index .Values "scanopy-oidc" "client_id" }}",client_secret="{{ index .Values "scanopy-oidc" "client_secret" }}"}]'
+          OIDC_CLIENT_ID:
+            valueFrom:
+              secretKeyRef:
+                name: scanopyinfisical
+                key: client-id
+          OIDC_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: scanopyinfisical
+                key: client-secret
+          SCANOPY_OIDC_PROVIDERS: '[{name="Authentik",slug="authentik",issuer_url="https://auth.{{ .Values.domain }}/application/o/scanopy/",client_id="$(OIDC_CLIENT_ID)",client_secret="$(OIDC_CLIENT_SECRET)"}]'
         resources:
           requests:
             cpu: 100m

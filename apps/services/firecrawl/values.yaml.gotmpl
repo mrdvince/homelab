@@ -34,6 +34,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     initContainers:
       wait-for-dependencies:
         image:
@@ -77,32 +79,30 @@ controllers:
           POSTGRES_USER:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
+                name: firecrawlinfisical
                 key: postgres-username
           POSTGRES_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
+                name: firecrawlinfisical
                 key: postgres-password
-          NUQ_DATABASE_URL:
+          NUQ_DATABASE_URL: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@firecrawl-nuq-postgres:5432/postgres
+          NUQ_DATABASE_URL_LISTEN: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@firecrawl-nuq-postgres:5432/postgres
+          RABBITMQ_USERNAME:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
-                key: postgres-url
-          NUQ_DATABASE_URL_LISTEN:
+                name: firecrawlinfisical
+                key: rabbitmq-username
+          RABBITMQ_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
-                key: postgres-url
-          NUQ_RABBITMQ_URL:
-            valueFrom:
-              secretKeyRef:
-                name: firecrawl
-                key: rabbitmq-url
+                name: firecrawlinfisical
+                key: rabbitmq-password
+          NUQ_RABBITMQ_URL: amqp://$(RABBITMQ_USERNAME):$(RABBITMQ_PASSWORD)@firecrawl-rabbitmq:5672
           BULL_AUTH_KEY:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
+                name: firecrawlinfisical
                 key: bull-auth-key
           USE_DB_AUTHENTICATION: "false"
           NUM_WORKERS_PER_QUEUE: "1"
@@ -252,6 +252,8 @@ controllers:
 
   rabbitmq:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     containers:
       main:
         image:
@@ -261,12 +263,12 @@ controllers:
           RABBITMQ_DEFAULT_USER:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
+                name: firecrawlinfisical
                 key: rabbitmq-username
           RABBITMQ_DEFAULT_PASS:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
+                name: firecrawlinfisical
                 key: rabbitmq-password
           RABBITMQ_DEFAULT_VHOST: /
         resources:
@@ -305,6 +307,8 @@ controllers:
 
   nuq-postgres:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     containers:
       main:
         image:
@@ -316,12 +320,12 @@ controllers:
           POSTGRES_USER:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
+                name: firecrawlinfisical
                 key: postgres-username
           POSTGRES_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: firecrawl
+                name: firecrawlinfisical
                 key: postgres-password
         resources:
           requests:
@@ -365,17 +369,6 @@ defaultPodOptions:
     fsGroupChangePolicy: OnRootMismatch
     seccompProfile:
       type: RuntimeDefault
-
-secrets:
-  environment:
-    stringData:
-      postgres-username: {{ .Values.firecrawl.postgres_username }}
-      postgres-password: {{ .Values.firecrawl.postgres_password }}
-      postgres-url: "postgresql://{{ .Values.firecrawl.postgres_username }}:{{ .Values.firecrawl.postgres_password }}@firecrawl-nuq-postgres:5432/postgres"
-      rabbitmq-username: {{ .Values.firecrawl.rabbitmq_username }}
-      rabbitmq-password: {{ .Values.firecrawl.rabbitmq_password }}
-      rabbitmq-url: "amqp://{{ .Values.firecrawl.rabbitmq_username }}:{{ .Values.firecrawl.rabbitmq_password }}@firecrawl-rabbitmq:5672"
-      bull-auth-key: {{ .Values.firecrawl.bull_auth_key }}
 
 persistence:
   api-tmp:

@@ -48,6 +48,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     strategy: Recreate
     initContainers:
       wait-for-mongodb:
@@ -76,11 +78,17 @@ controllers:
           PORT: "3080"
           TZ: Europe/Amsterdam
           CONFIG_PATH: /app/librechat.yaml
-          MONGO_URI:
+          MONGO_USERNAME:
             valueFrom:
               secretKeyRef:
-                name: librechat
-                key: mongo-uri
+                name: librechatinfisical
+                key: mongo-username
+          MONGO_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: librechatinfisical
+                key: mongo-password
+          MONGO_URI: mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@librechat-mongodb:27017/LibreChat?authSource=admin
           DOMAIN_CLIENT: https://librechat.{{ .Values.domain }}
           DOMAIN_SERVER: https://librechat.{{ .Values.domain }}
           NO_INDEX: "true"
@@ -99,18 +107,18 @@ controllers:
           OPENID_CLIENT_ID:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: oidc-client-id
           OPENID_CLIENT_SECRET:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: oidc-client-secret
           OPENID_ISSUER: https://auth.{{ .Values.domain }}/application/o/open-webui/
           OPENID_SESSION_SECRET:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: oidc-session-secret
           OPENID_SCOPE: openid profile email
           OPENID_CALLBACK_URL: /oauth/openid/callback
@@ -122,27 +130,27 @@ controllers:
           JWT_SECRET:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: jwt-secret
           JWT_REFRESH_SECRET:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: jwt-refresh-secret
           CREDS_KEY:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: credentials-key
           CREDS_IV:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: credentials-iv
           HERMES_API_KEY:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: hermes-api-key
         resources:
           requests:
@@ -185,6 +193,8 @@ controllers:
 
   mongodb:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     strategy: Recreate
     containers:
       main:
@@ -198,12 +208,12 @@ controllers:
           MONGO_INITDB_ROOT_USERNAME:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: mongo-username
           MONGO_INITDB_ROOT_PASSWORD:
             valueFrom:
               secretKeyRef:
-                name: librechat
+                name: librechatinfisical
                 key: mongo-password
         resources:
           requests:
@@ -343,21 +353,6 @@ configMaps:
                 - user
               customParams:
                 reasoningFormat: disabled
-
-secrets:
-  environment:
-    stringData:
-      hermes-api-key: {{ .Values.hermes.api_key }}
-      mongo-username: {{ .Values.librechat.mongo.username }}
-      mongo-password: {{ .Values.librechat.mongo.password }}
-      mongo-uri: "mongodb://{{ .Values.librechat.mongo.username }}:{{ .Values.librechat.mongo.password }}@librechat-mongodb:27017/LibreChat?authSource=admin"
-      oidc-client-id: {{ .Values.librechat.oidc.client_id }}
-      oidc-client-secret: {{ .Values.librechat.oidc.client_secret }}
-      oidc-session-secret: {{ .Values.librechat.oidc.session_secret }}
-      jwt-secret: {{ .Values.librechat.jwt_secret }}
-      jwt-refresh-secret: {{ .Values.librechat.jwt_refresh_secret }}
-      credentials-key: {{ .Values.librechat.credentials_key }}
-      credentials-iv: {{ .Values.librechat.credentials_iv }}
 
 persistence:
   configuration:
