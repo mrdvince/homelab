@@ -22,6 +22,8 @@ scopedNamespaces:
   - cnpg-system
   - cert-manager
   - external-dns
+  - monitoring
+  - blog
 scopedRBAC: true
 installCRDs: true
 {{ else if eq .Release.Name "homelab" }}
@@ -450,6 +452,61 @@ rawResources:
         targets:
           - name: adguardauth
             namespace: external-dns
+            kind: Secret
+            creationPolicy: Owner
+
+  grafana:
+    forceRename: grafanainfisical
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: grafanainfisical
+        namespace: monitoring
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /grafana
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /grafana/oidc
+        targets:
+          - name: grafanainfisical
+            namespace: monitoring
+            kind: Secret
+            creationPolicy: Owner
+
+  blog:
+    forceRename: bloginfisical
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: bloginfisical
+        namespace: blog
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /ghost
+        targets:
+          - name: bloginfisical
+            namespace: blog
             kind: Secret
             creationPolicy: Owner
 {{ end }}
