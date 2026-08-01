@@ -31,6 +31,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     containers:
       main:
         image:
@@ -69,8 +71,16 @@ controllers:
                 key: dbname
           OIDC_AUTH_ENABLED: "true"
           OIDC_CONFIGURATION_URL: https://auth.{{ .Values.domain }}/application/o/mealie/.well-known/openid-configuration
-          OIDC_CLIENT_ID: {{ index .Values "mealie-oidc" "client_id" }}
-          OIDC_CLIENT_SECRET: {{ index .Values "mealie-oidc" "client_secret" }}
+          OIDC_CLIENT_ID:
+            valueFrom:
+              secretKeyRef:
+                name: mealieinfisical
+                key: client-id
+          OIDC_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: mealieinfisical
+                key: client-secret
           OIDC_SIGNUP_ENABLED: "true"
           OIDC_AUTO_REDIRECT: "true"
           OIDC_REMEMBER_ME: "true"
