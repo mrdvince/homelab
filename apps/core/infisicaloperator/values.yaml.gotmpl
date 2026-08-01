@@ -24,6 +24,7 @@ scopedNamespaces:
   - external-dns
   - monitoring
   - blog
+  - kube-system
 scopedRBAC: true
 installCRDs: true
 {{ else if eq .Release.Name "homelab" }}
@@ -616,4 +617,144 @@ rawResources:
                 AUTHENTIK_CLIENT_ID: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
                 AUTHENTIK_CLIENT_SECRET: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
                 MEILI_MASTER_KEY: {{ `{{ "{{ .meilisearch_master_key.Value }}" }}` | quote }}
+
+  argocd-oidc:
+    forceRename: argocdoidc
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: argocdoidc
+        namespace: argocd
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /argo-oidc
+        targets:
+          - name: argocdoidc
+            namespace: argocd
+            kind: Secret
+            creationPolicy: Owner
+            metadata:
+              annotations: {}
+              labels:
+                app.kubernetes.io/part-of: argocd
+
+  netbox:
+    forceRename: netboxinfisical
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: netboxinfisical
+        namespace: apps
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /netbox-oidc
+        targets:
+          - name: netboxinfisical
+            namespace: apps
+            kind: Secret
+            secretType: kubernetes.io/basic-auth
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                username: {{ `{{ "{{ .superuser_name.Value }}" }}` | quote }}
+                password: {{ `{{ "{{ .superuser_password.Value }}" }}` | quote }}
+                email: {{ `{{ "{{ .superuser_email.Value }}" }}` | quote }}
+                api_token: {{ `{{ "{{ .api_token.Value }}" }}` | quote }}
+                oidc.yaml: |
+                  SOCIAL_AUTH_OIDC_OIDC_ENDPOINT: "https://auth.{{ .Values.domain }}/application/o/netbox/"
+                  SOCIAL_AUTH_OIDC_KEY: {{ `{{ "{{ .client_id.Value | quote }}" }}` }}
+                  SOCIAL_AUTH_OIDC_SECRET: {{ `{{ "{{ .client_secret.Value | quote }}" }}` }}
+                  SOCIAL_AUTH_OIDC_SCOPE: ["openid", "profile", "email", "roles"]
+                  SOCIAL_AUTH_REDIRECT_IS_HTTPS: true
+                  LOGOUT_REDIRECT_URL: "https://auth.{{ .Values.domain }}/application/o/netbox/end-session/"
+                  REMOTE_AUTH_SUPERUSER_GROUPS: ["superusers"]
+                  REMOTE_AUTH_STAFF_GROUPS: ["superusers", "staff"]
+
+  democratic-csi:
+    forceRename: democraticcsiinfisical
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: democraticcsiinfisical
+        namespace: kube-system
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /truenas/democratic_csi
+        targets:
+          - name: democraticcsiinfisical
+            namespace: kube-system
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                driver-config-file.yaml: |
+                  driver: freenas-iscsi
+                  instance_id: aion
+                  httpConnection:
+                    protocol: https
+                    host: {{ .Values.nfsServer }}
+                    port: 443
+                    apiKey: {{ `{{ "{{ .api_key.Value | quote }}" }}` }}
+                    allowInsecure: true
+                    apiVersion: 2
+                  sshConnection:
+                    host: {{ .Values.nfsServer }}
+                    port: 22
+                    username: {{ `{{ "{{ .username.Value | quote }}" }}` }}
+                    privateKey: {{ `{{ "{{ .ssh_private_key.Value | quote }}" }}` }}
+                  zfs:
+                    cli:
+                      sudoEnabled: true
+                    datasetParentName: swamp/moss/aion-iscsi
+                    detachedSnapshotsDatasetParentName: swamp/moss/aion-iscsi-snaps
+                    zvolEnableReservation: false
+                    zvolBlocksize: 16K
+                  iscsi:
+                    targetPortal: {{ .Values.nfsServer }}
+                    targetPortals: []
+                    namePrefix: csi-
+                    nameSuffix: "-aion"
+                    targetGroups:
+                      - targetGroupPortalGroup: 1
+                        targetGroupInitiatorGroup: 2
+                        targetGroupAuthType: None
+                        targetGroupAuthGroup:
+                    extentInsecureTpc: true
+                    extentXenCompat: false
+                    extentDisablePhysicalBlocksize: true
+                    extentBlocksize: 512
+                    extentRpm: "7200"
+                    extentAvailThreshold: 0
 {{ end }}
