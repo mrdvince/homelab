@@ -30,6 +30,8 @@ rawResources:
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     containers:
       main:
         image:
@@ -40,7 +42,7 @@ controllers:
           SEARXNG_SECRET:
             valueFrom:
               secretKeyRef:
-                name: searxng
+                name: searxnginfisical
                 key: secret-key
         resources:
           requests:
@@ -110,11 +112,6 @@ configMaps:
           limiter: false
           public_instance: false
           image_proxy: false
-
-secrets:
-  environment:
-    stringData:
-      secret-key: {{ .Values.searxng.secret_key }}
 
 persistence:
   config:
