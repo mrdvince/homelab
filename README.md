@@ -40,7 +40,7 @@ homelab/
 └── secrets/                 # sops-encrypted secrets
 ```
 
-Each application in `apps/` is discovered from its directory and uses a `helmfile.yaml.gotmpl` for chart configuration plus a `values.yaml.gotmpl` for environment-specific values. Add an `argocd.yaml` only when the application needs application-level overrides such as a non-default namespace or ignored differences. Resource-specific Argo CD sync behaviour belongs in the rendered manifests through annotations.
+Each application in `apps/` is discovered from its directory and uses a `helmfile.yaml.gotmpl` for chart configuration plus a `values.yaml.gotmpl` for environment-specific values. Add an `argocd.yaml` only when the application needs application-level overrides such as a non-default namespace, ignored differences, or an application-wide sync strategy. Resource-specific Argo CD sync behaviour belongs in the rendered manifests through annotations.
 
 ## Stack
 

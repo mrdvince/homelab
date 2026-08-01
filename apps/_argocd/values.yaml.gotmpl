@@ -112,9 +112,16 @@ applicationsets:
             - CreateNamespace=true
             - ServerSideApply=true
     templatePatch: |
-      {{`{{- if hasKey . "ignoreDifferences" }}`}}
+      {{`{{- if or (hasKey . "ignoreDifferences") (and (hasKey . "serverSideApply") (not .serverSideApply)) }}`}}
       spec:
+        {{`{{- if hasKey . "ignoreDifferences" }}`}}
         ignoreDifferences: {{`{{ .ignoreDifferences | toYaml | nindent 4 }}`}}
+        {{`{{- end }}`}}
+        {{`{{- if and (hasKey . "serverSideApply") (not .serverSideApply) }}`}}
+        syncPolicy:
+          syncOptions:
+            - CreateNamespace=true
+        {{`{{- end }}`}}
       {{`{{- end }}`}}
 
   storage-apps:
