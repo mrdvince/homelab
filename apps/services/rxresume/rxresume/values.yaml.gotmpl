@@ -1,3 +1,47 @@
+rawResources:
+  infisical:
+    forceRename: rxresume
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: rxresume
+        namespace: apps
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /rxresume
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /rxresume/oidc
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /s3
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /mailrise
+        targets:
+          - name: rxresumeinfisical
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                auth-secret: {{ `{{ "{{ .auth_secret.Value }}" }}` | quote }}
+                client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
+                client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
+                s3-access-key: {{ `{{ "{{ .accessKey.Value }}" }}` | quote }}
+                s3-secret-key: {{ `{{ "{{ .secretKey.Value }}" }}` | quote }}
+                smtp-password: {{ `{{ "{{ .smtp_password.Value }}" }}` | quote }}
+                smtp-username: {{ `{{ "{{ .smtp_username.Value }}" }}` | quote }}
+
 controllers:
   main:
     revisionHistoryLimit: 1

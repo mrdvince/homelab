@@ -1,3 +1,50 @@
+rawResources:
+  infisical:
+    forceRename: librechat
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: librechat
+        namespace: hermes
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /librechat
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /librechat/mongo
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /librechat/oidc
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /hermes
+        targets:
+          - name: librechatinfisical
+            namespace: hermes
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                credentials-iv: {{ `{{ "{{ .credentials_iv.Value }}" }}` | quote }}
+                credentials-key: {{ `{{ "{{ .credentials_key.Value }}" }}` | quote }}
+                hermes-api-key: {{ `{{ "{{ .api_key.Value }}" }}` | quote }}
+                jwt-refresh-secret: {{ `{{ "{{ .jwt_refresh_secret.Value }}" }}` | quote }}
+                jwt-secret: {{ `{{ "{{ .jwt_secret.Value }}" }}` | quote }}
+                mongo-password: {{ `{{ "{{ .password.Value }}" }}` | quote }}
+                mongo-username: {{ `{{ "{{ .username.Value }}" }}` | quote }}
+                oidc-client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
+                oidc-client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
+                oidc-session-secret: {{ `{{ "{{ .session_secret.Value }}" }}` | quote }}
+
 controllers:
   main:
     revisionHistoryLimit: 1

@@ -1,3 +1,36 @@
+rawResources:
+  infisical:
+    forceRename: firecrawl
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: firecrawl
+        namespace: apps
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /firecrawl
+        targets:
+          - name: firecrawlinfisical
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                bull-auth-key: {{ `{{ "{{ .bull_auth_key.Value }}" }}` | quote }}
+                postgres-password: {{ `{{ "{{ .postgres_password.Value }}" }}` | quote }}
+                postgres-username: {{ `{{ "{{ .postgres_username.Value }}" }}` | quote }}
+                rabbitmq-password: {{ `{{ "{{ .rabbitmq_password.Value }}" }}` | quote }}
+                rabbitmq-username: {{ `{{ "{{ .rabbitmq_username.Value }}" }}` | quote }}
+
 controllers:
   main:
     revisionHistoryLimit: 1

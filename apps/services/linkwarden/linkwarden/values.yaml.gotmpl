@@ -1,3 +1,43 @@
+rawResources:
+  infisical:
+    forceRename: linkwarden
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: linkwarden
+        namespace: apps
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /linkwarden
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /linkwarden/oidc
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /mailrise
+        targets:
+          - name: linkwardeninfisical
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
+                client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
+                meilisearch-master-key: {{ `{{ "{{ .meilisearch_master_key.Value }}" }}` | quote }}
+                nextauth-secret: {{ `{{ "{{ .nextauth_secret.Value }}" }}` | quote }}
+                smtp-password: {{ `{{ "{{ .smtp_password.Value }}" }}` | quote }}
+                smtp-username: {{ `{{ "{{ .smtp_username.Value }}" }}` | quote }}
+
 controllers:
   main:
     revisionHistoryLimit: 1

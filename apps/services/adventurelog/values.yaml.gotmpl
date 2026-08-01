@@ -1,3 +1,41 @@
+rawResources:
+  infisical:
+    forceRename: adventurelog
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: adventurelog
+        namespace: apps
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /adventurelog
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /adventurelog/oidc
+        targets:
+          - name: adventureloginfisical
+            namespace: apps
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                admin-email: {{ `{{ "{{ .admin_email.Value }}" }}` | quote }}
+                admin-password: {{ `{{ "{{ .admin_password.Value }}" }}` | quote }}
+                admin-username: {{ `{{ "{{ .admin_username.Value }}" }}` | quote }}
+                django-secret-key: {{ `{{ "{{ .secret_key.Value }}" }}` | quote }}
+                oidc-client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
+                oidc-client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
+                postgres-password: {{ `{{ "{{ .postgres_password.Value }}" }}` | quote }}
+
 controllers:
   main:
     revisionHistoryLimit: 1
