@@ -158,9 +158,10 @@ gitlab-runner:
       [[runners]]
         request_concurrency = 4
         builds_dir = "/tmp/builds"
-        environment = ["FF_NETWORK_PER_BUILD=1", "FF_USE_ADAPTIVE_REQUEST_CONCURRENCY=true", "FF_USE_ADVANCED_POD_SPEC_CONFIGURATION=true"]
+        environment = ["FF_NETWORK_PER_BUILD=1", "FF_USE_ADAPTIVE_REQUEST_CONCURRENCY=true", "FF_USE_ADVANCED_POD_SPEC_CONFIGURATION=true", "HELM_REGISTRY_CONFIG=/app/config/helm/registry.json"]
         [runners.kubernetes]
         namespace = "gitlab"
+        service_account = "gitlab-gitlab-runner"
         image = "{{ .Values.imageRegistry }}/library/alpine:3.23.2"
 {{ if not (.Values | get "renderStockImages" false) }}
         helper_image = "{{ .Values.imageRegistry }}/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-v18.11.2"
@@ -168,6 +169,10 @@ gitlab-runner:
         privileged = true
         logs_base_dir = "/tmp"
         scripts_base_dir = "/tmp"
+        [[runners.kubernetes.volumes.secret]]
+          name = "helmregistry"
+          mount_path = "/app/config/helm"
+          read_only = true
         [runners.kubernetes.node_selector]
           "node.home.mrdvince.me/worker" = "true"
         [[runners.kubernetes.volumes.empty_dir]]

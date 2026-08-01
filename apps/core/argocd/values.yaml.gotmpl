@@ -117,6 +117,8 @@ repoServer:
           value: /tmp/helm/cache
         - name: HELM_CONFIG_HOME
           value: /tmp/helm/config
+        - name: HELM_REGISTRY_CONFIG
+          value: /app/config/helm/registry.json
         - name: HELMFILE_CACHE_HOME
           value: /tmp/helmfile/cache
         - name: HELMFILE_TEMPDIR
@@ -143,6 +145,9 @@ repoServer:
           name: cmp-tmp
         - mountPath: /app/config/age/
           name: age
+        - mountPath: /app/config/helm/
+          name: helmregistry
+          readOnly: true
   volumes:
     - name: argocd-cmp-cm
       configMap:
@@ -152,6 +157,9 @@ repoServer:
     - name: age
       secret:
         secretName: age
+    - name: helmregistry
+      secret:
+        secretName: helmregistry
 
 {{ if not (.Values | get "renderStockImages" false) }}
 dex:

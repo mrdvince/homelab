@@ -17,6 +17,8 @@ scopedNamespaces:
   - infisicaloperator
   - hermes
   - apps
+  - argocd
+  - gitlab
 scopedRBAC: true
 installCRDs: true
 {{ else if eq .Release.Name "homelab" }}
@@ -96,4 +98,41 @@ rawResources:
             namespace: infisicaloperator
             kind: Secret
             creationPolicy: Owner
+
+  registry:
+    forceRename: helmregistry
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: helmregistry
+        annotations:
+          argocd.argoproj.io/sync-wave: "3"
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /zot
+        targets:
+          - name: helmregistry
+            namespace: argocd
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                registry.json: {{ `{{ "{{ .helm_registry_config.Value }}" }}` | quote }}
+          - name: helmregistry
+            namespace: gitlab
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                registry.json: {{ `{{ "{{ .helm_registry_config.Value }}" }}` | quote }}
 {{ end }}
