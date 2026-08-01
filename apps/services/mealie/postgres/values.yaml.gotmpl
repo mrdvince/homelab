@@ -43,11 +43,9 @@ backups:
   s3:
     region: "home"
     bucket: "cnpg-backups"
-    accessKey: {{ .Values.s3.accessKey | quote }}
-    secretKey: {{ .Values.s3.secretKey | quote }}
   secret:
-    create: true
-    name: "mealie-postgres-s3-creds"
+    create: false
+    name: cnpgbackup
 
   wal:
     compression: gzip

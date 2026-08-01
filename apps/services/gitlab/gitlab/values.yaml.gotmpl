@@ -81,7 +81,7 @@ global:
       enabled: true
       proxy_download: true
       connection:
-        secret: gitlab-s3-connection
+        secret: gitlabs3connection
         key: connection
 
     lfs:
@@ -364,7 +364,7 @@ gitlab:
       objectStorage:
         backend: s3
         config:
-          secret: gitlab-s3-backup-connection
+          secret: gitlabs3backup
           key: connection
       cron:
         enabled: false

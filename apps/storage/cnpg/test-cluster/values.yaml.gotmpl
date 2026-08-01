@@ -48,9 +48,8 @@ objectStore:
     jobs: 1
 
 credentials:
-  name: test-cluster-s3-creds
-  accessKey: {{ .Values.s3.accessKey | quote }}
-  secretKey: {{ .Values.s3.secretKey | quote }}
+  create: false
+  name: cnpgbackup
 
 scheduledBackup:
   name: daily-backup

@@ -17,39 +17,6 @@ releases:
     values:
       - postgres/values.yaml.gotmpl
 
-  - name: gitlab-s3-secrets
-    namespace: gitlab
-    chart: zot/internal/secret
-    version: 0.1.0
-    values:
-      - fullnameOverride: gitlab-s3-connection
-        stringData:
-          connection: |
-            provider: AWS
-            region: home
-            aws_access_key_id: {{ .Values.s3.accessKey }}
-            aws_secret_access_key: {{ .Values.s3.secretKey }}
-            endpoint: https://s3.{{ .Values.domain }}
-            path_style: true
-
-  - name: gitlab-s3-backup-secrets
-    namespace: gitlab
-    chart: zot/internal/secret
-    version: 0.1.0
-    values:
-      - fullnameOverride: gitlab-s3-backup-connection
-        stringData:
-          connection: |
-            [default]
-            access_key = {{ .Values.s3.accessKey }}
-            secret_key = {{ .Values.s3.secretKey }}
-            bucket_location = home
-            host_base = s3.{{ .Values.domain }}
-            host_bucket = s3.{{ .Values.domain }}
-            use_https = True
-            signature_v2 = False
-            preserve_attrs = False
-
   - name: gitlab-oidc-provider
     namespace: gitlab
     chart: zot/internal/secret
@@ -91,8 +58,6 @@ releases:
     needs:
       - gitlab-postgres
       - gitlab-redis
-      - gitlab-s3-secrets
-      - gitlab-s3-backup-secrets
       - gitlab-oidc-provider
     values:
       - gitlab/values.yaml.gotmpl
