@@ -3,8 +3,20 @@ image:
   registry: {{ .Values.imageRegistry }}
 
 {{ end }}
-adminUser: {{ .Values.grafana.adminUser }}
-adminPassword: {{ .Values.grafana.adminPassword }}
+admin:
+  existingSecret: grafanainfisical
+  userKey: admin-user
+  passwordKey: admin-password
+
+envValueFrom:
+  GF_AUTH_GENERIC_OAUTH_CLIENT_ID:
+    secretKeyRef:
+      name: grafanainfisical
+      key: oidc-client-id
+  GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
+    secretKeyRef:
+      name: grafanainfisical
+      key: oidc-client-secret
 
 assertNoLeakedSecrets: false
 
@@ -36,8 +48,8 @@ grafana.ini:
     name: Authentik
     allow_sign_up: true
     allow_assign_grafana_admin: true
-    client_id: {{ .Values.grafana.oidc.client_id }}
-    client_secret: {{ .Values.grafana.oidc.client_secret }}
+    client_id: $__env{GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
+    client_secret: $__env{GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
     scopes: openid email profile
     auth_url: https://auth.{{ .Values.domain }}/application/o/authorize/
     token_url: https://auth.{{ .Values.domain }}/application/o/token/

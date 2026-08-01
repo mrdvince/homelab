@@ -9,7 +9,7 @@ image:
   tag: 5.130.3-debian-12-r17
 
 ghostUsername: zero
-ghostPassword: {{ .Values.ghost.ghostPassword }}
+existingSecret: bloginfisical
 ghostEmail: zero@mrdvince.me
 ghostBlogTitle: "Nomadin"
 ghostHost: blog.{{ .Values.domain }}
@@ -40,8 +40,7 @@ mysql:
   auth:
     database: ghost_production
     username: ghost
-    rootPassword: {{ .Values.ghost.ghostMysqlRootPassword }}
-    password: {{ .Values.ghost.ghostMysqlPassword }}
+    existingSecret: bloginfisical
   primary:
     persistence:
       enabled: true
