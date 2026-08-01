@@ -3,8 +3,6 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl
@@ -16,33 +14,6 @@ releases:
     version: 0.7.0
     values:
       - postgres/values.yaml.gotmpl
-
-  - name: gitlab-oidc-provider
-    namespace: gitlab
-    chart: zot/internal/secret
-    version: 0.1.0
-    values:
-      - fullnameOverride: gitlab-oidc-provider
-        stringData:
-          provider: |
-            name: openid_connect
-            label: Authentik
-            args:
-              name: openid_connect
-              scope:
-                - openid
-                - profile
-                - email
-              response_type: code
-              issuer: https://auth.{{ .Values.domain }}/application/o/gitlab/
-              discovery: true
-              client_auth_method: query
-              uid_field: preferred_username
-              pkce: true
-              client_options:
-                identifier: {{ .Values | get "gitlab-oidc.client_id" }}
-                secret: {{ .Values | get "gitlab-oidc.client_secret" }}
-                redirect_uri: https://gitlab.{{ .Values.domain }}/users/auth/openid_connect/callback
 
   - name: gitlab-redis
     namespace: gitlab
@@ -58,6 +29,5 @@ releases:
     needs:
       - gitlab-postgres
       - gitlab-redis
-      - gitlab-oidc-provider
     values:
       - gitlab/values.yaml.gotmpl
