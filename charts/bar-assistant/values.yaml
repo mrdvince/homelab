@@ -15,6 +15,10 @@ api:
     limits:
       cpu: 500m
       memory: 512Mi
+  livenessProbe:
+    timeoutSeconds: 1
+  readinessProbe:
+    timeoutSeconds: 1
   persistence:
     enabled: true
     storageClass: ""

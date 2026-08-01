@@ -21,6 +21,10 @@ api:
     requests:
       cpu: 500m
       memory: 512Mi
+  livenessProbe:
+    timeoutSeconds: 5
+  readinessProbe:
+    timeoutSeconds: 5
   persistence:
     enabled: true
     storageClass: nfs-csi-retain

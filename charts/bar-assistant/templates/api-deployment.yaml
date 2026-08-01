@@ -88,12 +88,14 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: {{ .Values.api.livenessProbe.timeoutSeconds }}
           readinessProbe:
             httpGet:
               path: /
               port: http
             initialDelaySeconds: 10
             periodSeconds: 5
+            timeoutSeconds: {{ .Values.api.readinessProbe.timeoutSeconds }}
           {{- with .Values.api.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
