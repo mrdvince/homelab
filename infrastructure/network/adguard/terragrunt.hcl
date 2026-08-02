@@ -1,6 +1,5 @@
 locals {
-  secret_vars    = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
-  adguard_url    = trimsuffix(local.secret_vars.adhome.url, "/")
+  adguard_url    = trimsuffix(get_env("ADGUARD_URL"), "/")
   adguard_scheme = startswith(local.adguard_url, "http://") ? "http" : "https"
   adguard_host = trimprefix(
     trimprefix(local.adguard_url, "https://"),
@@ -36,8 +35,8 @@ terraform {
 inputs = {
   adguard_host     = local.adguard_host
   adguard_scheme   = local.adguard_scheme
-  adguard_username = local.secret_vars.adhome.user
-  adguard_password = local.secret_vars.adhome.password
+  adguard_username = get_env("ADGUARD_USERNAME")
+  adguard_password = get_env("ADGUARD_PASSWORD")
 
   domain_maps = {
     "auth.home.mrdvince.me"         = "10.30.100.13"

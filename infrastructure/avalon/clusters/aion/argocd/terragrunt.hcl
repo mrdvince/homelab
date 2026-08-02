@@ -12,7 +12,7 @@ dependency "cluster" {
 }
 
 locals {
-  secrets = include.root.locals.secret_vars
+  recovery_vars = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
 }
 
 inputs = {
@@ -25,8 +25,8 @@ inputs = {
 
   repositories = {
     homelab = {
-      url     = "git@gitlab.home.mrdvince.me:homelab/homelab.git"
-      ssh_key = local.secrets.gitlab_deploy_key
+      url      = "git@gitlab.home.mrdvince.me:homelab/homelab.git"
+      ssh_key  = local.recovery_vars.gitlab_deploy_key
       insecure = true
     }
   }

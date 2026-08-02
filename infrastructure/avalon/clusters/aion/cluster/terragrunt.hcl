@@ -20,7 +20,8 @@ dependencies {
 }
 
 locals {
-  external_kubelet_ssh = include.root.locals.secret_vars.aion.external_kubelet_ssh
+  recovery_vars        = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
+  external_kubelet_ssh = local.recovery_vars.aion.external_kubelet_ssh
   network_interface    = "eth0"
   worker_node_endpoints = {
     aion-21 = { endpoint = "10.30.30.134" }
@@ -158,8 +159,8 @@ inputs = {
           config = {
             "registry.home.mrdvince.me" = {
               auth = {
-                username = include.root.locals.secret_vars.registry.username
-                password = include.root.locals.secret_vars.registry.token
+                username = local.recovery_vars.registry.username
+                password = local.recovery_vars.registry.token
               }
             }
           }

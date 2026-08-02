@@ -13,8 +13,14 @@ locals {
 
   opnsense_host  = "vale.home.mrdvince.me"
   pve_target     = "elysium.home.mrdvince.me"
-  pve_token_id   = include.root.locals.secret_vars.pve.pve_exporter_token_id
+  pve_token_id   = get_env("PVE_EXPORTER_TOKEN_ID")
   pve_token_part = split("!", local.pve_token_id)
+
+  pve_token_secret             = get_env("PVE_EXPORTER_TOKEN_SECRET")
+  opnsense_exporter_api_key    = get_env("OPNSENSE_EXPORTER_API_KEY")
+  opnsense_exporter_api_secret = get_env("OPNSENSE_EXPORTER_API_SECRET")
+  opnsense_snmp_password       = get_env("OPNSENSE_SNMP_PASSWORD")
+  opnsense_snmp_enc_key        = get_env("OPNSENSE_SNMP_ENC_KEY")
 }
 
 inputs = {
@@ -51,15 +57,15 @@ inputs = {
         default:
           user: ${local.pve_token_part[0]}
           token_name: ${local.pve_token_part[1]}
-          token_value: ${include.root.locals.secret_vars.pve.pve_exporter_token_secret}
+          token_value: ${local.pve_token_secret}
           verify_ssl: false
       EOF
     }
 
     "opnsense.env" = {
       content = <<-EOF
-        OPNSENSE_EXPORTER_OPS_API_KEY=${include.root.locals.secret_vars.opnsense.exporter_api_key}
-        OPNSENSE_EXPORTER_OPS_API_SECRET=${include.root.locals.secret_vars.opnsense.exporter_api_secret}
+        OPNSENSE_EXPORTER_OPS_API_KEY=${local.opnsense_exporter_api_key}
+        OPNSENSE_EXPORTER_OPS_API_SECRET=${local.opnsense_exporter_api_secret}
       EOF
     }
 
@@ -70,10 +76,10 @@ inputs = {
             version: 3
             security_level: authPriv
             username: ${include.envcommon.locals.alloy_username}
-            password: ${include.root.locals.secret_vars.opnsense.snmp_password}
+            password: ${local.opnsense_snmp_password}
             auth_protocol: SHA
             priv_protocol: AES
-            priv_password: ${include.root.locals.secret_vars.opnsense.snmp_enc_key}
+            priv_password: ${local.opnsense_snmp_enc_key}
       EOF
     }
   }

@@ -4,8 +4,9 @@ include "root" {
 }
 
 locals {
-  pm_api_token_id     = include.root.locals.pm_api_token_id
-  pm_api_token_secret = include.root.locals.pm_api_token_secret
+  recovery_vars       = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
+  pm_api_token_id     = local.recovery_vars.pm_api_token_id
+  pm_api_token_secret = local.recovery_vars.pm_api_token_secret
   pm_api_url          = include.root.locals.pm_api_url
 }
 
