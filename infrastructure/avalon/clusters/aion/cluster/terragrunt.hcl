@@ -66,7 +66,7 @@ inputs = {
     ]
   }
 
-  extensions                        = ["iscsi-tools", "util-linux-tools", "qemu-guest-agent"]
+  extensions                        = ["iscsi-tools", "util-linux-tools", "qemu-guest-agent", "kata-containers"]
   auto_upgrade                      = true
   allow_scheduling_on_controlplanes = false
 
