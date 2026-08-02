@@ -1,6 +1,8 @@
 controllers:
   main:
     revisionHistoryLimit: 1
+    annotations:
+      secrets.infisical.com/auto-reload: "true"
     strategy: Recreate
     serviceAccount:
       identifier: codex
@@ -23,11 +25,9 @@ controllers:
               /mnt/data/projects \
               /mnt/data/tmp
             install -d -m 0755 -o 1000 -g 1000 /mnt/data/homebrew
-            install -d -m 0700 -o 1000 -g 1000 /mnt/data/home/.ssh
             install -d -m 0755 -o 1000 -g 1000 /mnt/homebrew /mnt/codex-home
 
             ln -s /opt/data/homebrew /mnt/homebrew/.linuxbrew
-            ln -s /opt/data/home/.ssh /mnt/codex-home/.ssh
 
             if [ ! -x /mnt/data/homebrew/bin/brew ]; then
               cp -a /opt/codex/homebrew/. /mnt/data/homebrew/
@@ -54,7 +54,35 @@ controllers:
         args:
           - codex-remote-control
         env:
+          GITLAB_HOST: gitlab.home.mrdvince.me
+          GITLAB_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: codexgitlab
+                key: token
+          GITLAB_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: codexgitlab
+                key: user
+          GIT_CONFIG_COUNT: "7"
+          GIT_CONFIG_KEY_0: url.https://oauth2@gitlab.home.mrdvince.me/.insteadOf
+          GIT_CONFIG_VALUE_0: "git@gitlab.home.mrdvince.me:"
+          GIT_CONFIG_KEY_1: credential.https://gitlab.home.mrdvince.me.helper
+          GIT_CONFIG_VALUE_1: >-
+            !f() { test "$1" = get && { echo "username=${GITLAB_USERNAME}"; echo "password=${GITLAB_TOKEN}"; }; }; f
+          GIT_CONFIG_KEY_2: gpg.format
+          GIT_CONFIG_VALUE_2: ssh
+          GIT_CONFIG_KEY_3: gpg.ssh.defaultKeyCommand
+          GIT_CONFIG_VALUE_3: ssh-add -L
+          GIT_CONFIG_KEY_4: commit.gpgSign
+          GIT_CONFIG_VALUE_4: "true"
+          GIT_CONFIG_KEY_5: user.name
+          GIT_CONFIG_VALUE_5: Vince
+          GIT_CONFIG_KEY_6: user.email
+          GIT_CONFIG_VALUE_6: vincivenv@gmail.com
           RUST_LOG: info
+          SSH_AUTH_SOCK: /run/signing-agent/agent.sock
           TZ: Europe/Amsterdam
         resources:
           requests:
@@ -81,6 +109,39 @@ controllers:
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+              - ALL
+      signer:
+        image:
+          repository: {{ .Values.imageRegistry }}/homelab/codex
+          tag: "0.146.0-3"
+        command:
+          - /bin/bash
+        args:
+          - -ec
+          - |
+            umask 077
+            cp /run/signing-source/key /run/signing-work/key
+            chmod 0600 /run/signing-work/key
+            rm -f /run/signing-agent/agent.sock
+            eval "$(ssh-agent -s -a /run/signing-agent/agent.sock)" >/dev/null
+            trap 'ssh-agent -k >/dev/null' EXIT TERM INT
+            ssh-add /run/signing-work/key >/dev/null
+            rm -f /run/signing-work/key
+            wait "${SSH_AGENT_PID}"
+        resources:
+          requests:
+            cpu: 5m
+            memory: 16Mi
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1000
           runAsGroup: 1000
@@ -218,6 +279,38 @@ persistence:
       main:
         codex:
           - path: /dev/shm
+  signing-agent:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 1Mi
+    advancedMounts:
+      main:
+        codex:
+          - path: /run/signing-agent
+        signer:
+          - path: /run/signing-agent
+  signing-source:
+    type: custom
+    volumeSpec:
+      secret:
+        secretName: codexsigning
+        defaultMode: 288
+        items:
+          - key: key
+            path: key
+    advancedMounts:
+      main:
+        signer:
+          - path: /run/signing-source
+            readOnly: true
+  signing-work:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 1Mi
+    advancedMounts:
+      main:
+        signer:
+          - path: /run/signing-work
   tmp:
     type: emptyDir
     sizeLimit: 20Gi
@@ -227,6 +320,45 @@ persistence:
           - path: /tmp
 
 rawResources:
+  infisical:
+    forceRename: codex
+    manifest:
+      apiVersion: secrets.infisical.com/v1beta1
+      kind: InfisicalStaticSecret
+      metadata:
+        name: codex
+        namespace: scriptorium
+      spec:
+        infisicalAuthRef:
+          name: homelab
+          namespace: infisicaloperator
+        syncOptions:
+          refreshInterval: 60s
+        sources:
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /codex/gitlab
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /codex/signing
+        targets:
+          - name: codexgitlab
+            namespace: scriptorium
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                token: {{ `{{ "{{ .token.Value }}" }}` | quote }}
+                user: {{ `{{ "{{ .user.Value }}" }}` | quote }}
+          - name: codexsigning
+            namespace: scriptorium
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                key: {{ `{{ "{{ .key.Value }}" }}` | quote }}
   kubernetes-admin-binding:
     forceRename: codex-kubernetes-admin
     manifest:

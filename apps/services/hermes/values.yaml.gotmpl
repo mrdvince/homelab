@@ -81,6 +81,23 @@ controllers:
           - gateway
           - run
         env:
+          GITLAB_HOST: gitlab.home.mrdvince.me
+          GITLAB_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: hermesinfisical
+                key: token
+          GITLAB_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: hermesinfisical
+                key: user
+          GIT_CONFIG_COUNT: "2"
+          GIT_CONFIG_KEY_0: url.https://oauth2@gitlab.home.mrdvince.me/.insteadOf
+          GIT_CONFIG_VALUE_0: "git@gitlab.home.mrdvince.me:"
+          GIT_CONFIG_KEY_1: credential.https://gitlab.home.mrdvince.me.helper
+          GIT_CONFIG_VALUE_1: >-
+            !f() { test "$1" = get && { echo "username=${GITLAB_USERNAME}"; echo "password=${GITLAB_TOKEN}"; }; }; f
           TZ: Europe/Amsterdam
           HERMES_DASHBOARD: "1"
           HERMES_DASHBOARD_HOST: 0.0.0.0
@@ -432,6 +449,9 @@ rawResources:
           - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
             environmentSlug: prod
             secretPath: /hermes/signal
+          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+            environmentSlug: prod
+            secretPath: /hermes/gitlab
         targets:
           - name: hermesinfisical
             namespace: hermes
@@ -444,17 +464,19 @@ rawResources:
                 oidc-client-id: {{ `{{ "{{ .client_id.Value }}" }}` | quote }}
                 oidc-client-secret: {{ `{{ "{{ .client_secret.Value }}" }}` | quote }}
                 signal-account: {{ `{{ "{{ .account.Value }}" }}` | quote }}
-  kubernetes-admin-binding:
-    forceRename: hermes-kubernetes-admin
+                token: {{ `{{ "{{ .token.Value }}" }}` | quote }}
+                user: {{ `{{ "{{ .user.Value }}" }}` | quote }}
+  kubernetes-view-binding:
+    forceRename: hermes-kubernetes-view
     manifest:
       apiVersion: rbac.authorization.k8s.io/v1
       kind: ClusterRoleBinding
       metadata:
-        name: hermes-kubernetes-admin
+        name: hermes-kubernetes-view
       roleRef:
         apiGroup: rbac.authorization.k8s.io
         kind: ClusterRole
-        name: cluster-admin
+        name: view
       subjects:
         - kind: ServiceAccount
           name: hermes
