@@ -3,8 +3,10 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
+{{ if not (.Values | get "renderStockImages" false) }}
     secrets:
       - ../../../secrets/bootstrap.enc.yaml
+{{ end }}
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl
@@ -24,10 +26,17 @@ releases:
     values:
       - fullnameOverride: infisical
         data:
+{{ if (.Values | get "renderStockImages" false) }}
+          AUTH_SECRET: stock
+          ENCRYPTION_KEY: stock
+          REDIS_PASSWORD: stock
+          REDIS_URL: redis://:stock@infisical-redis.apps.svc.cluster.local:6379
+{{ else }}
           AUTH_SECRET: {{ .Values.infisical.auth_secret | trim | quote }}
           ENCRYPTION_KEY: {{ .Values.infisical.encryption_key | trim | quote }}
           REDIS_PASSWORD: {{ .Values.infisical.redis_password | trim | quote }}
           REDIS_URL: {{ printf "redis://:%s@infisical-redis.apps.svc.cluster.local:6379" (.Values.infisical.redis_password | trim) | quote }}
+{{ end }}
 
   - name: infisical-redis
     namespace: apps

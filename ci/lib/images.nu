@@ -77,6 +77,7 @@ export def render-upstream-manifests [cfg: record] {
   rm -rf $cfg.rendered_dir
   mkdir $cfg.rendered_dir
   let helm_plugins = (^helm env HELM_PLUGINS | str trim)
+  let helm_registry_config = (^helm env HELM_REGISTRY_CONFIG | str trim)
   let helmfile_paths = (all-helmfile-paths)
   let render_threads = if $nu.os-info.name == "macos" { 1 } else { $cfg.render_threads }
 
@@ -95,7 +96,7 @@ export def render-upstream-manifests [cfg: record] {
         HELM_CACHE_HOME: ([$helm_home "cache"] | path join)
         HELM_CONFIG_HOME: ([$helm_home "config"] | path join)
         HELM_DATA_HOME: ([$helm_home "data"] | path join)
-        HELM_REGISTRY_CONFIG: ([$helm_home "registry" "config.json"] | path join)
+        HELM_REGISTRY_CONFIG: $helm_registry_config
         HELMFILE_CACHE_HOME: ([$helm_home "helmfile-cache"] | path join)
         HELMFILE_TEMPDIR: ([$helm_home "helmfile-tmp"] | path join)
         HELM_PLUGINS: $helm_plugins
