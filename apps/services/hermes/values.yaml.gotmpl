@@ -250,6 +250,7 @@ controllers:
 
 defaultPodOptions:
   automountServiceAccountToken: false
+  runtimeClassName: kata
   securityContext:
     runAsNonRoot: false
     runAsUser: 0
@@ -337,8 +338,7 @@ persistence:
     advancedMounts:
       main:
         main:
-          - path: /etc/hermes-kubernetes/config
-            subPath: config
+          - path: /etc/hermes-kubernetes
             readOnly: true
   signal-data:
     type: persistentVolumeClaim

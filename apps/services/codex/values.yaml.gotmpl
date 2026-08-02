@@ -24,6 +24,10 @@ controllers:
               /mnt/data/tmp
             install -d -m 0755 -o 1000 -g 1000 /mnt/data/homebrew
             install -d -m 0700 -o 1000 -g 1000 /mnt/data/home/.ssh
+            install -d -m 0755 -o 1000 -g 1000 /mnt/homebrew /mnt/codex-home
+
+            ln -s /opt/data/homebrew /mnt/homebrew/.linuxbrew
+            ln -s /opt/data/home/.ssh /mnt/codex-home/.ssh
 
             if [ ! -x /mnt/data/homebrew/bin/brew ]; then
               cp -a /opt/codex/homebrew/. /mnt/data/homebrew/
@@ -87,6 +91,7 @@ controllers:
 defaultPodOptions:
   automountServiceAccountToken: false
   hostname: codex
+  runtimeClassName: kata
   terminationGracePeriodSeconds: 60
   affinity:
     nodeAffinity:
@@ -156,10 +161,22 @@ persistence:
           - path: /mnt/data
         codex:
           - path: /opt/data
-          - path: /home/linuxbrew/.linuxbrew
-            subPath: homebrew
-          - path: /home/codex/.ssh
-            subPath: home/.ssh
+  homebrew-link:
+    type: emptyDir
+    advancedMounts:
+      main:
+        initialize-data:
+          - path: /mnt/homebrew
+        codex:
+          - path: /home/linuxbrew
+  codex-home-link:
+    type: emptyDir
+    advancedMounts:
+      main:
+        initialize-data:
+          - path: /mnt/codex-home
+        codex:
+          - path: /home/codex
   kubernetes-credentials:
     type: custom
     volumeSpec:
@@ -191,8 +208,7 @@ persistence:
     advancedMounts:
       main:
         codex:
-          - path: /etc/codex-kubernetes/config
-            subPath: config
+          - path: /etc/codex-kubernetes
             readOnly: true
   shared-memory:
     type: emptyDir
