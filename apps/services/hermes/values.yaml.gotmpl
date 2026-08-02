@@ -35,6 +35,8 @@ controllers:
           capabilities:
             drop:
               - ALL
+            add:
+              - DAC_OVERRIDE
       configure-proton-bridge:
         image:
           repository: {{ .Values.imageRegistry }}/homelab/proton-bridge
