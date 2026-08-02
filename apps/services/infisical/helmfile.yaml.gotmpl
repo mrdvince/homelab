@@ -4,7 +4,7 @@ environments:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
     secrets:
-      - ../../../secrets/secrets.enc.yaml
+      - ../../../secrets/bootstrap.enc.yaml
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl
