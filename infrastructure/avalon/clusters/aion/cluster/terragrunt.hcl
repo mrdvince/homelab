@@ -20,8 +20,11 @@ dependencies {
 }
 
 locals {
-  recovery_vars        = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
-  external_kubelet_ssh = local.recovery_vars.aion.external_kubelet_ssh
+  use_sops             = get_env("HOMELAB_SECRET_SOURCE", "infisical") == "sops"
+  secret_vars          = local.use_sops ? yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml")) : null
+  external_kubelet_ssh = local.use_sops ? local.secret_vars.aion.external_kubelet_ssh : get_env("AION_EXTERNAL_KUBELET_SSH")
+  registry_username    = local.use_sops ? local.secret_vars.registry.username : get_env("REGISTRY_USERNAME")
+  registry_token       = local.use_sops ? local.secret_vars.registry.token : get_env("REGISTRY_TOKEN")
   network_interface    = "eth0"
   worker_node_endpoints = {
     aion-21 = { endpoint = "10.30.30.134" }
@@ -159,8 +162,8 @@ inputs = {
           config = {
             "registry.home.mrdvince.me" = {
               auth = {
-                username = local.recovery_vars.registry.username
-                password = local.recovery_vars.registry.token
+                username = local.registry_username
+                password = local.registry_token
               }
             }
           }

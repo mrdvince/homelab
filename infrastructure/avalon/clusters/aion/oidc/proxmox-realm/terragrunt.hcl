@@ -4,9 +4,10 @@ include "root" {
 }
 
 locals {
-  recovery_vars       = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
-  pm_api_token_id     = local.recovery_vars.pm_api_token_id
-  pm_api_token_secret = local.recovery_vars.pm_api_token_secret
+  use_sops            = get_env("HOMELAB_SECRET_SOURCE", "infisical") == "sops"
+  secret_vars         = local.use_sops ? yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml")) : null
+  pm_api_token_id     = local.use_sops ? local.secret_vars.pm_api_token_id : get_env("PM_API_TOKEN_ID")
+  pm_api_token_secret = local.use_sops ? local.secret_vars.pm_api_token_secret : get_env("PM_API_TOKEN_SECRET")
   pm_api_url          = include.root.locals.pm_api_url
 }
 
