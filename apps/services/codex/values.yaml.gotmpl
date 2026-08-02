@@ -129,10 +129,9 @@ controllers:
             chmod 0600 /run/signing-work/key
             rm -f /run/signing-agent/agent.sock
             eval "$(ssh-agent -s -a /run/signing-agent/agent.sock)" >/dev/null
-            trap 'ssh-agent -k >/dev/null' EXIT TERM INT
             ssh-add /run/signing-work/key >/dev/null
             rm -f /run/signing-work/key
-            wait "${SSH_AGENT_PID}"
+            exec sleep infinity
         resources:
           requests:
             cpu: 5m
