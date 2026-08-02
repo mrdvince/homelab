@@ -527,6 +527,15 @@ rawResources:
                       protocol: TCP
             - toEntities:
                 - world
+            - toEndpoints:
+                - matchLabels:
+                    "k8s:io.kubernetes.pod.namespace": traefik
+                    app.kubernetes.io/name: traefik
+                    app.kubernetes.io/instance: traefik-traefik
+              toPorts:
+                - ports:
+                    - port: "443"
+                      protocol: TCP
             - toEntities:
                 - kube-apiserver
               toPorts:
