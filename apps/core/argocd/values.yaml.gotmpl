@@ -27,8 +27,8 @@ configs:
       connectors:
       - config:
           issuer: https://auth.{{ .Values.domain }}/application/o/argocd/
-          clientID: {{ .Values | get "argo-oidc.client_id" }}
-          clientSecret: $dex.authentik.clientSecret
+          clientID: $argocdoidc:client_id
+          clientSecret: $argocdoidc:client_secret
           insecureEnableGroups: true
           scopes:
             - openid
@@ -43,9 +43,6 @@ configs:
     policy.csv: |
       g, aion-argocd-admins, role:admin
       g, aion-argocd-viewers, role:readonly
-  secret:
-    extra:
-      dex.authentik.clientSecret: {{ .Values | get "argo-oidc.client_secret" }}
   params:
     server.insecure: true
     controller.repo.server.timeout.seconds: "180"

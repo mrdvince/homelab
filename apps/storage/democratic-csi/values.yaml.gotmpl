@@ -55,42 +55,6 @@ storageClasses:
       fsType: ext4
 
 driver:
+  existingConfigSecret: democraticcsiinfisical
   config:
     driver: freenas-iscsi
-    instance_id: aion
-    httpConnection:
-      protocol: https
-      host: {{ .Values.nfsServer }}
-      port: 443
-      apiKey: {{ .Values.truenas.democratic_csi.api_key | quote }}
-      allowInsecure: true
-      apiVersion: 2
-    sshConnection:
-      host: {{ .Values.nfsServer }}
-      port: 22
-      username: {{ .Values.truenas.democratic_csi.username }}
-      privateKey: |
-{{ .Values.truenas.democratic_csi.ssh_private_key | indent 8 }}
-    zfs:
-      cli:
-        sudoEnabled: true
-      datasetParentName: {{ .Values.truenas.democratic_csi.iscsi.dataset_parent }}
-      detachedSnapshotsDatasetParentName: {{ .Values.truenas.democratic_csi.iscsi.detached_snapshots_dataset_parent }}
-      zvolEnableReservation: false
-      zvolBlocksize: 16K
-    iscsi:
-      targetPortal: {{ .Values.nfsServer }}
-      targetPortals: []
-      namePrefix: csi-
-      nameSuffix: "-aion"
-      targetGroups:
-        - targetGroupPortalGroup: {{ .Values.truenas.democratic_csi.iscsi.portal_group }}
-          targetGroupInitiatorGroup: {{ .Values.truenas.democratic_csi.iscsi.initiator_group }}
-          targetGroupAuthType: None
-          targetGroupAuthGroup:
-      extentInsecureTpc: true
-      extentXenCompat: false
-      extentDisablePhysicalBlocksize: true
-      extentBlocksize: 512
-      extentRpm: "7200"
-      extentAvailThreshold: 0

@@ -3,15 +3,6 @@ environments:
     values:
       - ../../../infrastructure/images/config.yaml
       - ../../../infrastructure/images/images/**/*.yaml
-      - truenas:
-          democratic_csi:
-            iscsi:
-              dataset_parent: swamp/moss/aion-iscsi
-              detached_snapshots_dataset_parent: swamp/moss/aion-iscsi-snaps
-              portal_group: 1
-              initiator_group: 2
-    secrets:
-      - ../../../secrets/secrets.enc.yaml
 ---
 bases:
   - ../../../infrastructure/charts/repositories.yaml.gotmpl
