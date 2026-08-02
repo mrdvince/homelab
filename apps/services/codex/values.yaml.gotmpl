@@ -54,6 +54,7 @@ controllers:
         args:
           - codex-remote-control
         env:
+          GLAB_CONFIG_DIR: /dev/shm/glab
           GITLAB_HOST: gitlab.home.mrdvince.me
           GITLAB_TOKEN:
             valueFrom:
