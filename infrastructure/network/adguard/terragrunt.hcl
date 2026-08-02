@@ -1,5 +1,5 @@
 locals {
-  secret_vars    = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/infrastructure.enc.yaml"))
+  secret_vars    = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
   adguard_url    = trimsuffix(local.secret_vars.adhome.url, "/")
   adguard_scheme = startswith(local.adguard_url, "http://") ? "http" : "https"
   adguard_host = trimprefix(

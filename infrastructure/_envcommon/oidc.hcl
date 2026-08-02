@@ -1,7 +1,7 @@
 locals {
   base_source_url = "git@gitlab.home.mrdvince.me:homelab/terraform-modules.git"
   base_source_ref = "main"
-  secret_vars     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/infrastructure.enc.yaml"))
+  secret_vars     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders("root.hcl"))}/../secrets/secrets.enc.yaml"))
 }
 
 terraform {

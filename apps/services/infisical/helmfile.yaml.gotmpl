@@ -5,7 +5,7 @@ environments:
       - ../../../infrastructure/images/images/**/*.yaml
 {{ if not (.Values | get "renderStockImages" false) }}
     secrets:
-      - ../../../secrets/bootstrap.enc.yaml
+      - ../../../secrets/secrets.enc.yaml
 {{ end }}
 ---
 bases:
