@@ -22,3 +22,5 @@ charts/*/Chart.lock
 .vscode/
 *.swp
 .codex/*
+ml-experiments/
+dashboards/ML Experiments/
