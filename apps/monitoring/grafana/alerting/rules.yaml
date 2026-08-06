@@ -1,12 +1,33 @@
 apiVersion: 1
+deleteRules:
+  - orgId: 1
+    uid: proxmox-critical-journal
+  - orgId: 1
+    uid: proxmox-ssh-bruteforce
+  - orgId: 1
+    uid: kubernetes-crash-panic-burst
+  - orgId: 1
+    uid: logs-storage-filesystem
+  - orgId: 1
+    uid: proxmox-elysium-missing
+  - orgId: 1
+    uid: proxmox-avalon-missing
+  - orgId: 1
+    uid: proxmox-tirnanog-missing
+  - orgId: 1
+    uid: kubernetes-alloy-missing
+  - orgId: 1
+    uid: opnsense-critical-service-down
+  - orgId: 1
+    uid: opnsense-storage-critical
 groups:
   - orgId: 1
     name: logs
     folder: Homelab Alerts
     interval: 1m
     rules:
-      - uid: proxmox-critical-journal
-        title: Proxmox critical journal entries
+      - uid: proxmox-filesystem-io-errors
+        title: Proxmox filesystem or I/O errors
         condition: C
         data:
           - refId: A
@@ -19,10 +40,12 @@ groups:
                 type: loki
                 uid: P8E80F9AEF21F6940
               editorMode: code
-              expr: 'sum by (instance, unit, level) (count_over_time({platform="proxmox", source="journal", level=~"emerg|alert|crit"}[5m]))'
+              expr: 'sum by (instance, unit, log_type) (count_over_time({platform="proxmox"} |~ "(?i)(no space left on device|read-only file system|EXT4-fs error|XFS \\(.*\\): metadata I/O error|blk_update_request: I/O error|Buffer I/O error)" [5m]))'
+              instant: true
               intervalMs: 1000
               maxDataPoints: 43200
-              queryType: range
+              queryType: instant
+              range: false
               refId: A
           - refId: B
             datasourceUid: __expr__
@@ -63,173 +86,38 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: Error
-        for: 5m
+        execErrState: KeepLastState
+        for: 1m
         annotations:
-          summary: Critical systemd journal entries were logged on a Proxmox host.
-          query: '{platform="proxmox", source="journal", level=~"emerg|alert|crit"}'
-          action: Check the affected host journal and recent service failures.
+          summary: 'Proxmox host {{ "{{" }} $labels.instance {{ "}}" }} logged {{ "{{" }} printf "%.0f" $values.B.Value {{ "}}" }} filesystem or I/O error(s) in 5 minutes.'
+          description: Filesystem corruption, a read-only mount, or failed storage I/O can interrupt VMs and damage data.
+          query: '{platform="proxmox"} |~ "(?i)(no space left on device|read-only file system|EXT4-fs error|XFS \\(.*\\): metadata I/O error|blk_update_request: I/O error|Buffer I/O error)"'
+          action: 'Check the affected host kernel journal, filesystem state, and backing storage immediately.'
         labels:
           severity: critical
           team: homelab
           source: logs
           area: proxmox
-      - uid: proxmox-ssh-bruteforce
-        title: Proxmox SSH brute-force burst
+      - uid: postgresql-connections-exhausted
+        title: PostgreSQL connections exhausted
         condition: C
         data:
           - refId: A
             datasourceUid: P8E80F9AEF21F6940
             relativeTimeRange:
-              from: 600
+              from: 300
               to: 0
             model:
               datasource:
                 type: loki
                 uid: P8E80F9AEF21F6940
               editorMode: code
-              expr: 'sum by (instance) (count_over_time({platform="proxmox", log_type="ssh"} |~ "(?i)(failed password|invalid user|authentication failure|maximum authentication attempts|disconnecting authenticating user)" [10m]))'
+              expr: 'sum by (namespace, app, container) (count_over_time({namespace=~".+"} |~ "(?i)(SQLSTATE[ =:]?53300|too many clients already|remaining connection slots are reserved)" [5m]))'
+              instant: true
               intervalMs: 1000
               maxDataPoints: 43200
-              queryType: range
-              refId: A
-          - refId: B
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
-          - refId: C
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 19
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
-        noDataState: OK
-        execErrState: Error
-        for: 5m
-        annotations:
-          summary: A burst of SSH authentication failures was logged on a Proxmox host.
-          query: '{platform="proxmox", log_type="ssh"} |~ "(?i)(failed password|invalid user|authentication failure|maximum authentication attempts|disconnecting authenticating user)"'
-          action: Check the source addresses in auth logs and firewall/CrowdSec state.
-        labels:
-          severity: critical
-          team: homelab
-          source: logs
-          area: proxmox
-      - uid: kubernetes-crash-panic-burst
-        title: Kubernetes crash or panic burst
-        condition: C
-        data:
-          - refId: A
-            datasourceUid: P8E80F9AEF21F6940
-            relativeTimeRange:
-              from: 600
-              to: 0
-            model:
-              datasource:
-                type: loki
-                uid: P8E80F9AEF21F6940
-              editorMode: code
-              expr: 'sum by (namespace, app, container) (count_over_time({namespace!="", namespace!="monitoring", namespace!="traefik"} |~ "(?i)(panic|fatal|segfault|oomkilled|out of memory|database is locked)" [10m]))'
-              intervalMs: 1000
-              maxDataPoints: 43200
-              queryType: range
-              refId: A
-          - refId: B
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
-          - refId: C
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 2
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
-        noDataState: OK
-        execErrState: Error
-        for: 5m
-        annotations:
-          summary: Repeated crash, panic, or OOM-like log lines were seen in a Kubernetes workload.
-          query: '{namespace!="", namespace!="monitoring", namespace!="traefik"} |~ "(?i)(panic|fatal|segfault|oomkilled|out of memory|database is locked)"'
-          action: Check the affected namespace/app/container logs and pod restart state.
-        labels:
-          severity: critical
-          team: homelab
-          source: logs
-          area: kubernetes
-      - uid: logs-storage-filesystem
-        title: Critical storage or filesystem log event
-        condition: C
-        data:
-          - refId: A
-            datasourceUid: P8E80F9AEF21F6940
-            relativeTimeRange:
-              from: 600
-              to: 0
-            model:
-              datasource:
-                type: loki
-                uid: P8E80F9AEF21F6940
-              editorMode: code
-              expr: 'sum by (instance, log_type, log_file) (count_over_time({platform="proxmox"} |~ "(?i)(no space left on device|i/o error|read-only file system|ext4-fs error|xfs.*error)" [10m]))'
-              intervalMs: 1000
-              maxDataPoints: 43200
-              queryType: range
+              queryType: instant
+              range: false
               refId: A
           - refId: B
             datasourceUid: __expr__
@@ -270,104 +158,110 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
+        for: 1m
+        annotations:
+          summary: 'PostgreSQL for {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} or $labels.app $labels.container {{ "}}" }} rejected {{ "{{" }} printf "%.0f" $values.B.Value {{ "}}" }} connection(s) in 5 minutes.'
+          description: The database has exhausted its connection slots, so applications are already being denied database access.
+          query: '{namespace=~".+"} |~ "(?i)(SQLSTATE[ =:]?53300|too many clients already|remaining connection slots are reserved)"'
+          action: 'Identify the database and connection source, clear leaked or idle sessions, then review pool sizing and max_connections.'
+        labels:
+          severity: critical
+          team: homelab
+          source: logs
+          area: database
+      - uid: kubernetes-log-ingestion-missing
+        title: Kubernetes log ingestion stopped
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: P8E80F9AEF21F6940
+            relativeTimeRange:
+              from: 900
+              to: 0
+            model:
+              datasource:
+                type: loki
+                uid: P8E80F9AEF21F6940
+              editorMode: code
+              expr: 'sum(count_over_time({namespace=~".+"}[15m])) or vector(0)'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              queryType: instant
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              refId: C
+              type: threshold
+        noDataState: OK
+        execErrState: Alerting
         for: 5m
         annotations:
-          summary: A critical storage or filesystem error was logged on a Proxmox host.
-          query: '{platform="proxmox"} |~ "(?i)(no space left on device|i/o error|read-only file system|ext4-fs error|xfs.*error)"'
-          action: Check disk, filesystem, and VM/iSCSI storage state on the affected host.
+          summary: No Kubernetes workload logs have reached Loki for 15 minutes.
+          description: Cluster-wide Kubernetes log investigation is unavailable; workload health alerts continue from metrics.
+          query: '{namespace=~".+"}'
+          action: Check the in-cluster Alloy daemonset, Loki gateway, and Loki write path.
         labels:
-          severity: critical
-          team: homelab
-          source: logs
-          area: proxmox
-      - uid: proxmox-elysium-missing
-        title: Proxmox logs missing for elysium
-        condition: C
-        data:
-          - refId: A
-            datasourceUid: P8E80F9AEF21F6940
-            relativeTimeRange:
-              from: 900
-              to: 0
-            model:
-              datasource:
-                type: loki
-                uid: P8E80F9AEF21F6940
-              editorMode: code
-              expr: 'sum(count_over_time({platform="proxmox", instance="elysium"}[15m]))'
-              intervalMs: 1000
-              maxDataPoints: 43200
-              queryType: range
-              refId: A
-          - refId: B
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
-          - refId: C
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 1
-                    type: lt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
-        noDataState: Alerting
-        execErrState: Error
-        for: 10m
-        annotations:
-          summary: No Proxmox logs have arrived from elysium.
-          query: '{platform="proxmox", instance="elysium"}'
-          action: Check alloy-logs and Docker on elysium.
-        labels:
-          severity: critical
+          severity: warning
           team: homelab
           source: logs
           area: observability
-      - uid: proxmox-avalon-missing
-        title: Proxmox logs missing for avalon
+      - uid: proxmox-log-ingestion-missing
+        title: Proxmox log ingestion stopped
         condition: C
         data:
           - refId: A
             datasourceUid: P8E80F9AEF21F6940
             relativeTimeRange:
-              from: 900
+              from: 1800
               to: 0
             model:
               datasource:
                 type: loki
                 uid: P8E80F9AEF21F6940
               editorMode: code
-              expr: 'sum(count_over_time({platform="proxmox", instance="avalon"}[15m]))'
+              expr: 'sum(count_over_time({platform="proxmox", instance=~"elysium|avalon|tirnanog"}[30m])) or vector(0)'
+              instant: true
               intervalMs: 1000
               maxDataPoints: 43200
-              queryType: range
+              queryType: instant
+              range: false
               refId: A
           - refId: B
             datasourceUid: __expr__
@@ -407,153 +301,16 @@ groups:
               expression: B
               refId: C
               type: threshold
-        noDataState: Alerting
-        execErrState: Error
+        noDataState: OK
+        execErrState: Alerting
         for: 10m
         annotations:
-          summary: No Proxmox logs have arrived from avalon.
-          query: '{platform="proxmox", instance="avalon"}'
-          action: Check alloy-logs and Docker on avalon.
+          summary: No Proxmox logs from elysium, avalon, or tirnanog have reached Loki for 30 minutes.
+          description: Log investigation is unavailable across every Proxmox host, while host availability remains covered by metrics.
+          query: '{platform="proxmox", instance=~"elysium|avalon|tirnanog"}'
+          action: Check the host olly log agents, their network path, and Loki ingestion.
         labels:
-          severity: critical
-          team: homelab
-          source: logs
-          area: observability
-      - uid: proxmox-tirnanog-missing
-        title: Proxmox logs missing for tirnanog
-        condition: C
-        data:
-          - refId: A
-            datasourceUid: P8E80F9AEF21F6940
-            relativeTimeRange:
-              from: 900
-              to: 0
-            model:
-              datasource:
-                type: loki
-                uid: P8E80F9AEF21F6940
-              editorMode: code
-              expr: 'sum(count_over_time({platform="proxmox", instance="tirnanog"}[15m]))'
-              intervalMs: 1000
-              maxDataPoints: 43200
-              queryType: range
-              refId: A
-          - refId: B
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
-          - refId: C
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 1
-                    type: lt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
-        noDataState: Alerting
-        execErrState: Error
-        for: 10m
-        annotations:
-          summary: No Proxmox logs have arrived from tirnanog.
-          query: '{platform="proxmox", instance="tirnanog"}'
-          action: Check alloy-logs and Docker on tirnanog.
-        labels:
-          severity: critical
-          team: homelab
-          source: logs
-          area: observability
-      - uid: kubernetes-alloy-missing
-        title: Kubernetes Alloy logs missing
-        condition: C
-        data:
-          - refId: A
-            datasourceUid: P8E80F9AEF21F6940
-            relativeTimeRange:
-              from: 900
-              to: 0
-            model:
-              datasource:
-                type: loki
-                uid: P8E80F9AEF21F6940
-              editorMode: code
-              expr: 'sum(count_over_time({namespace="monitoring", app="alloy", container="alloy"}[15m]))'
-              intervalMs: 1000
-              maxDataPoints: 43200
-              queryType: range
-              refId: A
-          - refId: B
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
-          - refId: C
-            datasourceUid: __expr__
-            relativeTimeRange:
-              from: 0
-              to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 1
-                    type: lt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
-        noDataState: Alerting
-        execErrState: Error
-        for: 10m
-        annotations:
-          summary: No Kubernetes Alloy logs have arrived.
-          query: '{namespace="monitoring", app="alloy", container="alloy"}'
-          action: Check the in-cluster Alloy daemonset and Loki write path.
-        labels:
-          severity: critical
+          severity: warning
           team: homelab
           source: logs
           area: observability

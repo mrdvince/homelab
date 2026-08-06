@@ -12,10 +12,10 @@ contactPoints:
             template: |
               {
                 "topic": "realm",
-                "title": {{ "{{" }} printf "%q" (printf "[%s] %s" (toUpper .Status) .CommonLabels.alertname) {{ "}}" }},
-                "message": {{ "{{" }} printf "%q" (printf "%s\n\n%s\n\n%s" (or .CommonAnnotations.summary "grafana alert notification") (or .CommonAnnotations.action "open grafana and inspect the alert.") ((index .Alerts 0).GeneratorURL)) {{ "}}" }},
-                "priority": {{ "{{" }} if eq .Status "firing" {{ "}}" }}5{{ "{{" }} else {{ "}}" }}3{{ "{{" }} end {{ "}}" }},
-                "tags": [{{ "{{" }} if eq .Status "firing" {{ "}}" }}"warning"{{ "{{" }} else {{ "}}" }}"white_check_mark"{{ "{{" }} end {{ "}}" }}],
+                "title": {{ "{{" }} printf "%q" (printf "[%s][%s] %s (%d)" (toUpper .Status) (toUpper (or .CommonLabels.severity "unknown")) .CommonLabels.alertname (len .Alerts)) {{ "}}" }},
+                "message": {{ "{{" }}- $message := "" -{{ "}}" }}{{ "{{" }}- range .Alerts -{{ "}}" }}{{ "{{" }}- $summary := or (index .Annotations "summary") .Labels.alertname -{{ "}}" }}{{ "{{" }}- $description := or (index .Annotations "description") "impact not provided; inspect the linked alert." -{{ "}}" }}{{ "{{" }}- $action := or (index .Annotations "action") (index .Annotations "runbook_url") "open the linked alert and inspect the affected target." -{{ "}}" }}{{ "{{" }}- $message = printf "%s[%s] %s\nimpact: %s\naction: %s\n%s\n\n" $message (toUpper .Status) $summary $description $action .GeneratorURL -{{ "}}" }}{{ "{{" }}- end -{{ "}}" }}{{ "{{" }} printf "%q" $message {{ "}}" }},
+                "priority": {{ "{{" }} if eq .Status "resolved" {{ "}}" }}2{{ "{{" }} else if eq .CommonLabels.severity "critical" {{ "}}" }}5{{ "{{" }} else {{ "}}" }}3{{ "{{" }} end {{ "}}" }},
+                "tags": [{{ "{{" }} if eq .Status "resolved" {{ "}}" }}"white_check_mark"{{ "{{" }} else if eq .CommonLabels.severity "critical" {{ "}}" }}"rotating_light"{{ "{{" }} else {{ "}}" }}"warning"{{ "{{" }} end {{ "}}" }}],
                 "click": {{ "{{" }} printf "%q" ((index .Alerts 0).GeneratorURL) {{ "}}" }}
               }
         disableResolveMessage: false

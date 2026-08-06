@@ -19,7 +19,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: 'max by (name) (pve_node_info{exporter="pve"}) unless on (name) label_replace(max by (instance) (up{platform="proxmox",exporter="node"}), "name", "$1", "instance", "(.*)")'
+              expr: 'max by (name) (pve_node_info{exporter="pve"}) unless on (name) label_replace(max by (instance) (up{platform="proxmox",exporter="node"} == 1), "name", "$1", "instance", "(.*)")'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -30,7 +30,7 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
+            model: &reduce
               datasource:
                 type: __expr__
                 uid: __expr__
@@ -43,17 +43,15 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
+            model: &greater-than-zero
               conditions:
                 - evaluator:
-                    params:
-                      - 0
+                    params: [0]
                     type: gt
                   operator:
                     type: and
                   query:
-                    params:
-                      - C
+                    params: [C]
                   reducer:
                     type: last
                   type: query
@@ -64,14 +62,15 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 10m
         annotations:
-          summary: A Proxmox node exists in PVE but has no matching node exporter metrics.
-          query: 'max by (name) (pve_node_info{exporter="pve"}) unless on (name) label_replace(max by (instance) (up{platform="proxmox",exporter="node"}), "name", "$1", "instance", "(.*)")'
-          action: Check the olly metrics container and Prometheus remote write path on the affected Proxmox node.
-        labels:
-          severity: critical
+          summary: 'Proxmox node {{ "{{" }} $labels.name {{ "}}" }} has sent no node-exporter metrics for 10 minutes.'
+          description: Host resource and filesystem telemetry is unavailable, but the PVE API still reports the node.
+          query: 'max by (name) (pve_node_info{exporter="pve"}) unless on (name) label_replace(max by (instance) (up{platform="proxmox",exporter="node"} == 1), "name", "$1", "instance", "(.*)")'
+          action: 'Check the olly metrics container and Prometheus remote-write path on {{ "{{" }} $labels.name {{ "}}" }}.'
+        labels: &warning-observability-labels
+          severity: warning
           team: homelab
           source: metrics
           area: observability
@@ -89,7 +88,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: 'absent_over_time(up{platform="proxmox",exporter="pve"}[10m])'
+              expr: '(up{platform="proxmox",exporter="pve"} == bool 0) or absent(up{platform="proxmox",exporter="pve"})'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -100,51 +99,22 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
+            model: *reduce
           - refId: C
             datasourceUid: __expr__
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 0
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
+            model: *greater-than-zero
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 10m
         annotations:
-          summary: PVE exporter metrics have stopped arriving.
-          query: 'absent_over_time(up{platform="proxmox",exporter="pve"}[10m])'
-          action: Check pve-exporter and olly metrics on elysium.
-        labels:
-          severity: critical
-          team: homelab
-          source: metrics
-          area: observability
+          summary: PVE API metrics have not reached Prometheus for 10 minutes.
+          description: Proxmox node, VM, and storage state cannot be evaluated from the PVE API exporter.
+          query: '(up{platform="proxmox",exporter="pve"} == bool 0) or absent(up{platform="proxmox",exporter="pve"})'
+          action: Check pve-exporter and the olly metrics pipeline on elysium.
+        labels: *warning-observability-labels
       - uid: opnsense-exporter-missing
         title: OPNsense exporter metrics missing
         condition: C
@@ -159,7 +129,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: 'absent_over_time(up{platform="opnsense",exporter="opnsense",instance="opnsense"}[10m])'
+              expr: '(up{platform="opnsense",exporter="opnsense",instance="opnsense"} == bool 0) or absent(up{platform="opnsense",exporter="opnsense",instance="opnsense"})'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -170,51 +140,22 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
+            model: *reduce
           - refId: C
             datasourceUid: __expr__
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 0
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
+            model: *greater-than-zero
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 10m
         annotations:
-          summary: OPNsense exporter metrics have stopped arriving.
-          query: 'absent_over_time(up{platform="opnsense",exporter="opnsense",instance="opnsense"}[10m])'
-          action: Check opnsense-exporter and olly metrics on elysium.
-        labels:
-          severity: critical
-          team: homelab
-          source: metrics
-          area: observability
+          summary: OPNsense API metrics have not reached Prometheus for 10 minutes.
+          description: Firewall service state cannot be evaluated through the OPNsense exporter.
+          query: '(up{platform="opnsense",exporter="opnsense",instance="opnsense"} == bool 0) or absent(up{platform="opnsense",exporter="opnsense",instance="opnsense"})'
+          action: Check opnsense-exporter and the olly metrics pipeline on elysium.
+        labels: *warning-observability-labels
       - uid: opnsense-snmp-missing
         title: OPNsense SNMP metrics missing
         condition: C
@@ -229,7 +170,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: 'absent_over_time(up{platform="opnsense",exporter="snmp",instance="opnsense"}[10m])'
+              expr: '(up{platform="opnsense",exporter="snmp",instance="opnsense"} == bool 0) or absent(up{platform="opnsense",exporter="snmp",instance="opnsense"})'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -240,53 +181,24 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
+            model: *reduce
           - refId: C
             datasourceUid: __expr__
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 0
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
+            model: *greater-than-zero
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 10m
         annotations:
-          summary: OPNsense SNMP metrics have stopped arriving.
-          query: 'absent_over_time(up{platform="opnsense",exporter="snmp",instance="opnsense"}[10m])'
-          action: Check OPNsense SNMP and olly metrics on elysium.
-        labels:
-          severity: critical
-          team: homelab
-          source: metrics
-          area: observability
+          summary: OPNsense SNMP metrics have not reached Prometheus for 10 minutes.
+          description: Firewall filesystem and interface capacity cannot be evaluated through SNMP.
+          query: '(up{platform="opnsense",exporter="snmp",instance="opnsense"} == bool 0) or absent(up{platform="opnsense",exporter="snmp",instance="opnsense"})'
+          action: Check SNMP on OPNsense and the olly metrics pipeline on elysium.
+        labels: *warning-observability-labels
       - uid: pve-node-down
-        title: Proxmox cluster node down
+        title: Proxmox node unavailable
         condition: C
         data:
           - refId: A
@@ -299,7 +211,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: 'pve_up{exporter="pve",id=~"node/.+"} == bool 0'
+              expr: 'pve_up{exporter="pve",id=~"node/.+"}'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -310,30 +222,21 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
+            model: *reduce
           - refId: C
             datasourceUid: __expr__
             relativeTimeRange:
               from: 0
               to: 0
-            model:
+            model: &less-than-one
               conditions:
                 - evaluator:
-                    params:
-                      - 0
-                    type: gt
+                    params: [1]
+                    type: lt
                   operator:
                     type: and
                   query:
-                    params:
-                      - C
+                    params: [C]
                   reducer:
                     type: last
                   type: query
@@ -344,19 +247,20 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 10m
         annotations:
-          summary: A Proxmox cluster node is down according to the PVE API.
-          query: 'pve_up{exporter="pve",id=~"node/.+"} == bool 0'
-          action: Check the affected Proxmox node and cluster quorum state.
-        labels:
+          summary: 'Proxmox node {{ "{{" }} $labels.id {{ "}}" }} has been unavailable for 10 minutes.'
+          description: VMs on the node are unavailable or at risk, and cluster quorum may be reduced.
+          query: 'pve_up{exporter="pve",id=~"node/.+"}'
+          action: 'Check power, networking, and Proxmox quorum for {{ "{{" }} $labels.id {{ "}}" }}.'
+        labels: &critical-proxmox-labels
           severity: critical
           team: homelab
           source: metrics
           area: proxmox
       - uid: pve-storage-critical
-        title: Proxmox storage usage critical
+        title: Proxmox storage nearly full
         condition: C
         data:
           - refId: A
@@ -369,7 +273,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: '100 * pve_disk_usage_bytes{exporter="pve", id=~"storage/.+"} / pve_disk_size_bytes{exporter="pve"} > bool 95'
+              expr: '100 * pve_disk_usage_bytes{exporter="pve",id=~"storage/.+"} / pve_disk_size_bytes{exporter="pve"}'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -380,30 +284,21 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
+            model: *reduce
           - refId: C
             datasourceUid: __expr__
             relativeTimeRange:
               from: 0
               to: 0
-            model:
+            model: &greater-than-ninety-five
               conditions:
                 - evaluator:
-                    params:
-                      - 0
+                    params: [95]
                     type: gt
                   operator:
                     type: and
                   query:
-                    params:
-                      - C
+                    params: [C]
                   reducer:
                     type: last
                   type: query
@@ -414,19 +309,16 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 15m
         annotations:
-          summary: Proxmox storage usage is above 95%.
-          query: '100 * pve_disk_usage_bytes{exporter="pve", id=~"storage/.+"} / pve_disk_size_bytes{exporter="pve"} > 95'
-          action: Check the affected storage pool and decide whether to free space or move workloads.
-        labels:
-          severity: critical
-          team: homelab
-          source: metrics
-          area: proxmox
-      - uid: opnsense-critical-service-down
-        title: OPNsense critical service down
+          summary: 'Proxmox storage {{ "{{" }} $labels.id {{ "}}" }} has been {{ "{{" }} printf "%.1f" $values.B.Value {{ "}}" }}% full for 15 minutes.'
+          description: Further writes, snapshots, backups, or VM operations may fail when the storage fills.
+          query: '100 * pve_disk_usage_bytes{exporter="pve",id=~"storage/.+"} / pve_disk_size_bytes{exporter="pve"}'
+          action: 'Free space or move workloads from {{ "{{" }} $labels.id {{ "}}" }} before it reaches capacity.'
+        labels: *critical-proxmox-labels
+      - uid: opnsense-essential-service-down
+        title: OPNsense essential service unavailable
         condition: C
         data:
           - refId: A
@@ -439,7 +331,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: 'opnsense_services_status{opnsense_instance="opnsense",name=~"crowdsec|haproxy|kea-dhcp|ntpd|pf|routing|snmpd|syslog-ng|unbound"} == bool 0'
+              expr: 'opnsense_services_status{opnsense_instance="opnsense",name=~"haproxy|kea-dhcp|pf|routing|unbound"}'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -450,53 +342,73 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
+            model: *reduce
           - refId: C
             datasourceUid: __expr__
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              conditions:
-                - evaluator:
-                    params:
-                      - 0
-                    type: gt
-                  operator:
-                    type: and
-                  query:
-                    params:
-                      - C
-                  reducer:
-                    type: last
-                  type: query
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: B
-              refId: C
-              type: threshold
+            model: *less-than-one
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 5m
         annotations:
-          summary: A critical OPNsense service is down.
-          query: 'opnsense_services_status{opnsense_instance="opnsense",name=~"crowdsec|haproxy|kea-dhcp|ntpd|pf|routing|snmpd|syslog-ng|unbound"} == 0'
-          action: Check the affected OPNsense service in the GUI or on vale.
+          summary: 'OPNsense service {{ "{{" }} $labels.name {{ "}}" }} ({{ "{{" }} $labels.description {{ "}}" }}) has been down for 5 minutes.'
+          description: DNS, DHCP, routing, packet filtering, or ingress may be unavailable depending on the affected service.
+          query: 'opnsense_services_status{opnsense_instance="opnsense",name=~"haproxy|kea-dhcp|pf|routing|unbound"}'
+          action: 'Check and restore {{ "{{" }} $labels.name {{ "}}" }} in the OPNsense GUI or on vale.'
         labels:
           severity: critical
           team: homelab
           source: metrics
           area: opnsense
-      - uid: opnsense-storage-critical
-        title: OPNsense filesystem usage critical
+      - uid: opnsense-supporting-service-down
+        title: OPNsense supporting service unavailable
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: PBFA97CFB590B2093
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              datasource:
+                type: prometheus
+                uid: PBFA97CFB590B2093
+              editorMode: code
+              expr: 'opnsense_services_status{opnsense_instance="opnsense",name=~"crowdsec|ntpd|snmpd|syslog-ng"}'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model: *reduce
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model: *less-than-one
+        noDataState: OK
+        execErrState: KeepLastState
+        for: 10m
+        annotations:
+          summary: 'OPNsense service {{ "{{" }} $labels.name {{ "}}" }} ({{ "{{" }} $labels.description {{ "}}" }}) has been down for 10 minutes.'
+          description: Security enforcement, time synchronization, or observability is degraded; packet forwarding remains independently monitored.
+          query: 'opnsense_services_status{opnsense_instance="opnsense",name=~"crowdsec|ntpd|snmpd|syslog-ng"}'
+          action: 'Check and restore {{ "{{" }} $labels.name {{ "}}" }} in the OPNsense GUI or on vale.'
+        labels:
+          severity: warning
+          team: homelab
+          source: metrics
+          area: opnsense
+      - uid: opnsense-storage-warning
+        title: OPNsense filesystem nearly full
         condition: C
         data:
           - refId: A
@@ -509,7 +421,7 @@ groups:
                 type: prometheus
                 uid: PBFA97CFB590B2093
               editorMode: code
-              expr: '100 * hrStorageUsed{instance="opnsense",exporter="snmp",hrStorageType="1.3.6.1.2.1.25.2.1.4",hrStorageDescr=~"/|/var/log|/tmp"} / hrStorageSize{instance="opnsense",exporter="snmp",hrStorageType="1.3.6.1.2.1.25.2.1.4",hrStorageDescr=~"/|/var/log|/tmp"} > bool 90'
+              expr: '100 * hrStorageUsed{instance="opnsense",exporter="snmp",hrStorageType="1.3.6.1.2.1.25.2.1.4",hrStorageDescr=~"/|/var/log|/tmp"} / hrStorageSize{instance="opnsense",exporter="snmp",hrStorageType="1.3.6.1.2.1.25.2.1.4",hrStorageDescr=~"/|/var/log|/tmp"}'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -520,14 +432,7 @@ groups:
             relativeTimeRange:
               from: 0
               to: 0
-            model:
-              datasource:
-                type: __expr__
-                uid: __expr__
-              expression: A
-              reducer: last
-              refId: B
-              type: reduce
+            model: *reduce
           - refId: C
             datasourceUid: __expr__
             relativeTimeRange:
@@ -536,14 +441,12 @@ groups:
             model:
               conditions:
                 - evaluator:
-                    params:
-                      - 0
+                    params: [90]
                     type: gt
                   operator:
                     type: and
                   query:
-                    params:
-                      - C
+                    params: [C]
                   reducer:
                     type: last
                   type: query
@@ -554,14 +457,15 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: Error
+        execErrState: KeepLastState
         for: 15m
         annotations:
-          summary: OPNsense filesystem usage is above 90%.
-          query: '100 * hrStorageUsed{instance="opnsense",exporter="snmp",hrStorageDescr=~"/|/var/log|/tmp"} / hrStorageSize{instance="opnsense",exporter="snmp",hrStorageDescr=~"/|/var/log|/tmp"} > 90'
-          action: Check OPNsense filesystem usage, especially /var/log and /tmp.
+          summary: 'OPNsense filesystem {{ "{{" }} $labels.hrStorageDescr {{ "}}" }} has been {{ "{{" }} printf "%.1f" $values.B.Value {{ "}}" }}% full for 15 minutes.'
+          description: Logs, updates, and service writes may fail if this filesystem reaches capacity.
+          query: '100 * hrStorageUsed{instance="opnsense",exporter="snmp",hrStorageDescr=~"/|/var/log|/tmp"} / hrStorageSize{instance="opnsense",exporter="snmp",hrStorageDescr=~"/|/var/log|/tmp"}'
+          action: 'Inspect {{ "{{" }} $labels.hrStorageDescr {{ "}}" }} usage and remove or rotate safe-to-delete files.'
         labels:
-          severity: critical
+          severity: warning
           team: homelab
           source: metrics
           area: opnsense
