@@ -86,7 +86,7 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 1m
         annotations:
           summary: 'Proxmox host {{ "{{" }} $labels.instance {{ "}}" }} logged {{ "{{" }} printf "%.0f" $values.B.Value {{ "}}" }} filesystem or I/O error(s) in 5 minutes.'
@@ -158,7 +158,7 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 1m
         annotations:
           summary: 'PostgreSQL for {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} or $labels.app $labels.container {{ "}}" }} rejected {{ "{{" }} printf "%.0f" $values.B.Value {{ "}}" }} connection(s) in 5 minutes.'

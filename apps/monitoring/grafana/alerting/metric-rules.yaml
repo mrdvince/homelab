@@ -62,7 +62,7 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 10m
         annotations:
           summary: 'Proxmox node {{ "{{" }} $labels.name {{ "}}" }} has sent no node-exporter metrics for 10 minutes.'
@@ -74,6 +74,64 @@ groups:
           team: homelab
           source: metrics
           area: observability
+      - uid: prometheus-query-unavailable
+        title: Grafana cannot query Prometheus
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: PBFA97CFB590B2093
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              datasource:
+                type: prometheus
+                uid: PBFA97CFB590B2093
+              editorMode: code
+              expr: 'vector(1)'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model: *reduce
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model:
+              conditions:
+                - evaluator:
+                    params: [1]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              refId: C
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: Grafana has been unable to query Prometheus for 5 minutes.
+          description: Metrics-backed infrastructure and workload alerts may be stale or unavailable.
+          query: 'vector(1)'
+          action: Check the Grafana-to-Prometheus service path and the Prometheus workload in monitoring.
+        labels: *warning-observability-labels
       - uid: pve-exporter-missing
         title: PVE exporter metrics missing
         condition: C
@@ -107,7 +165,7 @@ groups:
               to: 0
             model: *greater-than-zero
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 10m
         annotations:
           summary: PVE API metrics have not reached Prometheus for 10 minutes.
@@ -148,7 +206,7 @@ groups:
               to: 0
             model: *greater-than-zero
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 10m
         annotations:
           summary: OPNsense API metrics have not reached Prometheus for 10 minutes.
@@ -189,7 +247,7 @@ groups:
               to: 0
             model: *greater-than-zero
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 10m
         annotations:
           summary: OPNsense SNMP metrics have not reached Prometheus for 10 minutes.
@@ -247,7 +305,7 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 10m
         annotations:
           summary: 'Proxmox node {{ "{{" }} $labels.id {{ "}}" }} has been unavailable for 10 minutes.'
@@ -309,7 +367,7 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 15m
         annotations:
           summary: 'Proxmox storage {{ "{{" }} $labels.id {{ "}}" }} has been {{ "{{" }} printf "%.1f" $values.B.Value {{ "}}" }}% full for 15 minutes.'
@@ -350,7 +408,7 @@ groups:
               to: 0
             model: *less-than-one
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 5m
         annotations:
           summary: 'OPNsense service {{ "{{" }} $labels.name {{ "}}" }} ({{ "{{" }} $labels.description {{ "}}" }}) has been down for 5 minutes.'
@@ -395,7 +453,7 @@ groups:
               to: 0
             model: *less-than-one
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 10m
         annotations:
           summary: 'OPNsense service {{ "{{" }} $labels.name {{ "}}" }} ({{ "{{" }} $labels.description {{ "}}" }}) has been down for 10 minutes.'
@@ -457,7 +515,7 @@ groups:
               refId: C
               type: threshold
         noDataState: OK
-        execErrState: KeepLastState
+        execErrState: OK
         for: 15m
         annotations:
           summary: 'OPNsense filesystem {{ "{{" }} $labels.hrStorageDescr {{ "}}" }} has been {{ "{{" }} printf "%.1f" $values.B.Value {{ "}}" }}% full for 15 minutes.'
