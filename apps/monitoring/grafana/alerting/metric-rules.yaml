@@ -132,6 +132,68 @@ groups:
           query: 'vector(1)'
           action: Check the Grafana-to-Prometheus service path and the Prometheus workload in monitoring.
         labels: *warning-observability-labels
+      - uid: postgresql-connections-exhausted
+        title: PostgreSQL connection capacity low
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: PBFA97CFB590B2093
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              datasource:
+                type: prometheus
+                uid: PBFA97CFB590B2093
+              editorMode: code
+              expr: '100 * sum by (namespace, pod, cluster) (cnpg_backends_total) / (max by (namespace, pod, cluster) (cnpg_pg_settings_setting{name="max_connections"}) - max by (namespace, pod, cluster) (cnpg_pg_settings_setting{name="superuser_reserved_connections"}) - max by (namespace, pod, cluster) (cnpg_pg_settings_setting{name="reserved_connections"}))'
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model: *reduce
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 0
+              to: 0
+            model:
+              conditions:
+                - evaluator:
+                    params: [90]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              refId: C
+              type: threshold
+        noDataState: OK
+        execErrState: OK
+        for: 5m
+        annotations:
+          summary: 'PostgreSQL {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} $labels.pod {{ "}}" }} ({{ "{{" }} $labels.cluster {{ "}}" }}) is using {{ "{{" }} printf "%.1f" $values.B.Value {{ "}}" }}% of client connection capacity.'
+          description: Fewer than 10% of ordinary client connection slots remain, so new application connections may soon be rejected.
+          query: '100 * sum by (namespace, pod, cluster) (cnpg_backends_total) / (max by (namespace, pod, cluster) (cnpg_pg_settings_setting{name="max_connections"}) - max by (namespace, pod, cluster) (cnpg_pg_settings_setting{name="superuser_reserved_connections"}) - max by (namespace, pod, cluster) (cnpg_pg_settings_setting{name="reserved_connections"}))'
+          action: 'Identify the connection source, clear leaked or stale idle sessions, then review pool sizing and max_connections for {{ "{{" }} $labels.cluster {{ "}}" }}.'
+        labels:
+          severity: critical
+          team: homelab
+          source: metrics
+          area: database
       - uid: pve-exporter-missing
         title: PVE exporter metrics missing
         condition: C

@@ -65,6 +65,21 @@ grafana:
           enabled: false
 
 prometheus:
+  additionalPodMonitors:
+    - name: cnpg
+      namespaceSelector:
+        any: true
+      selector:
+        matchExpressions:
+          - key: cnpg.io/cluster
+            operator: Exists
+      podMetricsEndpoints:
+        - port: metrics
+          interval: 30s
+          relabelings:
+            - sourceLabels:
+                - __meta_kubernetes_pod_label_cnpg_io_cluster
+              targetLabel: cluster
   prometheusSpec:
     retention: 15d
     enableRemoteWriteReceiver: true
