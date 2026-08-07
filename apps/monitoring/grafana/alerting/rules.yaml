@@ -112,7 +112,7 @@ groups:
                 type: loki
                 uid: P8E80F9AEF21F6940
               editorMode: code
-              expr: 'sum by (namespace, app, container) (count_over_time({namespace=~".+"} |~ "(?i)(SQLSTATE[ =:]?53300|too many clients already|remaining connection slots are reserved)" [5m]))'
+              expr: 'sum by (namespace, app, pod, container) (count_over_time({container="postgres"} |~ "(?i)(SQLSTATE[ =:]?53300|too many clients already|remaining connection slots are reserved)" [5m]))'
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -161,9 +161,9 @@ groups:
         execErrState: OK
         for: 1m
         annotations:
-          summary: 'PostgreSQL for {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} or $labels.app $labels.container {{ "}}" }} rejected {{ "{{" }} printf "%.0f" $values.B.Value {{ "}}" }} connection(s) in 5 minutes.'
+          summary: 'PostgreSQL pod {{ "{{" }} $labels.namespace {{ "}}" }}/{{ "{{" }} $labels.pod {{ "}}" }} rejected {{ "{{" }} printf "%.0f" $values.B.Value {{ "}}" }} connection(s) in 5 minutes.'
           description: The database has exhausted its connection slots, so applications are already being denied database access.
-          query: '{namespace=~".+"} |~ "(?i)(SQLSTATE[ =:]?53300|too many clients already|remaining connection slots are reserved)"'
+          query: '{container="postgres"} |~ "(?i)(SQLSTATE[ =:]?53300|too many clients already|remaining connection slots are reserved)"'
           action: 'Identify the database and connection source, clear leaked or idle sessions, then review pool sizing and max_connections.'
         labels:
           severity: critical

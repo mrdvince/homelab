@@ -8,4 +8,11 @@ contactPoints:
         settings:
           url: https://ntfy.home.mrdvince.me/realm?template=grafana
           httpMethod: POST
+          title: '{{ "{{" }} .Status | toUpper {{ "}}" }}: {{ "{{" }} .CommonLabels.alertname {{ "}}" }} ({{ "{{" }} len .Alerts {{ "}}" }})'
+          message: |-
+            {{ "{{" }} range .Alerts {{ "}}" }}
+            {{ "{{" }} index .Annotations "summary" {{ "}}" }}
+            details: {{ "{{" }} .GeneratorURL {{ "}}" }}
+            silence: {{ "{{" }} .SilenceURL {{ "}}" }}
+            {{ "{{" }} end {{ "}}" }}
         disableResolveMessage: false
