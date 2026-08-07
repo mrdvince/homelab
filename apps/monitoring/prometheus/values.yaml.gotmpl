@@ -77,7 +77,8 @@ prometheus:
         - port: metrics
           interval: 30s
           relabelings:
-            - sourceLabels:
+            - action: replace
+              sourceLabels:
                 - __meta_kubernetes_pod_label_cnpg_io_cluster
               targetLabel: cluster
   prometheusSpec:
