@@ -209,7 +209,11 @@ controllers:
                 command:
                   - /bin/bash
                   - -ec
-                  - exec 3<>/dev/tcp/127.0.0.1/8080
+                  - |
+                    exec 3<>/dev/tcp/127.0.0.1/8080
+                    printf 'GET /api/v1/check HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3
+                    IFS= read -r status <&3
+                    [[ "${status}" == HTTP/*" 200 "* ]]
               initialDelaySeconds: 30
               periodSeconds: 30
               timeoutSeconds: 5
@@ -222,7 +226,11 @@ controllers:
                 command:
                   - /bin/bash
                   - -ec
-                  - exec 3<>/dev/tcp/127.0.0.1/8080
+                  - |
+                    exec 3<>/dev/tcp/127.0.0.1/8080
+                    printf 'GET /api/v1/check HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3
+                    IFS= read -r status <&3
+                    [[ "${status}" == HTTP/*" 200 "* ]]
               initialDelaySeconds: 10
               periodSeconds: 10
               timeoutSeconds: 5
