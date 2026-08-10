@@ -26,6 +26,8 @@ controllers:
             web = config.setdefault("web", {})
             web["search_backend"] = "searxng"
             web["extract_backend"] = "firecrawl"
+            session_reset = config.setdefault("session_reset", {})
+            session_reset["notify"] = False
             temporary = path.with_suffix(".yaml.tmp")
             temporary.write_text(yaml.safe_dump(config, sort_keys=False))
             os.replace(temporary, path)
