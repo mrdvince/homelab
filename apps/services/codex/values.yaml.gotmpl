@@ -55,7 +55,7 @@ controllers:
           - codex-remote-control
         env:
           GLAB_CONFIG_DIR: /dev/shm/glab
-          GITLAB_HOST: gitlab.home.mrdvince.me
+          GITLAB_HOST: {{ .Values.gitlab.host }}
           GITLAB_TOKEN:
             valueFrom:
               secretKeyRef:
@@ -67,9 +67,9 @@ controllers:
                 name: codexgitlab
                 key: user
           GIT_CONFIG_COUNT: "7"
-          GIT_CONFIG_KEY_0: url.https://oauth2@gitlab.home.mrdvince.me/.insteadOf
-          GIT_CONFIG_VALUE_0: "git@gitlab.home.mrdvince.me:"
-          GIT_CONFIG_KEY_1: credential.https://gitlab.home.mrdvince.me.helper
+          GIT_CONFIG_KEY_0: url.https://oauth2@{{ .Values.gitlab.host }}/.insteadOf
+          GIT_CONFIG_VALUE_0: "git@{{ .Values.gitlab.host }}:"
+          GIT_CONFIG_KEY_1: credential.https://{{ .Values.gitlab.host }}.helper
           GIT_CONFIG_VALUE_1: >-
             !f() { test "$1" = get && { echo "username=${GITLAB_USERNAME}"; echo "password=${GITLAB_TOKEN}"; }; }; f
           GIT_CONFIG_KEY_2: gpg.format
@@ -79,12 +79,16 @@ controllers:
           GIT_CONFIG_KEY_4: commit.gpgSign
           GIT_CONFIG_VALUE_4: "true"
           GIT_CONFIG_KEY_5: user.name
-          GIT_CONFIG_VALUE_5: Vince
+          GIT_CONFIG_VALUE_5: {{ .Values.gitIdentity.name | quote }}
           GIT_CONFIG_KEY_6: user.email
-          GIT_CONFIG_VALUE_6: vincivenv@gmail.com
+          GIT_CONFIG_VALUE_6:
+            valueFrom:
+              secretKeyRef:
+                name: codexgitlab
+                key: email
           RUST_LOG: info
           SSH_AUTH_SOCK: /run/signing-agent/agent.sock
-          TZ: Europe/Amsterdam
+          TZ: {{ .Values.timezone }}
         resources:
           requests:
             cpu: "2"
@@ -191,7 +195,7 @@ configMaps:
           - name: aion
             cluster:
               certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-              server: https://10.30.30.145:6443
+              server: {{ .Values.kubernetesApiServer }}
         contexts:
           - name: aion
             context:
@@ -335,10 +339,10 @@ rawResources:
         syncOptions:
           refreshInterval: 60s
         sources:
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /codex/gitlab
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /codex/signing
         targets:
@@ -349,6 +353,7 @@ rawResources:
             template:
               engineVersion: v1
               data:
+                email: {{ `{{ "{{ .email.Value }}" }}` | quote }}
                 token: {{ `{{ "{{ .token.Value }}" }}` | quote }}
                 user: {{ `{{ "{{ .user.Value }}" }}` | quote }}
           - name: codexsigning

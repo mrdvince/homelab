@@ -59,7 +59,7 @@ gateway:
           - path: /
             pathType: Prefix
     tls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - loki.{{ .Values.domain }}
 

@@ -31,7 +31,7 @@ cluster:
     podAntiAffinityType: required
     topologyKey: kubernetes.io/hostname
     nodeSelector:
-      node.home.mrdvince.me/worker: "true"
+      {{ .Values.workerNodeSelectorKey }}: "true"
 
   postgresql:
     parameters:

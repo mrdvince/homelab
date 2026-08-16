@@ -32,8 +32,8 @@ config:
 
   smtp:
     enabled: true
-    defaultFrom: Penpot <penpot@home.mrdvince.me>
-    defaultReplyTo: Penpot <penpot@home.mrdvince.me>
+    defaultFrom: Penpot <penpot@{{ .Values.domain }}>
+    defaultReplyTo: Penpot <penpot@{{ .Values.domain }}>
     host: mailrise.apps.svc.cluster.local
     port: "8025"
     tls: false
@@ -135,6 +135,6 @@ ingress:
   hosts:
     - penpot.{{ .Values.domain }}
   tls:
-    - secretName: wildcard-home-mrdvince-me-tls
+    - secretName: {{ .Values.tls.secretName }}
       hosts:
         - penpot.{{ .Values.domain }}

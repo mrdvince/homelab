@@ -6,7 +6,7 @@ contactPoints:
       - uid: ntfy
         type: webhook
         settings:
-          url: https://ntfy.home.mrdvince.me/realm?template=grafana
+          url: __NTFY_BASE_URL__?template=grafana
           httpMethod: POST
           title: '{{ "{{" }} .Status | toUpper {{ "}}" }}: {{ "{{" }} .CommonLabels.alertname {{ "}}" }} ({{ "{{" }} len .Alerts {{ "}}" }})'
           message: |-

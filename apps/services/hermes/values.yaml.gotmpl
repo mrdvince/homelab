@@ -86,7 +86,7 @@ controllers:
           - run
         env:
           GLAB_CONFIG_DIR: /dev/shm/glab
-          GITLAB_HOST: gitlab.home.mrdvince.me
+          GITLAB_HOST: {{ .Values.gitlab.host }}
           GITLAB_TOKEN:
             valueFrom:
               secretKeyRef:
@@ -98,12 +98,12 @@ controllers:
                 name: hermesinfisical
                 key: user
           GIT_CONFIG_COUNT: "2"
-          GIT_CONFIG_KEY_0: url.https://oauth2@gitlab.home.mrdvince.me/.insteadOf
-          GIT_CONFIG_VALUE_0: "git@gitlab.home.mrdvince.me:"
-          GIT_CONFIG_KEY_1: credential.https://gitlab.home.mrdvince.me.helper
+          GIT_CONFIG_KEY_0: url.https://oauth2@{{ .Values.gitlab.host }}/.insteadOf
+          GIT_CONFIG_VALUE_0: "git@{{ .Values.gitlab.host }}:"
+          GIT_CONFIG_KEY_1: credential.https://{{ .Values.gitlab.host }}.helper
           GIT_CONFIG_VALUE_1: >-
             !f() { test "$1" = get && { echo "username=${GITLAB_USERNAME}"; echo "password=${GITLAB_TOKEN}"; }; }; f
-          TZ: Europe/Amsterdam
+          TZ: {{ .Values.timezone }}
           HERMES_DASHBOARD: "1"
           HERMES_DASHBOARD_HOST: 0.0.0.0
           HERMES_DASHBOARD_PORT: "9119"
@@ -298,7 +298,7 @@ configMaps:
           - name: aion
             cluster:
               certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-              server: https://10.30.30.145:6443
+              server: {{ .Values.kubernetesApiServer }}
         contexts:
           - name: aion
             context:
@@ -433,7 +433,7 @@ ingress:
               identifier: main
               port: dashboard
     tls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - hermes.{{ .Values.domain }}
 
@@ -453,16 +453,16 @@ rawResources:
         syncOptions:
           refreshInterval: 60s
         sources:
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /hermes
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /hermes/oidc
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /hermes/signal
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /hermes/gitlab
         targets:

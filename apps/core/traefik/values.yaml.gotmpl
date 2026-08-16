@@ -82,14 +82,14 @@ service:
   ipFamilyPolicy: "PreferDualStack"
   type: LoadBalancer
   annotations:
-    io.cilium/lb-ipam-ips: {{ .Values.loadBalancerIP }}
+    io.cilium/lb-ipam-ips: {{ .Values.traefik.loadBalancerIP }}
 
 tolerations:
   - key: "CriticalAddonsOnly"
     operator: "Exists"
 
 nodeSelector:
-  node.home.mrdvince.me/worker: "true"
+  {{ .Values.workerNodeSelectorKey }}: "true"
 
 resources:
   requests:
@@ -126,7 +126,7 @@ extraObjects:
       namespace: traefik
     spec:
       forwardAuth:
-        address: https://forward.auth.home.mrdvince.me/outpost.goauthentik.io/auth/traefik
+        address: https://forward.auth.{{ .Values.domain }}/outpost.goauthentik.io/auth/traefik
         trustForwardHeader: true
         authResponseHeaders:
           - X-authentik-username
@@ -138,17 +138,15 @@ extraObjects:
   - apiVersion: cert-manager.io/v1
     kind: Certificate
     metadata:
-      name: wildcard-home-mrdvince-me
+      name: {{ .Values.tls.certificateName }}
       namespace: traefik
     spec:
-      secretName: wildcard-home-mrdvince-me-tls
+      secretName: {{ .Values.tls.secretName }}
       issuerRef:
         name: letsencrypt-dns01-prod
         kind: ClusterIssuer
       dnsNames:
-        - "*.home.mrdvince.me"
-        - "*.aion.home.mrdvince.me"
-        - "home.mrdvince.me"
+{{ .Values.tls.dnsNames | toYaml | nindent 8 }}
       secretTemplate:
         annotations:
           reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
@@ -163,7 +161,7 @@ extraObjects:
       namespace: traefik
       annotations:
         external-dns.alpha.kubernetes.io/hostname: traefik.{{ .Values.domain }}
-        external-dns.alpha.kubernetes.io/target: {{ .Values.loadBalancerIP }}
+        external-dns.alpha.kubernetes.io/target: {{ .Values.traefik.loadBalancerIP }}
     spec:
       entryPoints:
         - websecure
@@ -177,7 +175,7 @@ extraObjects:
             - name: authentik-forward-auth
               namespace: traefik
       tls:
-        secretName: wildcard-home-mrdvince-me-tls
+        secretName: {{ .Values.tls.secretName }}
 
   # gitlab ssh routing
   - apiVersion: traefik.io/v1alpha1
@@ -202,7 +200,7 @@ extraObjects:
       namespace: traefik
       annotations:
         external-dns.alpha.kubernetes.io/hostname: mailrise.{{ .Values.domain }}
-        external-dns.alpha.kubernetes.io/target: {{ .Values.loadBalancerIP }}
+        external-dns.alpha.kubernetes.io/target: {{ .Values.traefik.loadBalancerIP }}
     spec:
       entryPoints:
         - smtps
@@ -213,4 +211,4 @@ extraObjects:
               namespace: apps
               port: 8025
       tls:
-        secretName: wildcard-home-mrdvince-me-tls
+        secretName: {{ .Values.tls.secretName }}

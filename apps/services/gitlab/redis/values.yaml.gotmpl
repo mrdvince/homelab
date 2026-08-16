@@ -16,7 +16,7 @@ controllers:
 
 defaultPodOptions:
   nodeSelector:
-    node.home.mrdvince.me/worker: "true"
+    {{ .Values.workerNodeSelectorKey }}: "true"
 
 service:
   main:

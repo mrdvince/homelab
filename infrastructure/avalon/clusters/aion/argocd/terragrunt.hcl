@@ -12,6 +12,8 @@ dependency "cluster" {
 }
 
 locals {
+  site_config = yamldecode(file("${dirname(find_in_parent_folders("root.hcl"))}/images/config.yaml"))
+
   secret_vars = try(
     {
       gitlab_deploy_key = get_env("GITLAB_DEPLOY_KEY")
@@ -30,14 +32,14 @@ inputs = {
 
   repositories = {
     homelab = {
-      url      = "git@gitlab.home.mrdvince.me:homelab/homelab.git"
+      url      = local.site_config.gitlab.repository
       ssh_key  = local.secret_vars.gitlab_deploy_key
       insecure = true
     }
   }
 
   root_app = {
-    repo_url = "git@gitlab.home.mrdvince.me:homelab/homelab.git"
+    repo_url = local.site_config.gitlab.repository
     env_name = "aion"
   }
 }

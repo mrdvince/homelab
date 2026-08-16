@@ -1,4 +1,45 @@
-imageRegistry: registry.home.mrdvince.me
-otlpEndpoint: alloy.monitoring.svc:4317
 domain: home.mrdvince.me
+imageRegistry: registry.home.mrdvince.me
+timezone: Europe/Amsterdam
+
+blog:
+  domain: aion.home.mrdvince.me
+
+gitIdentity:
+  name: Vince
+
+gitlab:
+  host: gitlab.home.mrdvince.me
+  repository: git@gitlab.home.mrdvince.me:homelab/homelab.git
+  modulesRepository: git@gitlab.home.mrdvince.me:homelab/terraform-modules.git
+
+infisical:
+  projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+
+kubernetesApiServer: https://10.30.30.145:6443
+workerNodeSelectorKey: node.home.mrdvince.me/worker
+
+tls:
+  certificateName: wildcard-home-mrdvince-me
+  secretName: wildcard-home-mrdvince-me-tls
+  dnsNames:
+    - "*.home.mrdvince.me"
+    - "*.aion.home.mrdvince.me"
+    - home.mrdvince.me
+
+notifications:
+  ntfyBaseUrl: https://ntfy.home.mrdvince.me/realm
+
+traefik:
+  loadBalancerIP: 10.30.40.50
+
+cilium:
+  aion:
+    lbPoolStart: 10.30.40.1
+    lbPoolStop: 10.30.40.254
+  athos:
+    lbPoolStart: 10.30.50.1
+    lbPoolStop: 10.30.50.254
+
+otlpEndpoint: alloy.monitoring.svc:4317
 nfsServer: 10.30.50.43

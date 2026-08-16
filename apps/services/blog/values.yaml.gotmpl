@@ -10,16 +10,27 @@ image:
 
 ghostUsername: zero
 existingSecret: bloginfisical
-ghostEmail: zero@mrdvince.me
 ghostBlogTitle: "Nomadin"
-ghostHost: blog.{{ .Values.domain }}
+ghostHost: blog.{{ .Values.blog.domain }}
 ghostEnableHttps: true
+
+args:
+  - /bin/bash
+  - -ec
+  - |
+      export GHOST_EMAIL="${GHOST_EMAIL_SECRET}"
+      exec /opt/bitnami/scripts/ghost/run.sh
 
 extraEnvVars:
   - name: url
-    value: https://blog.{{ .Values.domain }}
+    value: https://blog.{{ .Values.blog.domain }}
   - name: NODE_OPTIONS
     value: --require=/opt/bitnami/ghost-copyfile-fallback/fallback.cjs
+  - name: GHOST_EMAIL_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: bloginfisical
+        key: ghost-email
 
 extraVolumes:
   - name: ghost-copyfile-fallback
@@ -55,16 +66,16 @@ persistence:
 ingress:
   enabled: true
   ingressClassName: traefik
-  hostname: blog.{{ .Values.domain }}
+  hostname: blog.{{ .Values.blog.domain }}
   pathType: Prefix
   tls: false
   extraTls:
     - hosts:
-        - blog.{{ .Values.domain }}
+        - blog.{{ .Values.blog.domain }}
       secretName: ghost-blog-tls
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-dns01-prod
-    external-dns.alpha.kubernetes.io/hostname: blog.{{ .Values.domain }}
+    external-dns.alpha.kubernetes.io/hostname: blog.{{ .Values.blog.domain }}
     traefik.ingress.kubernetes.io/router.middlewares: blog-x-forwarded-proto@kubernetescrd
 
 resources:

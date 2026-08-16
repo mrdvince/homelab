@@ -1,5 +1,5 @@
 x-gitlabWorkerNodeSelector: &gitlabWorkerNodeSelector
-  node.home.mrdvince.me/worker: "true"
+  {{ .Values.workerNodeSelectorKey }}: "true"
 
 global:
 {{ if not (.Values | get "renderStockImages" false) }}
@@ -26,7 +26,7 @@ global:
       external-dns.alpha.kubernetes.io/hostname: gitlab.{{ .Values.domain }}
     tls:
       enabled: true
-      secretName: wildcard-home-mrdvince-me-tls
+      secretName: {{ .Values.tls.secretName }}
 
   hpa:
     apiVersion: autoscaling/v2
@@ -35,7 +35,7 @@ global:
     apiVersion: policy/v1
 
   nodeSelector:
-    node.home.mrdvince.me/worker: "true"
+    {{ .Values.workerNodeSelectorKey }}: "true"
   antiAffinity: hard
   affinity:
     podAntiAffinity:
@@ -174,7 +174,7 @@ gitlab-runner:
           mount_path = "/app/config/helm"
           read_only = true
         [runners.kubernetes.node_selector]
-          "node.home.mrdvince.me/worker" = "true"
+          "{{ .Values.workerNodeSelectorKey }}" = "true"
         [[runners.kubernetes.volumes.empty_dir]]
           name = "docker-certs"
           mount_path = "/certs/client"
@@ -214,7 +214,7 @@ gitlab:
       repository: {{ .Values.imageRegistry }}/gitlab-org/build/cng/gitlab-webservice-ee
 {{ end }}
     nodeSelector:
-      node.home.mrdvince.me/worker: "true"
+      {{ .Values.workerNodeSelectorKey }}: "true"
       kubernetes.io/hostname: aion-25
     deployment:
       strategy:

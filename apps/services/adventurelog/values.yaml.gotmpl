@@ -14,10 +14,10 @@ rawResources:
         syncOptions:
           refreshInterval: 60s
         sources:
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /adventurelog
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /adventurelog/oidc
         targets:
@@ -171,7 +171,7 @@ controllers:
               secretKeyRef:
                 name: mailriseinfisical
                 key: smtp-password
-          DEFAULT_FROM_EMAIL: AdventureLog <adventurelog@home.mrdvince.me>
+          DEFAULT_FROM_EMAIL: AdventureLog <adventurelog@{{ .Values.domain }}>
         resources:
           requests:
             cpu: 200m
@@ -466,6 +466,6 @@ ingress:
               identifier: main
               port: frontend
     tls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - adventurelog.{{ .Values.domain }}

@@ -1,7 +1,8 @@
 locals {
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   node_vars        = read_terragrunt_config(find_in_parent_folders("node.hcl"))
-  base_source_url  = "git@gitlab.home.mrdvince.me:homelab/terraform-modules.git"
+  site_config      = yamldecode(file("${dirname(find_in_parent_folders("root.hcl"))}/images/config.yaml"))
+  base_source_url  = local.site_config.gitlab.modulesRepository
   base_source_ref  = "main"
 
   secret_vars = try(

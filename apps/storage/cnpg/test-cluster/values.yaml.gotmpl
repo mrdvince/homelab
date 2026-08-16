@@ -30,7 +30,7 @@ cluster:
 
 objectStore:
   name: test-cluster-backups
-  endpointURL: https://s3.home.mrdvince.me
+  endpointURL: https://s3.{{ .Values.domain }}
   destinationPath: s3://cnpg-backups/test-cluster-plugin
   retentionPolicy: 7d
   instanceSidecarEnv:

@@ -14,7 +14,7 @@ rawResources:
         syncOptions:
           refreshInterval: 60s
         sources:
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /freshrss-oidc
         targets:
@@ -58,7 +58,7 @@ controllers:
           repository: {{ .Values.imageRegistry }}/{{ (index .Values.freshrss 0).image }}
           tag: "{{ (index .Values.freshrss 0).tag }}"
         env:
-          TZ: "Europe/Amsterdam"
+          TZ: {{ .Values.timezone | quote }}
           CRON_MIN: "1,31"
           DB_HOST: freshrss-postgres-rw.apps.svc.cluster.local
           DB_BASE: freshrss
@@ -248,6 +248,6 @@ ingress:
               identifier: main
               port: http
     tls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - rss.{{ .Values.domain }}

@@ -14,16 +14,16 @@ rawResources:
         syncOptions:
           refreshInterval: 60s
         sources:
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /rxresume
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /rxresume/oidc
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /s3
-          - projectId: 0b29d425-2822-4168-b95f-38127a2e80d7
+          - projectId: {{ .Values.infisical.projectId }}
             environmentSlug: prod
             secretPath: /mailrise
         targets:
@@ -53,7 +53,7 @@ controllers:
           repository: {{ .Values.imageRegistry }}/{{ (index .Values.rxresumeImages 0).image }}
           tag: "{{ (index .Values.rxresumeImages 0).tag }}"
         env:
-          TZ: Europe/Amsterdam
+          TZ: {{ .Values.timezone }}
           APP_URL: https://resume.{{ .Values.domain }}
           DATABASE_URL:
             valueFrom:
@@ -104,7 +104,7 @@ controllers:
               secretKeyRef:
                 name: rxresumeinfisical
                 key: smtp-password
-          SMTP_FROM: Reactive Resume <reactive-resume@home.mrdvince.me>
+          SMTP_FROM: Reactive Resume <reactive-resume@{{ .Values.domain }}>
           SMTP_SECURE: "false"
           FLAG_SHOW_SPONSORS: "false"
         resources:
@@ -180,6 +180,6 @@ ingress:
               identifier: main
               port: http
     tls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - resume.{{ .Values.domain }}

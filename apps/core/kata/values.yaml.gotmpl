@@ -16,4 +16,4 @@ rawResources:
           memory: 130Mi
       scheduling:
         nodeSelector:
-          node.home.mrdvince.me/worker: "true"
+          {{ .Values.workerNodeSelectorKey }}: "true"

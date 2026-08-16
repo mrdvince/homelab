@@ -64,6 +64,6 @@ ingress:
   hosts:
     - host: bar.{{ .Values.domain }}
   tls:
-    - secretName: wildcard-home-mrdvince-me-tls
+    - secretName: {{ .Values.tls.secretName }}
       hosts:
         - bar.{{ .Values.domain }}

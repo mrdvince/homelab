@@ -47,6 +47,6 @@ ingress:
               identifier: main
               port: http
     tls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - drawio.{{ .Values.domain }}

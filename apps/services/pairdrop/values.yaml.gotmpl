@@ -9,7 +9,7 @@ controllers:
         env:
           PUID: "1000"
           PGID: "1000"
-          TZ: "Europe/Amsterdam"
+          TZ: {{ .Values.timezone | quote }}
         resources:
           requests:
             cpu: 10m
@@ -47,6 +47,6 @@ ingress:
               identifier: main
               port: http
     tls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - pairdrop.{{ .Values.domain }}

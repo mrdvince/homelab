@@ -10,7 +10,7 @@ applicationsets:
             - matrix:
                 generators:
                   - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      repoURL: {{ .Values.gitlab.repository }}
                       revision: {{ .Values.repoRevision }}
                       directories:
                         - path: apps/core/*
@@ -26,7 +26,7 @@ applicationsets:
             - matrix:
                 generators:
                   - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      repoURL: {{ .Values.gitlab.repository }}
                       revision: {{ .Values.repoRevision }}
                       files:
                         - path: apps/core/*/argocd.yaml
@@ -39,7 +39,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+          repoURL: {{ .Values.gitlab.repository }}
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
@@ -75,7 +75,7 @@ applicationsets:
             - matrix:
                 generators:
                   - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      repoURL: {{ .Values.gitlab.repository }}
                       revision: {{ .Values.repoRevision }}
                       directories:
                         - path: apps/services/*
@@ -85,7 +85,7 @@ applicationsets:
             - matrix:
                 generators:
                   - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      repoURL: {{ .Values.gitlab.repository }}
                       revision: {{ .Values.repoRevision }}
                       files:
                         - path: apps/services/*/argocd.yaml
@@ -134,7 +134,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+          repoURL: {{ .Values.gitlab.repository }}
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
@@ -177,7 +177,7 @@ applicationsets:
             - matrix:
                 generators:
                   - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      repoURL: {{ .Values.gitlab.repository }}
                       revision: {{ .Values.repoRevision }}
                       directories:
                         - path: apps/storage/*
@@ -194,7 +194,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+          repoURL: {{ .Values.gitlab.repository }}
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:
@@ -230,7 +230,7 @@ applicationsets:
             - matrix:
                 generators:
                   - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      repoURL: {{ .Values.gitlab.repository }}
                       revision: {{ .Values.repoRevision }}
                       directories:
                         - path: apps/monitoring/*
@@ -240,7 +240,7 @@ applicationsets:
             - matrix:
                 generators:
                   - git:
-                      repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+                      repoURL: {{ .Values.gitlab.repository }}
                       revision: {{ .Values.repoRevision }}
                       files:
                         - path: apps/monitoring/*/argocd.yaml
@@ -253,7 +253,7 @@ applicationsets:
       spec:
         project: '{{`{{ dig "project" "default" . }}`}}'
         source:
-          repoURL: git@gitlab.home.mrdvince.me:homelab/homelab.git
+          repoURL: {{ .Values.gitlab.repository }}
           targetRevision: {{ .Values.repoRevision }}
           path: '{{`{{ .path.path }}`}}'
           plugin:

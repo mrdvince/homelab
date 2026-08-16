@@ -67,7 +67,7 @@ ingress:
   hosts:
     - grafana.{{ .Values.domain }}
   tls:
-    - secretName: wildcard-home-mrdvince-me-tls
+    - secretName: {{ .Values.tls.secretName }}
       hosts:
         - grafana.{{ .Values.domain }}
 
@@ -139,7 +139,7 @@ sidecar:
 
 alerting:
   contactpoints.yaml:
-{{ readFile "./alerting/contactpoints.yaml" | nindent 4 }}
+{{ readFile "./alerting/contactpoints.yaml" | replace "__NTFY_BASE_URL__" .Values.notifications.ntfyBaseUrl | nindent 4 }}
   policies.yaml:
 {{ readFile "./alerting/policies.yaml" | nindent 4 }}
   rules.yaml:

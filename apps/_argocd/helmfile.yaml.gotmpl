@@ -4,11 +4,13 @@ environments:
       - cluster: aion
         server: https://kubernetes.default.svc
         repoRevision: "HEAD"
+      - ../../infrastructure/images/config.yaml
   athos:
     values:
       - cluster: athos
         server: https://kubernetes.default.svc
         repoRevision: "HEAD"
+      - ../../infrastructure/images/config.yaml
 ---
 bases:
   - ../../infrastructure/charts/repositories.yaml.gotmpl

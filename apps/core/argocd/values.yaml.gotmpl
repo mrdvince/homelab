@@ -16,7 +16,7 @@ server:
     ingressClassName: traefik
     tls: true
     extraTls:
-      - secretName: wildcard-home-mrdvince-me-tls
+      - secretName: {{ .Values.tls.secretName }}
         hosts:
           - argocd.{{ .Values.domain }}
 
