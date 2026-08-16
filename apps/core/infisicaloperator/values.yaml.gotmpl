@@ -525,6 +525,14 @@ rawResources:
                 ghost-password: {{ `{{ "{{ .ghostPassword.Value }}" }}` | quote }}
                 mysql-password: {{ `{{ "{{ .ghostMysqlPassword.Value }}" }}` | quote }}
                 mysql-root-password: {{ `{{ "{{ .ghostMysqlRootPassword.Value }}" }}` | quote }}
+          - name: blogemail
+            namespace: blog
+            kind: Secret
+            creationPolicy: Owner
+            template:
+              engineVersion: v1
+              data:
+                GHOST_EMAIL_SECRET: {{ `{{ "{{ .ghostEmail.Value }}" }}` | quote }}
 
   gitlab-oidc:
     forceRename: gitlaboidc

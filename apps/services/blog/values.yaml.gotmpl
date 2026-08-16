@@ -10,20 +10,17 @@ image:
 
 ghostUsername: zero
 existingSecret: bloginfisical
+ghostEmail: $(GHOST_EMAIL_SECRET)
 ghostBlogTitle: "Nomadin"
 ghostHost: blog.{{ .Values.blog.domain }}
 ghostEnableHttps: true
+extraEnvVarsSecret: blogemail
 
 extraEnvVars:
   - name: url
     value: https://blog.{{ .Values.blog.domain }}
   - name: NODE_OPTIONS
     value: --require=/opt/bitnami/ghost-copyfile-fallback/fallback.cjs
-  - name: GHOST_EMAIL
-    valueFrom:
-      secretKeyRef:
-        name: bloginfisical
-        key: ghost-email
 
 extraVolumes:
   - name: ghost-copyfile-fallback
