@@ -14,19 +14,12 @@ ghostBlogTitle: "Nomadin"
 ghostHost: blog.{{ .Values.blog.domain }}
 ghostEnableHttps: true
 
-args:
-  - /bin/bash
-  - -ec
-  - |
-      export GHOST_EMAIL="${GHOST_EMAIL_SECRET}"
-      exec /opt/bitnami/scripts/ghost/run.sh
-
 extraEnvVars:
   - name: url
     value: https://blog.{{ .Values.blog.domain }}
   - name: NODE_OPTIONS
     value: --require=/opt/bitnami/ghost-copyfile-fallback/fallback.cjs
-  - name: GHOST_EMAIL_SECRET
+  - name: GHOST_EMAIL
     valueFrom:
       secretKeyRef:
         name: bloginfisical
